@@ -1,0 +1,57 @@
+import type { TimelineSet } from "@/types/content";
+
+export const BIBLE_BOOK_SETS: TimelineSet[] = [
+  {
+    id: "biblio-pentateuque",
+    type: "timeline-set",
+    category: "livres",
+    difficulty: "facile",
+    title: "Les cinq premiers livres",
+    description: "Remettez la Torah dans l'ordre.",
+    events: [
+      { id: "gen", event: "Genèse", yearOrder: 1 },
+      { id: "exo", event: "Exode", yearOrder: 2 },
+      { id: "lev", event: "Lévitique", yearOrder: 3 },
+      { id: "nom", event: "Nombres", yearOrder: 4 },
+      { id: "deu", event: "Deutéronome", yearOrder: 5 },
+    ],
+    sources: [{ type: "bible", reference: "Ordre canonique hébreu", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01",
+    tags: ["livres"],
+  },
+  {
+    id: "biblio-evangiles",
+    type: "timeline-set",
+    category: "livres",
+    difficulty: "moyen",
+    title: "Les quatre Évangiles",
+    description: "Classez les Évangiles dans l'ordre biblique.",
+    events: [
+      { id: "mat", event: "Matthieu", yearOrder: 1 },
+      { id: "mar", event: "Marc", yearOrder: 2 },
+      { id: "luc", event: "Luc", yearOrder: 3 },
+      { id: "joh", event: "Jean", yearOrder: 4 },
+    ],
+    sources: [{ type: "bible", reference: "Nouveau Testament", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01",
+    tags: ["évangiles"],
+  },
+  {
+    id: "biblio-historiques",
+    type: "timeline-set",
+    category: "livres",
+    difficulty: "difficile",
+    title: "Livres historiques",
+    description: "Ordre de Josué à Esther.",
+    events: [
+      { id: "jos", event: "Josué", yearOrder: 1 },
+      { id: "jgs", event: "Juges", yearOrder: 2 },
+      { id: "rut", event: "Ruth", yearOrder: 3 },
+      { id: "1sa", event: "1 Samuel", yearOrder: 4 },
+      { id: "2sa", event: "2 Samuel", yearOrder: 5 },
+    ],
+    sources: [{ type: "bible", reference: "Section historique", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01",
+    tags: ["histoire"],
+  },
+];

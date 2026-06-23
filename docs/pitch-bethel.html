@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JW Games — Proposition au Bethel</title>
+  <style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 18mm 16mm;
+  }
+  .cover {
+    text-align: center;
+    padding: 48mm 0 32mm;
+    page-break-after: always;
+    border-bottom: 3px solid #00b8b8;
+    margin-bottom: 8mm;
+  }
+  .cover-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    background: #050507;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00b8b8;
+    font-size: 28pt;
+    font-weight: 800;
+  }
+  .cover h1 {
+    font-size: 26pt;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: #050507;
+  }
+  .cover .tagline {
+    font-size: 13pt;
+    color: #555;
+    margin-bottom: 24px;
+  }
+  .cover .meta {
+    font-size: 10pt;
+    color: #777;
+    line-height: 1.8;
+  }
+  .cover .meta a { color: #009999; text-decoration: none; }
+  h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #009999;
+    margin: 20px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e0e0e0;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11pt;
+    font-weight: 600;
+    margin: 14px 0 6px;
+    color: #333;
+    page-break-after: avoid;
+  }
+  p { margin-bottom: 8px; }
+  ul, ol { margin: 6px 0 10px 20px; }
+  li { margin-bottom: 3px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f4fafa; font-weight: 600; color: #006666; }
+  tr:nth-child(even) td { background: #fafafa; }
+  blockquote {
+    border-left: 3px solid #00b8b8;
+    padding: 8px 14px;
+    margin: 10px 0;
+    background: #f4fafa;
+    font-style: italic;
+    color: #333;
+    page-break-inside: avoid;
+  }
+  .notice {
+    background: #fff8e6;
+    border: 1px solid #f5d78e;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  .footer-note {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+    font-size: 9.5pt;
+    color: #666;
+    text-align: center;
+  }
+  .page-break { page-break-before: always; }
+  @media print {
+    body { padding: 0; }
+    a { color: #009999; }
+  }
+  </style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="cover-logo">JW</div>
+  <h1>JW Games</h1>
+  <p class="tagline">Jeux bibliques et médiathèque — basés sur les sources officielles</p>
+  <div class="meta">
+  <p><strong>Proposition de transmission au Bethel</strong></p>
+  <p>Juin 2026</p>
+  <p style="margin-top:16px">
+    Démonstration : <a href="https://jwgames.netlify.app">jwgames.netlify.app</a><br>
+    Code source : <a href="https://github.com/alfredgibeau-ahoussinou/jw-games">github.com/alfredgibeau-ahoussinou/jw-games</a>
+  </p>
+  </div>
+</section>
+
+<h2>1. Objet de ce document</h2>
+<p>Je souhaite mettre à disposition de l'organisation <strong>JW Games</strong>, une application web gratuite conçue pour aider frères, sœurs, jeunes et familles à <strong>réviser et approfondir la Bible</strong> de manière ludique, en s'appuyant <strong>exclusivement sur le contenu officiel</strong> publié sur JW.org et dans JW Library (Traduction du monde nouveau).</p>
+<p>Ce document présente la vision du projet, ses fonctionnalités, les garanties de conformité des sources, l'architecture technique et ma proposition de transmission — sans prétention commerciale ni revendication d'approbation officielle.</p>
+
+<h2>2. Le problème que nous cherchons à résoudre</h2>
+<ul>
+  <li>Les jeunes et les familles utilisent déjà des jeux et des applications sur leurs appareils.</li>
+  <li>La révision biblique peut parfois sembler répétitive ou difficile à intégrer au quotidien.</li>
+  <li>Les ressources officielles JW.org sont riches, mais dispersées entre vidéos, articles, texte du jour et publications.</li>
+</ul>
+<p><strong>JW Games</strong> propose un espace unique, sobre et respectueux, qui <strong>canalise l'attention vers les sources officielles</strong> plutôt que de les remplacer.</p>
+
+<h2>3. Vision et principes directeurs</h2>
+<table>
+  <tr><th>Principe</th><th>Application concrète</th></tr>
+  <tr><td>Sources officielles uniquement</td><td>Questions, versets, vidéos et articles renvoient vers JW.org / JW Library</td></tr>
+  <tr><td>Pas de contenu doctrinal inventé</td><td>Données curatées ou issues d'API publiques JW</td></tr>
+  <tr><td>Gratuit et sans publicité</td><td>Aucune monétisation, aucun tracking commercial</td></tr>
+  <tr><td>Respect de la vie privée</td><td>Profil local ; synchronisation cloud optionnelle</td></tr>
+  <tr><td>Accessibilité mobile</td><td>PWA installable, interface adaptée téléphone et tablette</td></tr>
+  <tr><td>Humilité</td><td>Projet personnel offert à l'organisation, ouvert aux retours du Bethel</td></tr>
+</table>
+
+<h2>4. Fonctionnalités principales</h2>
+
+<h3>4.1 Accueil et navigation</h3>
+<ul>
+  <li>Tableau de bord : jeux, étude thématique, médiathèque, texte du jour</li>
+  <li>Barre officielle rappelant la source JW.org</li>
+  <li>Installation en application (PWA) sur iOS et Android</li>
+</ul>
+
+<h3>4.2 Quinze modes de jeu bibliques</h3>
+<table>
+  <tr><th>Jeu</th><th>Description</th></tr>
+  <tr><td>Quiz biblique</td><td>Questions à choix multiples par thème et difficulté</td></tr>
+  <tr><td>Vrai ou Faux</td><td>Affirmations à valider avec explication</td></tr>
+  <tr><td>Mémoire</td><td>Association de paires (personnages, événements, versets)</td></tr>
+  <tr><td>Versets à compléter</td><td>Texte biblique avec mots manquants</td></tr>
+  <tr><td>Mots mélangés</td><td>Réorganisation de mots pour reconstituer un verset</td></tr>
+  <tr><td>Rapidité</td><td>Réponses dans un temps limité</td></tr>
+  <tr><td>Ordre chronologique</td><td>Classement d'événements bibliques</td></tr>
+  <tr><td>Cartes flash</td><td>Révision par retournement de cartes</td></tr>
+  <tr><td>Devinettes</td><td>Énigmes basées sur les récits bibliques</td></tr>
+  <tr><td>Bibliothèque</td><td>Questions sur les publications</td></tr>
+  <tr><td>Thématique</td><td>Quiz par sujet (foi, prière, etc.)</td></tr>
+  <tr><td>Undercover</td><td>Jeu d'équipe pour réunions</td></tr>
+  <tr><td>Quiz vidéo</td><td>Questions liées aux vidéos JW</td></tr>
+  <tr><td>Jeu d'équipe</td><td>Mode collaboratif</td></tr>
+  <tr><td>Mots croisés bibliques</td><td>Variante textuelle</td></tr>
+</table>
+<p>Chaque partie affiche les <strong>références bibliques</strong> et, le cas échéant, un lien vers la source officielle.</p>
+
+<h3>4.3 Étude thématique — 18 parcours</h3>
+<p>Parcours structurés (foi, prière, qualités chrétiennes, événements bibliques…) avec articles de référence et mini-jeux intégrés.</p>
+
+<h3>4.4 Médiathèque vidéo — 137 vidéos</h3>
+<p>Collections organisées (Bible, famille, jeunes…), lecteur intégré avec sous-titres JW, mini-quiz optionnel.</p>
+
+<h3>4.5 Texte du jour</h3>
+<p>Affichage depuis WOL (Watchtower Online Library), mis en cache au déploiement pour garantir la disponibilité.</p>
+
+<h3>4.6 Page Découvrir</h3>
+<p>Liens organisés vers les sections officielles de JW.org.</p>
+
+<h3>4.7 Profil personnel (local)</h3>
+<p>Pseudonyme, points d'expérience, badges, historique — sans donnée personnelle sensible.</p>
+
+<div class="page-break"></div>
+
+<h2>5. Conformité et sources</h2>
+<blockquote>Tout le contenu est basé exclusivement sur les sources officielles : JW.org et JW Library (Traduction du monde nouveau).</blockquote>
+<ul>
+  <li>Images : CDN média JW (jw.org / jw-cdn)</li>
+  <li>Vidéos : flux officiels</li>
+  <li>Versets : Traduction du monde nouveau</li>
+  <li>Le site <strong>ne remplace pas</strong> JW Library ni l'application officielle JW.org</li>
+</ul>
+
+<div class="notice">
+  <strong>Note importante :</strong> Ce projet est une initiative personnelle. Il n'a pas reçu d'approbation officielle de l'organisation et ne doit pas être présenté comme un produit du Bethel sans autorisation expresse.
+</div>
+
+<h2>6. Démonstration — scénario suggéré (5 min)</h2>
+<ol>
+  <li>Accueil → texte du jour et jeux vedettes</li>
+  <li>Quiz → référence biblique en fin de question</li>
+  <li>Médiathèque → vidéo avec sous-titres (30 s)</li>
+  <li>Étude thématique → article + mini-jeu</li>
+  <li>Installation PWA sur mobile</li>
+</ol>
+
+<h2>7. Architecture technique (résumé)</h2>
+<table>
+  <tr><th>Couche</th><th>Technologie</th></tr>
+  <tr><td>Framework</td><td>Next.js 16 (React 19, TypeScript)</td></tr>
+  <tr><td>Styles</td><td>Tailwind CSS 4, design system sombre</td></tr>
+  <tr><td>État</td><td>Zustand (profil, progression)</td></tr>
+  <tr><td>Données</td><td>Supabase (optionnel) + IndexedDB local</td></tr>
+  <tr><td>Hébergement</td><td>Netlify (déploiement automatique)</td></tr>
+  <tr><td>PWA</td><td>Manifest + installation native</td></tr>
+</table>
+<p>Détails complets dans <code>docs/ARCHITECTURE.md</code> du dépôt GitHub.</p>
+
+<h2>8. Proposition de transmission</h2>
+<p>Je propose de <strong>transmettre l'intégralité du projet</strong> à l'organisation :</p>
+
+<h3>Option A — Adoption officielle</h3>
+<p>Transfert du dépôt GitHub, du domaine, documentation technique et guide Figma. Accompagnement pour la maintenance.</p>
+
+<h3>Option B — Usage interne / branche</h3>
+<p>Déploiement sur l'infrastructure de l'organisation, adaptation du branding selon les directives du Service des publications.</p>
+
+<h3>Option C — Retour et orientation</h3>
+<p>Si le projet ne correspond pas aux priorités actuelles, je reste ouvert à vos recommandations.</p>
+
+<p><strong>Ce que je ne demande pas :</strong> rémunération, reconnaissance publique.</p>
+<p><strong>Ce que je demande :</strong> orientation sur la conformité, la poursuite éventuelle sous l'égide de l'organisation, et les ajustements souhaités.</p>
+
+<h2>9. Maintenance et évolutivité</h2>
+<ul>
+  <li><strong>Contenu :</strong> fichiers <code>src/data/*.ts</code> — enrichissement sans modifier le code des jeux</li>
+  <li><strong>Traductions :</strong> structure prête pour l'internationalisation</li>
+  <li><strong>Sécurité :</strong> pas de secrets dans le code source</li>
+  <li><strong>Coûts :</strong> hébergement gratuit Netlify pour un usage modéré</li>
+</ul>
+
+<h2>10. Conclusion</h2>
+<p><strong>JW Games</strong> est né d'un désir sincère : aider nos frères et sœurs, en particulier les jeunes, à <strong>aimer davantage l'étude de la Bible</strong> en utilisant les outils qu'ils connaissent déjà — toujours en ramenant vers les publications officielles.</p>
+<p>Je mets ce travail entre vos mains avec reconnaissance pour tout ce que l'organisation accomplit au service de Jéhovah et de notre prochain.</p>
+
+<div class="footer-note">
+  <p><em>Document préparé par Alfred Gibeau-Ahoussinou — Juin 2026</em></p>
+  <p>jwgames.netlify.app · github.com/alfredgibeau-ahoussinou/jw-games</p>
+</div>
+
+</body>
+</html>

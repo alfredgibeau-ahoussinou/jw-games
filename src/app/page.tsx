@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { Flame, Film, Gamepad2, BookMarked } from "lucide-react";
+import { GameCard } from "@/components/game/GameCard";
+import { StudyThemeCard } from "@/components/study/StudyThemeCard";
+import { HeroBanner } from "@/components/media/HeroBanner";
+import { MediaRow } from "@/components/media/MediaRow";
+import { VideoPoster } from "@/components/media/MediaRow";
+import { DailyTextSection } from "@/components/daily/DailyTextSection";
+import { PageWrapper } from "@/components/motion/PageWrapper";
+import { JW_VIDEO_COLLECTIONS, JW_VIDEOS } from "@/data/jw-videos";
+import { GAME_MODES } from "@/lib/constants";
+import { STUDY_THEMES } from "@/data/study-themes";
+import { useUserStore } from "@/stores/user-store";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { XP_PER_LEVEL } from "@/lib/constants";
+
+const HERO_VIDEO = JW_VIDEOS.find((v) => v.id.startsWith("bjf-")) ?? JW_VIDEOS[0];
+const FEATURED_GAMES = ["quiz", "devinettes", "videoquiz", "memoire", "biblio"]
+  .map((id) => GAME_MODES.find((g) => g.id === id)!)
+  .filter(Boolean);
+
+export default function HomePage() {
+  const profile = useUserStore((s) => s.profile);
+
+  const enfantsRow = JW_VIDEO_COLLECTIONS.find((c) => c.id === "bjf")?.videos.slice(0, 10) ?? [];
+  const jeunesRow = [
+    ...(JW_VIDEO_COLLECTIONS.find((c) => c.id === "ados-spiritualite")?.videos.slice(0, 6) ?? []),
+    ...(JW_VIDEO_COLLECTIONS.find((c) => c.id === "ados-films")?.videos.slice(0, 4) ?? []),
+  ];
+  const jesusRow = JW_VIDEO_COLLECTIONS.find((c) => c.id === "gnj")?.videos ?? [];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <PageWrapper>
+      <HeroBanner video={HERO_VIDEO} />
+
+      <div className="relative z-10 space-y-6 pb-8 pt-4">
+        {profile && (
+          <div className="container-app mb-6">
+            <div className="flex items-center gap-4 rounded-md bg-[var(--bg-card)] p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded bg-[var(--accent)] font-bold text-white">
+                {profile.displayName.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">{profile.displayName}</p>
+                <p className="text-caption">
+                  Niveau {profile.level} · Série {profile.streak}j
+                </p>
+                <ProgressBar value={profile.xp % XP_PER_LEVEL} max={XP_PER_LEVEL} className="mt-2" />
+              </div>
+              <Link href="/quotidien" className="link-primary shrink-0">
+                <Flame className="mr-1 inline h-4 w-4" />
+                Défi
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <DailyTextSection />
+
+        <MediaRow title="Jeux bibliques" href="/jeux" className="media-row--hub">
+          {FEATURED_GAMES.map((game) => (
+            <GameCard key={game.id} game={game} compact />
+          ))}
+        </MediaRow>
+
+        <MediaRow title="Étude personnelle" href="/etude" className="media-row--hub">
+          {STUDY_THEMES.slice(0, 8).map((theme) => (
+            <StudyThemeCard key={theme.id} theme={theme} compact />
+          ))}
+        </MediaRow>
+
+        <MediaRow title="Pour les enfants" href="/mediatheque">
+          {enfantsRow.map((v) => (
+            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+          ))}
+        </MediaRow>
+
+        <MediaRow title="Pour les jeunes" href="/mediatheque">
+          {jeunesRow.map((v) => (
+            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+          ))}
+        </MediaRow>
+
+        <MediaRow title="La bonne nouvelle selon Jésus" href="/mediatheque">
+          {jesusRow.map((v) => (
+            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+          ))}
+        </MediaRow>
+
+        <div className="container-app mt-10 flex flex-wrap gap-3">
+          <Link
+            href="/etude"
+            className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--bg-card)] px-5 py-3.5 text-sm font-medium tracking-tight transition-colors hover:border-white/12 hover:bg-[var(--bg-hover)]"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <BookMarked className="h-4 w-4 text-[var(--accent)]" />
+            Étude personnelle
+          </Link>
+          <Link
+            href="/jeux"
+            className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--bg-card)] px-5 py-3.5 text-sm font-medium tracking-tight transition-colors hover:border-white/12 hover:bg-[var(--bg-hover)]"
           >
-            Documentation
-          </a>
+            <Gamepad2 className="h-4 w-4 text-[var(--accent)]" />
+            Tous les jeux
+          </Link>
+          <Link
+            href="/mediatheque"
+            className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--bg-card)] px-5 py-3.5 text-sm font-medium tracking-tight transition-colors hover:border-white/12 hover:bg-[var(--bg-hover)]"
+          >
+            <Film className="h-4 w-4 text-[var(--accent)]" />
+            Médiathèque
+          </Link>
         </div>
-      </main>
-    </div>
+      </div>
+    </PageWrapper>
   );
 }

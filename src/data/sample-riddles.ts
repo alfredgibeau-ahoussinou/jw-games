@@ -1,0 +1,90 @@
+import type { QuizQuestion } from "@/types/content";
+import { EXTRA_RIDDLES } from "./extra/extra-riddles";
+
+export const RIDDLE_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "rid-01", type: "quiz", category: "personnages", difficulty: "facile",
+    title: "Le berger", description: "",
+    question: "Je suis le plus jeune fils de Jessé, j'ai vaincu un géant. Qui suis-je ?",
+    options: ["David", "Saül", "Salomon", "Samuel"],
+    correctIndex: 0,
+    explanation: "David, le berger de Bethléem, vainquit Goliath.",
+    sources: [{ type: "bible", reference: "1 Samuel 17", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["david"],
+  },
+  {
+    id: "rid-02", type: "quiz", category: "personnages", difficulty: "facile",
+    title: "L'arche", description: "",
+    question: "J'ai construit une arche sur ordre de Dieu pour sauver ma famille. Qui suis-je ?",
+    options: ["Noé", "Abraham", "Moïse", "Joseph"],
+    correctIndex: 0,
+    explanation: "Noé construisit l'arche avant le déluge.",
+    sources: [{ type: "bible", reference: "Genèse 6-9", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["noé"],
+  },
+  {
+    id: "rid-03", type: "quiz", category: "personnages", difficulty: "moyen",
+    title: "Le prophète courageux", description: "",
+    question: "J'ai défié 450 prophètes de Baal sur le mont Carmel. Qui suis-je ?",
+    options: ["Élie", "Élisée", "Ésaïe", "Jérémie"],
+    correctIndex: 0,
+    explanation: "Élie prouva que Jéhovah est le vrai Dieu.",
+    sources: [{ type: "bible", reference: "1 Rois 18", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["élie"],
+  },
+  {
+    id: "rid-04", type: "quiz", category: "evenements", difficulty: "moyen",
+    title: "La mer", description: "",
+    question: "Dieu ouvrit une mer pour que mon peuple passe à pied sec. Qui dirigeais-je ?",
+    options: ["Moïse", "Josué", "Aaron", "Caleb"],
+    correctIndex: 0,
+    explanation: "Moïse conduisit Israël à travers la mer Rouge.",
+    sources: [{ type: "bible", reference: "Exode 14", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["moïse"],
+  },
+  {
+    id: "rid-05", type: "quiz", category: "personnages", difficulty: "facile",
+    title: "La mère du Messie", description: "",
+    question: "Un ange m'a annoncé que je donnerais naissance au Fils de Dieu. Qui suis-je ?",
+    options: ["Marie", "Élisabeth", "Anne", "Ruth"],
+    correctIndex: 0,
+    explanation: "Marie fut choisie pour devenir la mère de Jésus.",
+    sources: [{ type: "bible", reference: "Luc 1:26-38", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["marie"],
+  },
+  {
+    id: "rid-06", type: "quiz", category: "personnages", difficulty: "difficile",
+    title: "Le disciple fidèle", description: "",
+    question: "J'étais pêcheur et Jésus m'a surnommé « fils du tonnerre ». Qui suis-je ?",
+    options: ["Jean", "Jacques", "Pierre", "André"],
+    correctIndex: 1,
+    explanation: "Jacques et Jean étaient surnommés « fils du tonnerre ».",
+    sources: [{ type: "bible", reference: "Marc 3:17", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["disciples"],
+  },
+  {
+    id: "rid-07", type: "quiz", category: "versets", difficulty: "moyen",
+    title: "Sagesse divine", description: "",
+    question: "« La crainte de Jéhovah est le début de... »",
+    options: ["la sagesse", "la richesse", "la guerre", "la peur"],
+    correctIndex: 0,
+    explanation: "Proverbes 9:10 — la crainte de Jéhovah est le début de la sagesse.",
+    sources: [{ type: "bible", reference: "Proverbes 9:10", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["proverbes"],
+  },
+  {
+    id: "rid-08", type: "quiz", category: "personnages", difficulty: "moyen",
+    title: "La reine courageuse", description: "",
+    question: "J'ai risqué ma vie pour sauver mon peuple du massacre. Qui suis-je ?",
+    options: ["Esther", "Déborah", "Ruth", "Abigaïl"],
+    correctIndex: 0,
+    explanation: "Esther intercéda auprès du roi pour sauver les Juifs.",
+    sources: [{ type: "bible", reference: "Esther 4-8", bibleEdition: "Traduction du monde nouveau" }],
+    verifiedAt: "2026-01-01", tags: ["esther"],
+  },
+  ...EXTRA_RIDDLES,
+];
+
+export function getRiddles() {
+  return RIDDLE_QUESTIONS;
+}
