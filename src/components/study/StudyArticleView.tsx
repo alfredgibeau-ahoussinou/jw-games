@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { BookOpen, Newspaper } from "lucide-react";
-import type { StudyArticle } from "@/types/study";
+import { BookOpen, ExternalLink, Newspaper } from "lucide-react";
+import type { StudyArticle, StudyArticleBlock } from "@/types/study";
 import { STUDY_PUBLICATION_LABELS } from "@/types/study";
 import { getStudyTheme } from "@/data/study-themes";
-import { cn } from "@/lib/cn";
+import { estimateReadMinutes } from "@/data/study/article-builder";
 
 const KIND_STYLE: Record<StudyArticle["kind"], { icon: typeof BookOpen; badge: string }> = {
   "tours-de-garde": {
@@ -24,6 +24,78 @@ const KIND_STYLE: Record<StudyArticle["kind"], { icon: typeof BookOpen; badge: s
   },
 };
 
+const KIND_INTRO: Record<StudyArticle["kind"], string> = {
+  "tours-de-garde": "Étude biblique — style Tours de garde",
+  "reveillez-vous": "Étude biblique — style Réveillez-vous !",
+  livre: "Étude biblique — style publication",
+  brochure: "Étude biblique — style brochure",
+};
+
+function ArticleBlock({ block }: { block: StudyArticleBlock }) {
+  switch (block.type) {
+    case "h2":
+      return (
+        <h2>
+          {block.text}
+        </h2>
+      );
+    case "h3":
+      return (
+        <h3>
+          {block.text}
+        </h3>
+      );
+    case "p":
+      return (
+        <p>
+          {block.text}
+        </p>
+      );
+    case "scripture":
+      return (
+        <blockquote>
+          « {block.text} »
+          <footer>{block.ref}</footer>
+        </blockquote>
+      );
+    case "ul":
+      return (
+        <ul>
+          {block.items.map((item) => (
+            <li
+              key={item}
+            >
+              <span aria-hidden />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    case "question":
+      return (
+        <div>
+          <p>
+            Question de méditation
+          </p>
+          <p>{block.text}</p>
+        </div>
+      );
+    case "note":
+      return (
+        <div>
+          <p>
+            {block.title}
+          </p>
+          <p>
+            {block.text}
+          </p>
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
 interface StudyArticleViewProps {
   article: StudyArticle;
 }
@@ -34,59 +106,89 @@ export function StudyArticleView({ article }: StudyArticleViewProps) {
   const label = STUDY_PUBLICATION_LABELS[article.kind];
   const theme = article.themeId ? getStudyTheme(article.themeId) : undefined;
   const meta = [article.year, article.issue].filter(Boolean).join(" · ");
+  const readMinutes = estimateReadMinutes(article.body);
 
   return (
-    <article className="mx-auto max-w-3xl">
-      <header className="mb-8 border-b border-white/[0.06] pb-8">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wider ring-1",
-              style.badge
-            )}
+    <article>
+      <div>
+        <p>
+          {KIND_INTRO[article.kind]} · lecture ~{readMinutes} min · texte d&apos;étude original pour{" "}
+          <strong>JW Games</strong>, fondé sur la
+          Bible. Pour les publications officielles, consultez{" "}
+          <a
+            href="https://www.jw.org/fr/"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <Icon className="h-3 w-3" aria-hidden />
+            jw.org
+            <ExternalLink aria-hidden />
+          </a>
+          .
+        </p>
+      </div>
+
+      <header>
+        <div>
+          <span
+          >
+            <Icon aria-hidden />
             {label}
           </span>
-          {meta && <span className="text-caption">{meta}</span>}
+          {meta && <span>{meta}</span>}
           {theme && (
             <Link
               href={`/etude/${theme.id}`}
-              className="text-caption ml-auto hover:text-[var(--accent)]"
             >
               Thème : {theme.title}
             </Link>
           )}
         </div>
-        <h1 className="text-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h1>
           {article.title}
         </h1>
         {article.subtitle && (
-          <p className="text-body mt-2 text-lg text-[var(--text-muted)]">{article.subtitle}</p>
+          <p>{article.subtitle}</p>
         )}
-        <p className="text-body mt-4 text-[1.0625rem] font-medium leading-relaxed text-[var(--text)]">
+        <p>
           {article.excerpt}
         </p>
       </header>
 
-      <div className="prose-study space-y-5">
-        {article.body.map((paragraph, i) => (
-          <p key={i} className="text-body text-[1.0625rem] leading-[1.75] text-[var(--text-muted)]">
-            {paragraph}
-          </p>
+      <div>
+        {article.body.map((block, i) => (
+          <ArticleBlock key={`${block.type}-${i}`} block={block} />
         ))}
       </div>
 
-      {article.scriptureRefs && article.scriptureRefs.length > 0 && (
-        <footer className="mt-10 rounded-2xl border border-white/[0.06] bg-[var(--bg-elevated)] p-6">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--text-dim)]">
-            Références bibliques
+      {article.studyQuestions && article.studyQuestions.length > 0 && (
+        <section>
+          <h2>
+            Questions pour approfondir votre étude
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <ol>
+            {article.studyQuestions.map((question, i) => (
+              <li
+                key={question}
+              >
+                <span>
+                  {i + 1}
+                </span>
+                <span>{question}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {article.scriptureRefs && article.scriptureRefs.length > 0 && (
+        <footer>
+          <h2>
+            Références bibliques à lire
+          </h2>
+          <div>
             {article.scriptureRefs.map((ref) => (
               <span
                 key={ref}
-                className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-sm font-medium text-[var(--accent)]"
               >
                 {ref}
               </span>

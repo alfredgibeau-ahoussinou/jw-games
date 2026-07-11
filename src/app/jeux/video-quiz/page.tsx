@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { fisherYatesShuffle } from "@/lib/quiz-options";
 import { GameShell, GameResults } from "@/components/layout/GameShell";
 import { VideoQuizGame } from "@/components/game/VideoQuizGame";
 import { GameStartMenu } from "@/components/game/shared/GameStartMenu";
@@ -25,7 +26,7 @@ export default function VideoQuizPage() {
 
   const allItems = getVideoQuizItems();
   const items = useMemo(
-    () => [...allItems].sort(() => Math.random() - 0.5).slice(0, roundSize),
+    () => fisherYatesShuffle(allItems).slice(0, roundSize),
     [roundSize, gameKey, allItems]
   );
 
@@ -62,9 +63,9 @@ export default function VideoQuizPage() {
           ]}
           onStart={startGame}
         >
-          <div className="rounded-xl border border-white/[0.06] bg-[var(--bg-card)] p-4">
-            <p className="mb-3 text-sm font-medium">Vidéos par manche</p>
-            <div className="flex flex-wrap gap-2">
+          <div>
+            <p>Vidéos par manche</p>
+            <div>
               {ROUND_OPTIONS.map((n) => (
                 <Button
                   key={n}

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import { getFlashcardDecks } from "@/data/sample-flashcards";
 import { calcXp, getAccuracyLabel } from "@/lib/daily-challenges";
 import { useUserStore } from "@/stores/user-store";
-import { cn } from "@/lib/cn";
 
 type Phase = "menu" | "pick" | "playing" | "results";
 
@@ -54,9 +53,9 @@ export default function CartesPage() {
       )}
 
       {phase === "pick" && (
-        <div className="space-y-4">
-          <p className="text-center text-sm text-[var(--text-muted)]">Sélectionnez un paquet de cartes</p>
-          <div className="grid gap-4 sm:grid-cols-3">
+        <div>
+          <p>Sélectionnez un paquet de cartes</p>
+          <div>
           {decks.map((d, i) => (
             <button
               key={d.id}
@@ -65,32 +64,22 @@ export default function CartesPage() {
                 setDeckId(d.id);
                 setPhase("playing");
               }}
-              className="group relative flex h-[168px] flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-6 text-left transition-all hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl"
             >
               <div
-                className={cn(
-                  "pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br opacity-20 blur-3xl transition-opacity group-hover:opacity-35",
-                  DECK_GRADIENTS[i % DECK_GRADIENTS.length]
-                )}
               />
               <div
-                className={cn(
-                  "mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-white/10",
-                  DECK_GRADIENTS[i % DECK_GRADIENTS.length]
-                )}
               >
-                <Layers className="h-5 w-5 text-white" strokeWidth={1.75} aria-hidden />
+                <Layers strokeWidth={1.75} aria-hidden />
               </div>
-              <p className="font-semibold tracking-tight text-[var(--text)]">{d.name}</p>
-              <p className="mt-auto pt-2 text-sm text-[var(--text-muted)]">{d.cards.length} cartes</p>
+              <p>{d.name}</p>
+              <p>{d.cards.length} cartes</p>
               <ArrowUpRight
-                className="absolute bottom-5 right-5 h-4 w-4 text-[var(--text-dim)] transition-all group-hover:text-[var(--accent)]"
                 aria-hidden
               />
             </button>
           ))}
           </div>
-          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
+          <Button variant="outline" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

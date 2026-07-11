@@ -1,4 +1,5 @@
 import type { VerseGapQuestion } from "@/types/content";
+import { fisherYatesShuffle } from "@/lib/quiz-options";
 import { EXTRA_VERSE_GAPS } from "./extra/extra-verses";
 
 export const VERSE_GAP_QUESTIONS: VerseGapQuestion[] = [
@@ -86,5 +87,5 @@ export const VERSE_GAP_QUESTIONS: VerseGapQuestion[] = [
 ];
 
 export function shuffleVerses(limit = 8) {
-  return [...VERSE_GAP_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, limit);
+  return fisherYatesShuffle(VERSE_GAP_QUESTIONS).slice(0, limit);
 }

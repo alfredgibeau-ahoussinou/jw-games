@@ -1,6 +1,7 @@
 import type { StudyMiniGame, StudyTheme } from "@/types/study";
 import { getArticlesForTheme, getFeaturedArticles, getStudyArticle } from "./study/articles";
 import { EXTENDED_STUDY_THEMES } from "./study/extended-themes";
+import { ROLE_STUDY_THEMES } from "./study/role-themes";
 import { quiz, reading, tf, verset } from "./study/helpers";
 
 export { getFeaturedArticles, getStudyArticle, getArticlesForTheme };
@@ -653,7 +654,11 @@ const BASE_STUDY_THEMES: StudyTheme[] = [
   },
 ];
 
-export const STUDY_THEMES: StudyTheme[] = [...BASE_STUDY_THEMES, ...EXTENDED_STUDY_THEMES];
+export const STUDY_THEMES: StudyTheme[] = [
+  ...BASE_STUDY_THEMES,
+  ...EXTENDED_STUDY_THEMES,
+  ...ROLE_STUDY_THEMES,
+];
 
 export function getThemeArticles(themeId: string) {
   const theme = getStudyTheme(themeId);
@@ -663,16 +668,47 @@ export function getThemeArticles(themeId: string) {
     .filter((a): a is NonNullable<typeof a> => a != null);
 }
 
+export function getStudyThemeIds(): string[] {
+  return STUDY_THEMES.map((t) => t.id);
+}
+
+const STUDY_THEME_ALIASES: Record<string, string> = {
+  prophéties: "propheties",
+};
+
+const STUDY_GAME_ALIASES: Record<string, string> = {
+  "prophéties-quiz": "propheties-quiz",
+  "prophéties-vf": "propheties-vf",
+  "prophéties-verset": "propheties-verset",
+};
+
+export function normalizeStudyThemeId(id: string): string {
+  try {
+    const decoded = decodeURIComponent(id);
+    return STUDY_THEME_ALIASES[decoded] ?? decoded;
+  } catch {
+    return STUDY_THEME_ALIASES[id] ?? id;
+  }
+}
+
+export function normalizeStudyGameId(gameId: string): string {
+  try {
+    const decoded = decodeURIComponent(gameId);
+    return STUDY_GAME_ALIASES[decoded] ?? decoded;
+  } catch {
+    return STUDY_GAME_ALIASES[gameId] ?? gameId;
+  }
+}
+
 export function getStudyTheme(id: string): StudyTheme | undefined {
-  return STUDY_THEMES.find((t) => t.id === id);
+  const themeId = normalizeStudyThemeId(id);
+  return STUDY_THEMES.find((t) => t.id === themeId);
 }
 
 export function getStudyMiniGame(themeId: string, gameId: string): StudyMiniGame | undefined {
-  return getStudyTheme(themeId)?.miniGames.find((g) => g.id === gameId);
-}
-
-export function getStudyThemeIds(): string[] {
-  return STUDY_THEMES.map((t) => t.id);
+  const theme = normalizeStudyThemeId(themeId);
+  const game = normalizeStudyGameId(gameId);
+  return STUDY_THEMES.find((t) => t.id === theme)?.miniGames.find((g) => g.id === game);
 }
 
 export function getStudyGameParams(): { themeId: string; gameId: string }[] {

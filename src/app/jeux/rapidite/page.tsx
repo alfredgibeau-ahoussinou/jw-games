@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Zap, Timer } from "lucide-react";
 import { GameShell, GameResults } from "@/components/layout/GameShell";
 import { SpeedGame } from "@/components/game/SpeedGame";
@@ -9,11 +9,14 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SAMPLE_SPEED, getSpeedSets } from "@/data/sample-games";
 import { calcXp, getAccuracyLabel } from "@/lib/daily-challenges";
+import { getRecommendedSpeedSetIds } from "@/lib/quiz-personalization";
+import { DEFAULT_PREFERENCES } from "@/lib/user-preferences";
 import { useUserStore } from "@/stores/user-store";
 
 type Phase = "menu" | "pick" | "playing" | "results";
 
 export default function RapiditePage() {
+  const preferences = useUserStore((s) => s.profile?.preferences) ?? DEFAULT_PREFERENCES;
   const [phase, setPhase] = useState<Phase>("menu");
   const [results, setResults] = useState({ score: 0, total: 0, bestStreak: 0 });
   const [challenges, setChallenges] = useState(SAMPLE_SPEED);
@@ -22,7 +25,10 @@ export default function RapiditePage() {
   const lastEarnedBadges = useUserStore((s) => s.lastEarnedBadges);
   const clearLastBadges = useUserStore((s) => s.clearLastBadges);
 
-  const sets = getSpeedSets();
+  const sets = useMemo(() => {
+    const allowed = new Set(getRecommendedSpeedSetIds(preferences.bibleLevel));
+    return getSpeedSets().filter((s) => allowed.has(s.id));
+  }, [preferences.bibleLevel]);
 
   function handleComplete(score: number, total: number, meta?: { bestStreak: number }) {
     setResults({ score, total, bestStreak: meta?.bestStreak ?? 0 });
@@ -44,12 +50,12 @@ export default function RapiditePage() {
           description="Choisissez un pack de défis puis répondez le plus vite possible. Bonus pour les réponses rapides et combos pour les séries."
           stats={[
             { label: "Packs", value: sets.length },
-            { label: "Défis max", value: Math.max(...sets.map((s) => s.challenges.length)) },
+            { label: "Défis max", value: Math.max(...sets.map((s) => s.challenges.length), 0) },
           ]}
           tips={[
             "Passer une question coûte une pénalité de combo",
             "Plus vous répondez vite, plus le bonus est élevé",
-            "Entraînez-vous d'abord sur le pack « Débutant »",
+            "Entraînez-vous d'abord sur le pack « Classique »",
           ]}
           onStart={() => setPhase("pick")}
           startLabel="Choisir un pack"
@@ -57,9 +63,9 @@ export default function RapiditePage() {
       )}
 
       {phase === "pick" && (
-        <div className="space-y-4">
-          <p className="text-center text-sm text-[var(--text-muted)]">Sélectionnez votre niveau</p>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p>Sélectionnez votre niveau</p>
+          <div>
             {sets.map((set) => (
               <Card
                 key={set.id}
@@ -70,22 +76,22 @@ export default function RapiditePage() {
                   setPhase("playing");
                 }}
               >
-                <div className="mb-2 flex items-center gap-2 text-[var(--accent)]">
-                  <Zap className="h-4 w-4" aria-hidden />
-                  <h3 className="text-lg font-bold text-[var(--text)]">{set.name}</h3>
+                <div>
+                  <Zap aria-hidden />
+                  <h3>{set.name}</h3>
                 </div>
-                <p className="flex items-center gap-1.5 text-sm text-[var(--text-muted)]">
-                  <Timer className="h-3.5 w-3.5" aria-hidden />
+                <p>
+                  <Timer aria-hidden />
                   {set.challenges.length} défis · max{" "}
                   {Math.max(...set.challenges.map((c) => c.timeLimitSeconds))}s
                 </p>
-                <Button className="mt-4 w-full" size="sm">
+                <Button size="sm">
                   Lancer
                 </Button>
               </Card>
             ))}
           </div>
-          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
+          <Button variant="outline" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

@@ -1,117 +1,190 @@
 "use client";
 
 import Link from "next/link";
-import { Flame, Film, Gamepad2, BookMarked } from "lucide-react";
-import { GameCard } from "@/components/game/GameCard";
-import { StudyThemeCard } from "@/components/study/StudyThemeCard";
-import { HeroBanner } from "@/components/media/HeroBanner";
-import { MediaRow } from "@/components/media/MediaRow";
-import { VideoPoster } from "@/components/media/MediaRow";
+import { Flame, Film, Gamepad2, BookMarked, Sparkles, Globe } from "lucide-react";
+import { GameHomeFlow } from "@/components/game/GameFlowStage";
+import { WelcomeHero } from "@/components/welcome/WelcomeHero";
+import { WelcomeMarquee } from "@/components/welcome/WelcomeMarquee";
+import { WelcomeBento } from "@/components/welcome/WelcomeBento";
+import { InteractiveStrip } from "@/components/motion/InteractiveStrip";
+import { MotionExplorerRail } from "@/components/motion/MotionExplorerRail";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { MediaRow, VideoPoster } from "@/components/media/MediaRow";
 import { DailyTextSection } from "@/components/daily/DailyTextSection";
+import { LanguageHomeRow } from "@/components/language/LanguageHomeRow";
+import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { PageWrapper } from "@/components/motion/PageWrapper";
-import { JW_VIDEO_COLLECTIONS, JW_VIDEOS } from "@/data/jw-videos";
+import { Button } from "@/components/ui/Button";
+import { StudyThemeCard } from "@/components/study/StudyThemeCard";
+import { JW_VIDEO_COLLECTIONS } from "@/data/jw-videos";
 import { GAME_MODES } from "@/lib/constants";
-import { STUDY_THEMES } from "@/data/study-themes";
 import { useUserStore } from "@/stores/user-store";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { XP_PER_LEVEL } from "@/lib/constants";
+import { getPersonalizedGreeting, getPersonalizedHome } from "@/lib/user-preferences";
+import { getPersonalizedStudyThemes } from "@/lib/study-personalization";
+import { StudyContinueBanner } from "@/components/study/StudyContinueBanner";
 
-const HERO_VIDEO = JW_VIDEOS.find((v) => v.id.startsWith("bjf-")) ?? JW_VIDEOS[0];
-const FEATURED_GAMES = ["quiz", "devinettes", "videoquiz", "memoire", "biblio"]
-  .map((id) => GAME_MODES.find((g) => g.id === id)!)
-  .filter(Boolean);
+const VIDEO_ROWS = {
+  enfants: {
+    title: "Pour les enfants",
+    videos: JW_VIDEO_COLLECTIONS.find((c) => c.id === "bjf")?.videos.slice(0, 10) ?? [],
+  },
+  jeunes: {
+    title: "Pour les jeunes",
+    videos: [
+      ...(JW_VIDEO_COLLECTIONS.find((c) => c.id === "ados-spiritualite")?.videos.slice(0, 6) ?? []),
+      ...(JW_VIDEO_COLLECTIONS.find((c) => c.id === "ados-films")?.videos.slice(0, 4) ?? []),
+    ],
+  },
+  jesus: {
+    title: "La bonne nouvelle selon Jésus",
+    videos: JW_VIDEO_COLLECTIONS.find((c) => c.id === "gnj")?.videos ?? [],
+  },
+};
 
 export default function HomePage() {
   const profile = useUserStore((s) => s.profile);
+  const isOnboarded = useUserStore((s) => s.isOnboarded);
+  const studyProgress = useUserStore((s) => s.studyProgress);
 
-  const enfantsRow = JW_VIDEO_COLLECTIONS.find((c) => c.id === "bjf")?.videos.slice(0, 10) ?? [];
-  const jeunesRow = [
-    ...(JW_VIDEO_COLLECTIONS.find((c) => c.id === "ados-spiritualite")?.videos.slice(0, 6) ?? []),
-    ...(JW_VIDEO_COLLECTIONS.find((c) => c.id === "ados-films")?.videos.slice(0, 4) ?? []),
-  ];
-  const jesusRow = JW_VIDEO_COLLECTIONS.find((c) => c.id === "gnj")?.videos ?? [];
+  const personalized = getPersonalizedHome(profile?.preferences);
+  const greeting = profile
+    ? getPersonalizedGreeting(profile.displayName, profile.preferences)
+    : null;
+
+  const featuredGames = personalized.featuredGameIds
+    .map((id) => GAME_MODES.find((g) => g.id === id)!)
+    .filter(Boolean);
+
+  const primaryVideos = VIDEO_ROWS[personalized.primaryVideoRow]?.videos ?? VIDEO_ROWS.jesus.videos;
+  const primaryVideoTitle = VIDEO_ROWS[personalized.primaryVideoRow]?.title ?? VIDEO_ROWS.jesus.title;
+  const studyThemes = getPersonalizedStudyThemes(profile?.preferences, 8);
 
   return (
-    <PageWrapper>
-      <HeroBanner video={HERO_VIDEO} />
+    <PageWrapper className="netflix-home">
+      <WelcomeHero isOnboarded={isOnboarded} displayName={profile?.displayName} />
+      <WelcomeMarquee />
 
-      <div className="relative z-10 space-y-6 pb-8 pt-4">
-        {profile && (
-          <div className="container-app mb-6">
-            <div className="flex items-center gap-4 rounded-md bg-[var(--bg-card)] p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-[var(--accent)] font-bold text-white">
-                {profile.displayName.charAt(0).toUpperCase()}
+      <div id="decouvrir" className="netflix-feed">
+        <WelcomeBento />
+
+        {!isOnboarded && (
+          <ScrollReveal>
+            <div className="promo-bar netflix-continue">
+              <div>
+                <Sparkles aria-hidden />
+                <div>
+                  <p>Personnalisez votre expérience</p>
+                  <p>Pseudo, tranche d&apos;âge, objectifs — sans données confidentielles.</p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold">{profile.displayName}</p>
-                <p className="text-caption">
-                  Niveau {profile.level} · Série {profile.streak}j
-                </p>
-                <ProgressBar value={profile.xp % XP_PER_LEVEL} max={XP_PER_LEVEL} className="mt-2" />
-              </div>
-              <Link href="/quotidien" className="link-primary shrink-0">
-                <Flame className="mr-1 inline h-4 w-4" />
-                Défi
+              <Link href="/profil">
+                <Button variant="play">Créer mon profil</Button>
               </Link>
             </div>
-          </div>
+          </ScrollReveal>
         )}
 
-        <DailyTextSection />
+        {profile && greeting && (
+          <ScrollReveal>
+            <div className="promo-bar netflix-continue">
+              <ProfileAvatar profile={profile} size="sm" />
+              <div>
+                <p>{greeting.title}</p>
+                <p>{greeting.subtitle}</p>
+                <p>
+                  Niveau {profile.level} · Série {profile.streak}j
+                </p>
+                <ProgressBar value={profile.xp % XP_PER_LEVEL} max={XP_PER_LEVEL} />
+              </div>
+              <Link href="/quotidien">
+                <Button variant="primary">
+                  <Flame aria-hidden />
+                  Défi
+                </Button>
+              </Link>
+            </div>
+          </ScrollReveal>
+        )}
 
-        <MediaRow title="Jeux bibliques" href="/jeux" className="media-row--hub">
-          {FEATURED_GAMES.map((game) => (
-            <GameCard key={game.id} game={game} compact />
+        {(isOnboarded || studyProgress.lastArticleId) && (
+          <ScrollReveal>
+            <StudyContinueBanner
+              preferences={profile?.preferences}
+              studyProgress={studyProgress}
+              compact
+            />
+          </ScrollReveal>
+        )}
+
+        <section aria-label={personalized.gamesRowTitle}>
+          <h2 className="netflix-row-title">{personalized.gamesRowTitle}</h2>
+          <p className="netflix-row-sub">Swipez entre les modes · recommandé pour vous</p>
+          <GameHomeFlow games={featuredGames} />
+          <p className="netflix-row-sub" style={{ paddingInline: "var(--page-gutter)", marginTop: "0.75rem" }}>
+            <Link href="/jeux">Voir tous les jeux →</Link>
+          </p>
+        </section>
+
+        <InteractiveStrip
+          title={profile ? "Étude pour vous" : "Étude personnelle"}
+          subtitle="Thèmes recommandés selon votre profil"
+          href="/etude"
+        >
+          {studyThemes.map((theme) => (
+            <StudyThemeCard key={theme.id} theme={theme} compact showProgress />
           ))}
-        </MediaRow>
+        </InteractiveStrip>
 
-        <MediaRow title="Étude personnelle" href="/etude" className="media-row--hub">
-          {STUDY_THEMES.slice(0, 8).map((theme) => (
-            <StudyThemeCard key={theme.id} theme={theme} compact />
-          ))}
-        </MediaRow>
+        <section className="page-section" aria-label="Texte du jour" style={{ paddingInline: "var(--page-gutter)" }}>
+          <h2 className="netflix-row-title">Texte du jour</h2>
+          <DailyTextSection variant="compact" />
+        </section>
 
-        <MediaRow title="Pour les enfants" href="/mediatheque">
-          {enfantsRow.map((v) => (
+        <MediaRow title={primaryVideoTitle} href="/mediatheque">
+          {primaryVideos.map((v) => (
             <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
           ))}
         </MediaRow>
 
-        <MediaRow title="Pour les jeunes" href="/mediatheque">
-          {jeunesRow.map((v) => (
-            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
-          ))}
-        </MediaRow>
+        <LanguageHomeRow />
 
-        <MediaRow title="La bonne nouvelle selon Jésus" href="/mediatheque">
-          {jesusRow.map((v) => (
-            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
-          ))}
-        </MediaRow>
+        {personalized.primaryVideoRow !== "enfants" && VIDEO_ROWS.enfants.videos.length > 0 && (
+          <MediaRow title={VIDEO_ROWS.enfants.title} href="/mediatheque">
+            {VIDEO_ROWS.enfants.videos.map((v) => (
+              <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+            ))}
+          </MediaRow>
+        )}
 
-        <div className="container-app mt-10 flex flex-wrap gap-3">
-          <Link
-            href="/etude"
-            className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--bg-card)] px-5 py-3.5 text-sm font-medium tracking-tight transition-colors hover:border-white/12 hover:bg-[var(--bg-hover)]"
-          >
-            <BookMarked className="h-4 w-4 text-[var(--accent)]" />
-            Étude personnelle
-          </Link>
-          <Link
-            href="/jeux"
-            className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--bg-card)] px-5 py-3.5 text-sm font-medium tracking-tight transition-colors hover:border-white/12 hover:bg-[var(--bg-hover)]"
-          >
-            <Gamepad2 className="h-4 w-4 text-[var(--accent)]" />
-            Tous les jeux
-          </Link>
-          <Link
-            href="/mediatheque"
-            className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[var(--bg-card)] px-5 py-3.5 text-sm font-medium tracking-tight transition-colors hover:border-white/12 hover:bg-[var(--bg-hover)]"
-          >
-            <Film className="h-4 w-4 text-[var(--accent)]" />
-            Médiathèque
-          </Link>
-        </div>
+        {personalized.primaryVideoRow !== "jeunes" && VIDEO_ROWS.jeunes.videos.length > 0 && (
+          <MediaRow title={VIDEO_ROWS.jeunes.title} href="/mediatheque">
+            {VIDEO_ROWS.jeunes.videos.map((v) => (
+              <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+            ))}
+          </MediaRow>
+        )}
+
+        {personalized.primaryVideoRow !== "jesus" && (
+          <MediaRow title={VIDEO_ROWS.jesus.title} href="/mediatheque">
+            {VIDEO_ROWS.jesus.videos.map((v) => (
+              <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+            ))}
+          </MediaRow>
+        )}
+
+        <section className="page-section">
+          <h2 className="netflix-row-title">Explorer tout JW Games</h2>
+          <MotionExplorerRail
+            items={[
+              { href: "/jeux", label: "Jeux bibliques", icon: Gamepad2, index: 0 },
+              { href: "/etude", label: "Étude personnelle", icon: BookMarked, index: 1 },
+              { href: "/mediatheque", label: "Médiathèque vidéo", icon: Film, index: 2 },
+              { href: "/langues", label: "Langues prédication", icon: Globe, index: 3 },
+            ]}
+          />
+        </section>
       </div>
     </PageWrapper>
   );

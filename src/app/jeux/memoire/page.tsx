@@ -68,23 +68,23 @@ export default function MemoirePage() {
       )}
 
       {phase === "pick" && (
-        <div className="space-y-4">
-          <p className="text-center text-sm text-[var(--text-muted)]">Sélectionnez un jeu de paires</p>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p>Sélectionnez un jeu de paires</p>
+          <div>
             {sets.map((set) => (
               <Card key={set.id} hover interactive onClick={() => startGame(set.id)}>
-                <div className="mb-2 flex items-center gap-2 text-[var(--accent)]">
-                  <Brain className="h-4 w-4" aria-hidden />
-                  <h3 className="text-lg font-bold text-[var(--text)]">{set.name}</h3>
+                <div>
+                  <Brain aria-hidden />
+                  <h3>{set.name}</h3>
                 </div>
-                <p className="text-sm text-[var(--text-muted)]">{set.pairs.length} paires</p>
-                <Button className="mt-4 w-full" size="sm">
+                <p>{set.pairs.length} paires</p>
+                <Button size="sm">
                   Jouer
                 </Button>
               </Card>
             ))}
           </div>
-          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
+          <Button variant="outline" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

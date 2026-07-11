@@ -1,19 +1,30 @@
 import type { StudyArticle, StudyPublicationKind } from "@/types/study";
+import { buildStructuredArticle } from "./article-full-content";
 
 function art(
   id: string,
   kind: StudyPublicationKind,
   title: string,
   excerpt: string,
-  body: string[],
+  paragraphs: string[],
   opts?: { subtitle?: string; year?: string; issue?: string; scriptureRefs?: string[]; themeId?: string }
 ): StudyArticle {
+  const { body, studyQuestions } = buildStructuredArticle({
+    id,
+    kind,
+    title,
+    excerpt,
+    paragraphs,
+    scriptureRefs: opts?.scriptureRefs,
+  });
+
   return {
     id,
     kind,
     title,
     excerpt,
     body,
+    studyQuestions,
     ...opts,
   };
 }
@@ -507,7 +518,7 @@ export const STUDY_ARTICLES: StudyArticle[] = [
   ),
   // ——— Prophéties ———
   art(
-    "prophéties-wt-fil",
+    "propheties-wt-fil",
     "tours-de-garde",
     "Les prophéties — un fil conducteur dans l'histoire",
     "Daniel, Ésaïe et Apocalypse s'harmonisent pour révéler le dessein de Jéhovah.",
@@ -517,10 +528,10 @@ export const STUDY_ARTICLES: StudyArticle[] = [
       "Les prophéties messianiques — naissance à Bethléem, mort sur le bois, résurrection — se sont accomplies en Jésus, confirmant qu'il est le Christ promis.",
       "Étudier les prophéties avec humilité et en comparant les Écritures nous protège des interprétations fantaisistes et renforce notre confiance en Jéhovah.",
     ],
-    { themeId: "prophéties", scriptureRefs: ["Ésaïe 46:10", "Daniel 2:44", "2 Pierre 1:19"] }
+    { themeId: "propheties", scriptureRefs: ["Ésaïe 46:10", "Daniel 2:44", "2 Pierre 1:19"] }
   ),
   art(
-    "prophéties-livre-apocalypse",
+    "propheties-livre-apocalypse",
     "livre",
     "Apocalypse — son accomplissement",
     "Comprendre les symboles de l'Apocalypse et leur lien avec l'histoire et notre époque.",
@@ -530,7 +541,142 @@ export const STUDY_ARTICLES: StudyArticle[] = [
       "L'Apocalypse réconforte : malgré les événements troublants des derniers jours, le dessein de Dieu avance et aboutira à la paix éternelle.",
       "Cette étude complète les mini-jeux sur les prophéties et aide à lire l'Apocalypse avec confiance plutôt qu'avec crainte.",
     ],
-    { themeId: "prophéties", scriptureRefs: ["Apocalypse 1:1-3", "Apocalypse 21:3, 4", "Daniel 7:13, 14"] }
+    { themeId: "propheties", scriptureRefs: ["Apocalypse 1:1-3", "Apocalypse 21:3, 4", "Daniel 7:13, 14"] }
+  ),
+  // ——— Découvrir la Bible ———
+  art(
+    "decouverte-wt-premiers-pas",
+    "tours-de-garde",
+    "Premiers pas dans la Bible",
+    "Comment commencer à lire la Bible : choisir un livre, prier avant d'étudier, noter une idée par lecture.",
+    [
+      "Beaucoup de personnes possèdent une Bible sans savoir par où commencer. La clé est la simplicité : de courts passages, lus avec attention, valent mieux que des pages parcourues sans réflexion.",
+      "Les récits de la Genèse — création, Noé, Abraham — posent les bases. L'évangile de Marc offre une introduction rapide à la vie de Jésus. Les Psaumes réconfortent et enseignent la prière.",
+      "Avant d'ouvrir la Bible, une prière brève demandant à Jéhovah de nous aider à comprendre prépare le cœur. Après la lecture, se demander « Qu'ai-je appris sur Jéhovah ? » ancre le sens.",
+      "Tenir un carnet avec une idée par séance crée une trace de progrès encourageante. En quelques semaines, on constate combien on a déjà appris.",
+    ],
+    { themeId: "decouvrir-bible", scriptureRefs: ["Psaume 119:105", "2 Timothée 3:16", "Jean 17:3"] }
+  ),
+  art(
+    "decouverte-brochure-bible",
+    "brochure",
+    "La Bible — un livre qui change des vies",
+    "Pourquoi la Bible est fiable, comment elle a été transmise et ce qu'elle promet pour l'avenir.",
+    [
+      "La Bible a été écrite sur plus de 1 600 ans par une quarantaine d'hommes, mais un seul auteur en inspire le contenu : Jéhovah. Cette harmonie à travers les siècles est remarquable.",
+      "Les manuscrits anciens confirment que le texte biblique a été transmis avec soin. Les découvertes archéologiques corroborent souvent les récits bibliques.",
+      "La Bible ne se contente pas de raconter le passé : elle annonce un avenir radieux — un Royaume qui apportera la paix, la justice et la vie éternelle sur la terre.",
+      "Lire la Bible avec un guide ou un cours biblique accélère la compréhension, mais chacun peut commencer seul avec prière et humilité.",
+    ],
+    { themeId: "decouvrir-bible", scriptureRefs: ["2 Timothée 3:16", "Ésaïe 55:11", "Matthieu 24:14"] }
+  ),
+  // ——— Prédication ———
+  art(
+    "predication-wt-courage",
+    "tours-de-garde",
+    "Trouver le courage de parler",
+    "Surmonter la timidité, préparer une introduction simple et se rappeler que Jéhovah soutient ceux qui le servent.",
+    [
+      "La timidité est fréquente, même chez des serviteurs expérimentés. Moïse doutait de sa capacité à parler ; Jéhovah lui a donné de l'aide et un collaborateur. Nous ne sommes pas seuls non plus.",
+      "Préparer à l'avance une phrase d'introduction et une question réduit l'anxiété. On peut la répéter calmement avant de sonner à une porte ou d'aborder quelqu'un.",
+      "Se concentrer sur le message plutôt que sur soi-même change la perspective : nous offrons une bonne nouvelle, pas un jugement.",
+      "Après chaque sortie, noter une conversation encourageante — même brève — renforce la confiance pour la prochaine fois.",
+    ],
+    { themeId: "predication", scriptureRefs: ["Josué 1:9", "Matthieu 28:19, 20", "Actes 4:29"] }
+  ),
+  art(
+    "predication-awake-conversations",
+    "reveillez-vous",
+    "Conversations naturelles en prédication",
+    "Écouter, poser des questions ouvertes et relier la Parole aux préoccupations des gens.",
+    [
+      "Les meilleures conversations en prédication ressemblent à un échange, pas à un monologue. Poser « Qu'est-ce qui vous préoccupe en ce moment ? » ouvre des portes sincères.",
+      "Écouter sans interrompre montre du respect. Souvent les gens veulent d'abord être compris avant d'entendre une réponse biblique.",
+      "Relier un verset ou une publication à ce que la personne vient de partager rend le message vivant. Jésus faisait ainsi avec la Samaritaine et Nicodème.",
+      "Si la personne n'est pas intéressée, partir avec dignité laisse une impression positive pour une prochaine visite.",
+    ],
+    { year: "2024", themeId: "predication", scriptureRefs: ["Colossiens 4:6", "Jacques 1:19", "Jean 4:7-15"] }
+  ),
+  // ——— Pionnier ———
+  art(
+    "pionnier-wt-joie",
+    "tours-de-garde",
+    "Garder la joie comme pionnier",
+    "Éviter l'épuisement, célébrer les petites victoires et rester concentré sur pourquoi on sert.",
+    [
+      "Le service de pionnier demande de l'énergie physique et spirituelle. Sans équilibre, la joie peut faiblir. Jéhovah ne demande pas l'impossible — il voit nos efforts sincères.",
+      "Célébrer une bonne conversation, une étude biblique ou une personne retrouvée au service nourrit la motivation mieux que de ne voir que ce qui manque.",
+      "L'étude personnelle régulière est le carburant du pionnier : sans elle, le service devient mécanique. Même 15 minutes par jour font une différence.",
+      "Demander de l'aide à un ancien ou un compagnon de service quand on traverse une période difficile est un signe de sagesse, pas de faiblesse.",
+    ],
+    { themeId: "pionnier", scriptureRefs: ["Philippiens 4:4", "Galates 6:9", "Psaume 37:23, 24"] }
+  ),
+  art(
+    "pionnier-brochure-organisation",
+    "brochure",
+    "Organiser son temps de pionnier",
+    "Planifier la semaine, fixer des objectifs réalistes et protéger le temps pour la famille et le repos.",
+    [
+      "Un pionnier efficace planifie : quels jours pour le service matinal, quelles après-midis pour les visites, quand étudier et quand se reposer.",
+      "Des objectifs quotidiens modestes mais constants — par exemple deux heures le matin, une heure l'après-midi — sont plus durables que des journées marathon suivies d'épuisement.",
+      "La famille et la santé ne sont pas des obstacles au service : Jéhovah veut que nous prenions soin de notre corps et de nos proches.",
+      "Réévaluer chaque mois ce qui fonctionne permet d'ajuster sans culpabilité. Le but est une vie équilibrée qui honore Dieu sur la durée.",
+    ],
+    { themeId: "pionnier", scriptureRefs: ["Éphésiens 5:15, 16", "Marc 1:35", "1 Timothée 4:8"] }
+  ),
+  // ——— École biblique ———
+  art(
+    "ecole-wt-enfants",
+    "tours-de-garde",
+    "Aider les enfants à aimer la Bible",
+    "Récits visuels, questions simples et participation active pour les 7-12 ans.",
+    [
+      "Les enfants apprennent par l'histoire et l'émotion. Lire un récit biblique avec expression, puis demander « Qu'as-tu aimé ? » ou « Que ferait Jéhovah à notre place ? » les implique.",
+      "Des dessins, des chansons ou des jeux simples renforcent la mémoire. L'application pratique — partager, obéir aux parents — donne sens au récit.",
+      "Des sessions courtes (10-15 minutes) régulières valent mieux qu'une longue leçon rare. La constance construit l'habitude.",
+      "Montrer que nous aimons aussi la Bible — en l'étudiant nous-mêmes — est le meilleur exemple.",
+    ],
+    { themeId: "ecole-biblique", scriptureRefs: ["Deutéronome 6:6, 7", "2 Timothée 3:15", "Matthieu 19:14"] }
+  ),
+  art(
+    "ecole-awake-famille",
+    "reveillez-vous",
+    "Le culte familial avec des enfants",
+    "Idées concrètes pour des moments spirituels en famille sans pression.",
+    [
+      "Le culte familial n'a pas besoin d'être parfait. Une lecture, une prière commune et un compliment sincère peuvent suffire.",
+      "Laisser les enfants lire un verset ou poser une question les rend acteurs. Même une réponse maladroite mérite d'être encouragée.",
+      "Choisir un moment fixe — après le dîner, le samedi matin — aide à ancrer l'habitude dans le rythme familial.",
+      "Si une séance est ratée, recommencer le lendemain sans culpabilité. Jéhovah valorise l'effort des parents qui veulent lui ressembler.",
+    ],
+    { year: "2023", themeId: "ecole-biblique", scriptureRefs: ["Josué 24:15", "Proverbes 22:6", "Éphésiens 6:4"] }
+  ),
+  // ——— Vie chrétienne ———
+  art(
+    "vie-wt-quotidien",
+    "tours-de-garde",
+    "Vivre sa foi au quotidien",
+    "École, travail, loisirs : aligner ses choix sur les normes bibliques quand personne ne regarde.",
+    [
+      "La vraie foi se voit dans les détails : rendre la monnaie, respecter les règles, parler avec respect même sous pression.",
+      "Les collègues et camarades de classe observent notre conduite. Une attitude calme et honnête peut ouvrir des conversations sur la foi.",
+      "Les réseaux sociaux testent notre intégrité : ce qu'on partage, comment on répond aux critiques, le temps qu'on y consacre.",
+      "Demander chaque matin « Comment puis-je honorer Jéhovah aujourd'hui ? » oriente les petites décisions avant les grandes tentations.",
+    ],
+    { themeId: "vie-chretienne", scriptureRefs: ["Colossiens 3:23", "1 Pierre 2:12", "Matthieu 5:16"] }
+  ),
+  art(
+    "vie-awake-adolescents",
+    "reveillez-vous",
+    "Adolescents — tenir bon sous pression",
+    "Popularité, examens, amitiés : garder ses priorités spirituelles à l'adolescence.",
+    [
+      "L'adolescence combine changements physiques, pression des pairs et quête d'identité. C'est normal de se poser des questions — la Bible offre des réponses solides.",
+      "Choisir des amis qui respectent nos valeurs protège mieux que tenter de plaire à tout le monde. 1 Corinthiens 15:33 avertit : les mauvaises fréquentations corrompent.",
+      "Les études et le service peuvent coexister : organiser son temps évite de sacrifier l'un pour l'autre. Jéhovah bénit ceux qui le mettent en premier.",
+      "Parler à un parent ou un ancien de confiance quand on traverse une période difficile n'est pas une faiblesse — c'est une preuve de maturité.",
+    ],
+    { year: "2024", themeId: "vie-chretienne", scriptureRefs: ["1 Timothée 4:12", "1 Corinthiens 15:33", "Matthieu 6:33"] }
   ),
 ];
 
@@ -539,7 +685,22 @@ export const STUDY_ARTICLES_BY_ID: Record<string, StudyArticle> = Object.fromEnt
 );
 
 export function getStudyArticle(id: string): StudyArticle | undefined {
-  return STUDY_ARTICLES_BY_ID[id];
+  const normalized = normalizeStudyArticleId(id);
+  return STUDY_ARTICLES_BY_ID[normalized];
+}
+
+const STUDY_ARTICLE_ALIASES: Record<string, string> = {
+  "prophéties-wt-fil": "propheties-wt-fil",
+  "prophéties-livre-apocalypse": "propheties-livre-apocalypse",
+};
+
+export function normalizeStudyArticleId(id: string): string {
+  try {
+    const decoded = decodeURIComponent(id);
+    return STUDY_ARTICLE_ALIASES[decoded] ?? decoded;
+  } catch {
+    return STUDY_ARTICLE_ALIASES[id] ?? id;
+  }
 }
 
 export function getArticlesForTheme(themeId: string): StudyArticle[] {

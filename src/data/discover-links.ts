@@ -1,4 +1,8 @@
-import { JW_IMAGES, JW_LIBRARY_LINK, JW_ORG_LINK } from "@/lib/jw-images";
+import {
+  JW_LIBRARY_LINK,
+  JW_ORG_LINK,
+  jwImageForSlot,
+} from "@/lib/jw-images";
 
 export interface DiscoverItem {
   id: string;
@@ -18,8 +22,8 @@ export interface DiscoverSection {
 }
 
 export const DISCOVER_HERO = {
-  image: JW_IMAGES.coursBiblique.url,
-  alt: "Cours biblique et ressources JW.org",
+  image: jwImageForSlot("discover.hero").url,
+  alt: jwImageForSlot("discover.hero").alt,
 };
 
 export const DISCOVER_APP_LINKS: DiscoverItem[] = [
@@ -28,7 +32,7 @@ export const DISCOVER_APP_LINKS: DiscoverItem[] = [
     title: "Médiathèque",
     description: "Vidéos officielles intégrées, avec sous-titres et mini-quiz.",
     href: "/mediatheque",
-    image: JW_IMAGES.bonneNouvelleJesus.url,
+    image: jwImageForSlot("discover.mediatheque").url,
     badge: "Vidéos",
   },
   {
@@ -36,7 +40,7 @@ export const DISCOVER_APP_LINKS: DiscoverItem[] = [
     title: "Jeux bibliques",
     description: "Quiz, mémoire, devinettes et plus — seul ou en groupe.",
     href: "/jeux",
-    image: JW_IMAGES.videoquiz.url,
+    image: jwImageForSlot("discover.jeux").url,
     badge: "15 modes",
   },
   {
@@ -44,15 +48,23 @@ export const DISCOVER_APP_LINKS: DiscoverItem[] = [
     title: "Étude personnelle",
     description: "Thèmes guidés pour approfondir un sujet à votre rythme.",
     href: "/etude",
-    image: JW_IMAGES.bibleEtude.url,
+    image: jwImageForSlot("discover.etude").url,
     badge: "Thèmes",
+  },
+  {
+    id: "langues",
+    title: "Langues pour la prédication",
+    description: "Anglais, espagnol, arabe, chinois… Phrases et mots pour le ministère.",
+    href: "/langues",
+    image: jwImageForSlot("discover.langues").url,
+    badge: "8 langues",
   },
   {
     id: "quotidien",
     title: "Défi du jour",
     description: "Quatre missions quotidiennes pour garder une routine.",
     href: "/quotidien",
-    image: JW_IMAGES.quotidien.url,
+    image: jwImageForSlot("discover.quotidien").url,
     badge: "XP bonus",
   },
 ];
@@ -67,24 +79,24 @@ export const DISCOVER_SECTIONS: DiscoverSection[] = [
         id: "enfants",
         title: "Enfants",
         description: "Chansons, leçons animées et histoires bibliques pour les plus jeunes.",
-        href: JW_IMAGES.enfants.href,
-        image: JW_IMAGES.enfants.url,
+        href: "https://www.jw.org/fr/la-bible-et-vous/enfants/",
+        image: jwImageForSlot("discover.enfants").url,
         external: true,
       },
       {
         id: "ados",
         title: "Adolescents",
         description: "Vidéos et articles sur la foi, les amitiés et les choix du quotidien.",
-        href: JW_IMAGES.adolescents.href,
-        image: JW_IMAGES.adolescents.url,
+        href: "https://www.jw.org/fr/la-bible-et-vous/adolescents/",
+        image: jwImageForSlot("discover.ados").url,
         external: true,
       },
       {
         id: "familles",
         title: "Couples et familles",
         description: "Conseils bibliques pour renforcer l'harmonie à la maison.",
-        href: JW_IMAGES.famille.href,
-        image: JW_IMAGES.famille.url,
+        href: "https://www.jw.org/fr/la-bible-et-vous/familles/",
+        image: jwImageForSlot("discover.familles").url,
         external: true,
       },
     ],
@@ -99,23 +111,23 @@ export const DISCOVER_SECTIONS: DiscoverSection[] = [
         title: "Bible en ligne",
         description: "Traduction du monde nouveau, notes et outils de recherche.",
         href: "https://www.jw.org/fr/bibliothèque/bible/",
-        image: JW_IMAGES.bibleEtude.url,
+        image: jwImageForSlot("discover.bible").url,
         external: true,
       },
       {
         id: "cours",
         title: "Cours biblique",
         description: "Étude gratuite à domicile, à votre rythme, avec un instructeur.",
-        href: JW_IMAGES.coursBiblique.href,
-        image: JW_IMAGES.coursBiblique.url,
+        href: "https://www.jw.org/fr/la-bible-et-vous/cours-biblique-particulier/",
+        image: jwImageForSlot("discover.cours").url,
         external: true,
       },
       {
         id: "histoire",
         title: "La Bible et l'histoire",
         description: "Découvrir comment l'histoire confirme les récits bibliques.",
-        href: JW_IMAGES.histoire.href,
-        image: JW_IMAGES.histoire.url,
+        href: "https://www.jw.org/fr/la-bible-et-vous/histoire/",
+        image: jwImageForSlot("discover.histoire").url,
         external: true,
       },
     ],
@@ -129,8 +141,8 @@ export const DISCOVER_SECTIONS: DiscoverSection[] = [
         id: "gnj",
         title: "La bonne nouvelle selon Jésus",
         description: "Série animée retraçant la vie et le ministère de Jésus-Christ.",
-        href: JW_IMAGES.bonneNouvelleJesus.href,
-        image: JW_IMAGES.bonneNouvelleJesus.url,
+        href: "https://www.jw.org/fr/bibliothèque/videos/bonne-nouvelle-selon-jesus/",
+        image: jwImageForSlot("discover.gnj").url,
         external: true,
       },
       {
@@ -138,7 +150,7 @@ export const DISCOVER_SECTIONS: DiscoverSection[] = [
         title: "Bibliothèque vidéo",
         description: "Des centaines de vidéos classées par thème et par public.",
         href: "https://www.jw.org/fr/bibliothèque/videos/",
-        image: JW_IMAGES.ministere.url,
+        image: jwImageForSlot("discover.videos").url,
         external: true,
       },
       {
@@ -146,7 +158,7 @@ export const DISCOVER_SECTIONS: DiscoverSection[] = [
         title: "Magazines et brochures",
         description: "Publications périodiques et ouvrages à lire en ligne ou à télécharger.",
         href: JW_LIBRARY_LINK,
-        image: JW_IMAGES.thematique.url,
+        image: jwImageForSlot("discover.magazines").url,
         external: true,
       },
     ],

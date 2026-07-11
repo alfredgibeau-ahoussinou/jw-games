@@ -10,13 +10,13 @@ export interface BadgeDefinition {
 export const BADGE_DEFINITIONS: BadgeDefinition[] = [
   { id: "first-game", name: "Premier pas", description: "Jouer votre première partie", icon: "🎮" },
   { id: "quiz-rookie", name: "Apprenti", description: "10 bonnes réponses au quiz", icon: "📖" },
-  { id: "perfect-quiz", name: "Sans faute", description: "Quiz parfait sans erreur", icon: "⭐" },
+  { id: "perfect-quiz", name: "Réponses justes", description: "Un quiz complété sans erreur", icon: "⭐" },
   { id: "streak-3", name: "Assidu", description: "Série de 3 jours", icon: "🔥" },
   { id: "streak-7", name: "Fidèle", description: "Série de 7 jours", icon: "💎" },
   { id: "memory-ace", name: "Mémoire d'éléphant", description: "Mémoire terminée en ≤ 8 coups", icon: "🧠" },
-  { id: "speed-lightning", name: "Éclair", description: "3 défis rapidité réussis", icon: "⚡" },
-  { id: "level-5", name: "Érudit", description: "Atteindre le niveau 5", icon: "🏆" },
-  { id: "bible-scholar", name: "Lettré", description: "50 bonnes réponses au total", icon: "✝️" },
+  { id: "speed-lightning", name: "Bon rythme", description: "3 défis rapidité réussis", icon: "⚡" },
+  { id: "level-5", name: "Progression constante", description: "Atteindre le niveau 5", icon: "🏆" },
+  { id: "bible-scholar", name: "Lettré", description: "50 bonnes réponses au total", icon: "📖" },
   { id: "undercover-detective", name: "Détective", description: "Jouer 3 parties Undercover", icon: "🕵️" },
 ];
 

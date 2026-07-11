@@ -1,6 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import {
+  canInstallOnIos,
+  isIosDevice,
+  isStandaloneMode,
+  needsSafariForIosInstall,
+} from "@/lib/pwa-install";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -11,17 +17,21 @@ declare global {
   interface WindowEventMap {
     beforeinstallprompt: BeforeInstallPromptEvent;
   }
-  interface Navigator {
-    standalone?: boolean;
-  }
 }
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 let listenerReady = false;
+let iosHintOpen = false;
+
 const subscribers = new Set<() => void>();
+const iosHintSubscribers = new Set<() => void>();
 
 function notifySubscribers() {
   subscribers.forEach((cb) => cb());
+}
+
+function notifyIosHintSubscribers() {
+  iosHintSubscribers.forEach((cb) => cb());
 }
 
 export function initPwaInstallListener() {
@@ -40,17 +50,31 @@ export function initPwaInstallListener() {
   });
 }
 
-function isStandaloneMode() {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone === true
-  );
+export function openIosInstallHint() {
+  iosHintOpen = true;
+  notifyIosHintSubscribers();
 }
 
-function isIosDevice() {
-  if (typeof window === "undefined") return false;
-  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+export function closeIosInstallHint() {
+  iosHintOpen = false;
+  notifyIosHintSubscribers();
+}
+
+export function useIosInstallHint() {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const refresh = () => setTick((n) => n + 1);
+    iosHintSubscribers.add(refresh);
+    return () => {
+      iosHintSubscribers.delete(refresh);
+    };
+  }, []);
+
+  return {
+    open: iosHintOpen,
+    close: closeIosInstallHint,
+  };
 }
 
 export function usePwaInstall() {
@@ -82,27 +106,25 @@ export function usePwaInstall() {
       return true;
     }
 
-    if (isIosDevice() && typeof navigator.share === "function") {
-      try {
-        await navigator.share({
-          title: "JW Games",
-          text: "Installer JW Games sur l'écran d'accueil",
-          url: window.location.href,
-        });
-        return true;
-      } catch {
-        return false;
-      }
+    if (isIosDevice() && !isStandaloneMode()) {
+      // Sur iOS, « Sur l'écran d'accueil » n'apparaît que via le bouton Partager de Safari —
+      // pas via navigator.share(). On affiche un repère vers ce bouton.
+      openIosInstallHint();
+      return true;
     }
 
     return false;
   }, []);
 
-  const canInstall = ready && !standalone;
+  const canInstall =
+    ready &&
+    !standalone &&
+    (deferredPrompt !== null || canInstallOnIos() || needsSafariForIosInstall());
 
   return {
     canInstall,
     install,
     hasNativePrompt: deferredPrompt !== null,
+    isIos: isIosDevice(),
   };
 }

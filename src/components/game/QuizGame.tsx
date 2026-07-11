@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { prepareQuizForPlay } from "@/lib/quiz-options";
+
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { GameHud } from "@/components/game/GameHud";
@@ -31,8 +32,9 @@ export function QuizGame({ questions, onComplete }: QuizGameProps) {
   const correctCount = useRef(0);
   const { streak, bestStreak, showCombo, registerAnswer } = useGameStreak();
 
-  const question = questions[currentIndex];
-  const isLast = currentIndex === questions.length - 1;
+  const shuffledQuestions = useMemo(() => prepareQuizForPlay(questions), [questions]);
+  const question = shuffledQuestions[currentIndex];
+  const isLast = currentIndex === shuffledQuestions.length - 1;
   const answered = selectedIndex !== null;
   const isCorrect = answered && selectedIndex === question.correctIndex;
 
@@ -52,12 +54,12 @@ export function QuizGame({ questions, onComplete }: QuizGameProps) {
 
   const handleNext = useCallback(() => {
     if (isLast) {
-      onComplete(correctCount.current, questions.length, { bestStreak });
+      onComplete(correctCount.current, shuffledQuestions.length, { bestStreak });
       return;
     }
     setCurrentIndex((i) => i + 1);
     setSelectedIndex(null);
-  }, [isLast, onComplete, questions.length, bestStreak]);
+  }, [isLast, onComplete, shuffledQuestions.length, bestStreak]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -83,12 +85,12 @@ export function QuizGame({ questions, onComplete }: QuizGameProps) {
   const sourceEdition = question.sources[0]?.bibleEdition;
 
   return (
-    <div className="relative mx-auto w-full max-w-2xl">
+    <div>
       <GameComboBanner streak={streak} show={showCombo} />
 
       <GameHud
         current={currentIndex + 1}
-        total={questions.length}
+        total={shuffledQuestions.length}
         score={score}
         streak={streak}
         extra={
@@ -98,16 +100,12 @@ export function QuizGame({ questions, onComplete }: QuizGameProps) {
         }
       />
 
-      <AnimatePresence mode="wait">
-        <motion.div
+      <>
+        <div
           key={question.id}
-          initial={{ opacity: 0, x: 60, filter: "blur(3px)" }}
-          animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, x: -60, filter: "blur(3px)" }}
-          transition={{ type: "spring", stiffness: 280, damping: 28 }}
         >
-          <Card className="mb-6">
-            <p className="text-xl font-semibold leading-relaxed text-[var(--text)] sm:text-2xl">
+          <Card>
+            <p>
               {question.question}
             </p>
           </Card>
@@ -128,11 +126,10 @@ export function QuizGame({ questions, onComplete }: QuizGameProps) {
               sourceEdition={sourceEdition}
               nextLabel={isLast ? "Voir les résultats 🏆" : "Question suivante →"}
               onNext={handleNext}
-              className="mt-6"
             />
           )}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </>
     </div>
   );
 }

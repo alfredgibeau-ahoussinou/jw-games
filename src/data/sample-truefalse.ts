@@ -1,4 +1,5 @@
 import type { TrueFalseQuestion } from "@/types/content";
+import { fisherYatesShuffle } from "@/lib/quiz-options";
 import { EXTRA_TRUE_FALSE } from "./extra/extra-truefalse";
 
 export const TRUE_FALSE_QUESTIONS: TrueFalseQuestion[] = [
@@ -117,7 +118,10 @@ export const TRUE_FALSE_QUESTIONS: TrueFalseQuestion[] = [
   ...EXTRA_TRUE_FALSE,
 ];
 
-export function shuffleTrueFalse(limit?: number) {
-  const arr = [...TRUE_FALSE_QUESTIONS].sort(() => Math.random() - 0.5);
+export function shuffleTrueFalse(
+  limit?: number,
+  pool: typeof TRUE_FALSE_QUESTIONS = TRUE_FALSE_QUESTIONS
+) {
+  const arr = fisherYatesShuffle(pool);
   return limit ? arr.slice(0, limit) : arr;
 }

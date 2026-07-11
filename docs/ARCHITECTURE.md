@@ -9,25 +9,23 @@ Documentation détaillée du code source pour les développeurs et l'équipe tec
 
 ## 1. Vue d'ensemble
 
-JW Games est une application **Next.js 16** (App Router) en **TypeScript**, déployée sur **Netlify**. Elle fonctionne comme une **PWA** installable et peut opérer entièrement en local (IndexedDB) ou avec **Supabase** pour la synchronisation optionnelle.
+JW Games est une application **Next.js 16** (App Router) en **TypeScript**, déployée sur **Netlify**. Elle fonctionne comme une **PWA** installable et opère entièrement en **stockage local** (localStorage via Zustand) — aucune donnée personnelle n'est collectée ni synchronisée côté serveur.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        Navigateur / PWA                      │
 │  ┌─────────────┐  ┌──────────────┐  ┌─────────────────────┐ │
 │  │ Pages React │  │ Composants   │  │ Zustand (user-store)│ │
-│  │ (App Router)│  │ jeu / layout │  │ + IndexedDB local   │ │
-│  └──────┬──────┘  └──────────────┘  └──────────┬──────────┘ │
-└─────────┼────────────────────────────────────────┼───────────┘
-          │                                        │
-          ▼                                        ▼
-┌─────────────────────┐              ┌─────────────────────────┐
-│ API Routes Next.js  │              │ Supabase (optionnel)    │
-│ /api/daily-text     │              │ profils, sessions       │
-│ /api/jw-media       │              └─────────────────────────┘
+│  │ (App Router)│  │ jeu / layout │  │ + localStorage      │ │
+│  └──────┬──────┘  └──────────────┘  └─────────────────────┘ │
+└─────────┼────────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ API Routes Next.js  │
+│ /api/daily-text     │
+│ /api/jw-media       │
 │ /api/video-subtitles│
-│ /api/profile        │
-│ /api/sessions       │
 └─────────┬───────────┘
           │
           ▼
@@ -88,7 +86,6 @@ JWGAMES/
 | Tailwind CSS | 4.x | Styles utilitaires + variables CSS |
 | Zustand | 5.x | État global (profil, XP, badges) |
 | Framer Motion | 12.x | Animations de page et cartes |
-| Supabase | 2.x | Backend optionnel (PostgreSQL) |
 | Lucide React | — | Icônes |
 
 ---
@@ -176,9 +173,7 @@ Proxy pour les métadonnées média JW (images, vignettes) depuis le CDN officie
 
 Récupère les sous-titres VTT d'une vidéo JW pour le lecteur intégré.
 
-### `POST /api/profile` & `POST /api/sessions`
-
-Synchronisation optionnelle avec Supabase si les variables d'environnement sont configurées. Sinon, fallback silencieux vers le stockage local.
+Aucune route API ne collecte ni ne stocke de profil ou de sessions joueur. Le profil, l'XP et les badges restent uniquement dans le navigateur.
 
 ---
 
@@ -195,25 +190,17 @@ Synchronisation optionnelle avec Supabase si les variables d'environnement sont 
 }
 ```
 
-Actions : `setDisplayName`, `addXp`, `recordSession`, `unlockBadge`, etc.
+Actions : `initProfile`, `addXp`, `recordGame`, `trackDailyProgress`, etc.
 
-### Persistance locale — `src/lib/db/local-store.ts`
+### Persistance locale
 
-- **IndexedDB** via API native du navigateur.
-- Identifiant appareil : `src/lib/device-id.ts` (UUID persistant).
+- **localStorage** via middleware `persist` de Zustand (`jw-games-user`).
+- Identifiant appareil : `src/lib/device-id.ts` (UUID persistant, local uniquement).
 - Fonctionne **sans compte** ni serveur.
 
-### Supabase (optionnel) — `src/lib/supabase/`
+**SyncProvider** (`src/components/providers/SyncProvider.tsx`) réhydrate le store Zustand au chargement (local uniquement).
 
-Variables requises (`.env.local`) :
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-```
-
-Schéma SQL : `supabase/migrations/001_initial.sql`
-
-**SyncProvider** (`src/components/providers/SyncProvider.tsx`) tente la sync au chargement si Supabase est configuré.
+> **Note :** La synchronisation Supabase et le classement joueurs ont été retirés. Le schéma `supabase/migrations/` est conservé à titre historique uniquement.
 
 ---
 
@@ -273,12 +260,7 @@ npm run start            # Serveur de production local
 
 ### Variables d'environnement (production)
 
-| Variable | Obligatoire | Description |
-|----------|-------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Non | URL projet Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Non | Clé anonyme Supabase |
-
-Sans Supabase, l'application fonctionne entièrement en local.
+Aucune variable obligatoire pour le profil utilisateur. L'application fonctionne entièrement en stockage local.
 
 ---
 

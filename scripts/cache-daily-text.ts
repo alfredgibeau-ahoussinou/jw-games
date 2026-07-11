@@ -19,7 +19,7 @@ async function main() {
   await mkdir(CACHE_DIR, { recursive: true });
   const cached = new Set<string>();
 
-  for (const offset of [-1, 0, 1]) {
+  for (const offset of [-2, -1, 0, 1, 2]) {
     try {
       const iso = await cacheDailyText(getParisDate(offset));
       cached.add(iso);
@@ -32,7 +32,8 @@ async function main() {
   }
 
   if (cached.size === 0) {
-    throw new Error("Aucun texte du jour mis en cache");
+    console.warn("⚠ Aucun texte du jour mis en cache — le build continue (fallback runtime).");
+    return;
   }
 }
 

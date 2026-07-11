@@ -1,5 +1,7 @@
--- JW Games — Schéma initial Supabase
--- Exécuter dans l'éditeur SQL Supabase ou via CLI
+-- JW Games — Schéma initial Supabase (HISTORIQUE)
+-- ⚠️ Non utilisé par l'application : la sync cloud et le classement ont été retirés.
+-- Les profils et sessions restent uniquement en stockage local (navigateur).
+-- Pour nettoyer un déploiement existant : voir 002_remove_ranking.sql
 
 -- Profils joueurs
 CREATE TABLE IF NOT EXISTS profiles (

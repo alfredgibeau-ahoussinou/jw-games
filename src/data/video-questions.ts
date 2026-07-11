@@ -1,4 +1,5 @@
 import type { JwVideo } from "@/data/jw-videos";
+import { diversifyQuizQuestion } from "@/lib/quiz-options";
 import { VIDEO_QUIZ_BY_ID } from "./video-quiz-by-id";
 import {
   BJF_LESSON_QUIZZES,
@@ -142,7 +143,7 @@ function buildCoherentQuestions(video: JwVideo): MiniVideoQuestion[] {
 
 /** Questions strictement liées au contenu de la vidéo — pas de quiz générique */
 export function getVideoQuestions(video: JwVideo): MiniVideoQuestion[] {
-  return buildCoherentQuestions(video);
+  return buildCoherentQuestions(video).map(diversifyQuizQuestion);
 }
 
 export function hasVideoQuiz(video: JwVideo): boolean {

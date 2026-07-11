@@ -1,4 +1,5 @@
 import type { WordScrambleItem } from "@/types/content";
+import { fisherYatesShuffle } from "@/lib/quiz-options";
 import { EXTRA_WORD_SCRAMBLE } from "./extra/extra-words";
 
 export const WORD_SCRAMBLE_ITEMS: WordScrambleItem[] = [
@@ -26,5 +27,5 @@ export function scrambleWord(word: string) {
 }
 
 export function shuffleWords(limit = 8) {
-  return [...WORD_SCRAMBLE_ITEMS].sort(() => Math.random() - 0.5).slice(0, limit);
+  return fisherYatesShuffle(WORD_SCRAMBLE_ITEMS).slice(0, limit);
 }

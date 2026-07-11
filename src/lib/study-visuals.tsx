@@ -3,11 +3,14 @@ import {
   BookOpen,
   Crown,
   Flame,
+  GraduationCap,
   HandHeart,
   Heart,
   Home,
   Leaf,
   Megaphone,
+  Compass,
+  School,
   Scale,
   Shield,
   Sparkles,
@@ -15,6 +18,7 @@ import {
   Sun,
   Users,
   BookMarked,
+  Timer,
 } from "lucide-react";
 
 export const STUDY_THEME_VISUALS: Record<
@@ -38,7 +42,12 @@ export const STUDY_THEME_VISUALS: Record<
   jeunesse: { icon: Users, gradient: "from-fuchsia-500/90 to-purple-700/90" },
   paix: { icon: Sprout, gradient: "from-teal-400/90 to-cyan-700/90" },
   integrite: { icon: Shield, gradient: "from-blue-600/90 to-indigo-800/90" },
-  prophecies: { icon: Sparkles, gradient: "from-purple-500/90 to-indigo-700/90" },
+  propheties: { icon: Sparkles, gradient: "from-purple-500/90 to-indigo-700/90" },
+  "decouvrir-bible": { icon: Compass, gradient: "from-cyan-500/90 to-blue-700/90" },
+  predication: { icon: Megaphone, gradient: "from-sky-500/90 to-indigo-700/90" },
+  pionnier: { icon: Timer, gradient: "from-amber-500/90 to-orange-700/90" },
+  "ecole-biblique": { icon: School, gradient: "from-lime-500/90 to-emerald-700/90" },
+  "vie-chretienne": { icon: GraduationCap, gradient: "from-violet-500/90 to-purple-700/90" },
 };
 
 export const STUDY_MINI_GAME_XP = 15;

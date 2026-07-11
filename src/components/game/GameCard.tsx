@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { GameModeConfig } from "@/types/game";
-import { cn } from "@/lib/cn";
 import { GAME_VISUALS, getPlayerMeta } from "@/lib/game-visuals";
 import { GameModeIcon } from "@/components/game/GameModeIcon";
+import { InteractiveCard } from "@/components/motion/InteractiveCard";
+import { SafeImage } from "@/components/ui/SafeImage";
+import { jwImageForGame } from "@/lib/jw-images";
 
 interface GameCardProps {
   game: GameModeConfig;
@@ -19,10 +21,25 @@ function PlayerChip({ players }: { players: GameModeConfig["players"] }) {
   const Icon = meta.icon;
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5 text-[0.6875rem] font-medium tracking-wide text-[var(--text-muted)] backdrop-blur-sm">
-      <Icon className="h-3 w-3 opacity-70" aria-hidden />
+    <span>
+      <Icon aria-hidden />
       {meta.label}
     </span>
+  );
+}
+
+function CardImageBg({ mode, className }: { mode: GameModeConfig["id"]; className?: string }) {
+  const img = jwImageForGame(mode);
+  return (
+    <>
+      <SafeImage
+        src={img.url}
+        alt=""
+        fill
+        sizes="(max-width: 640px) 80vw, 320px"
+      />
+      <div />
+    </>
   );
 }
 
@@ -39,32 +56,27 @@ function GameTile({
 
   if (featured) {
     return (
-      <div className="game-card-featured group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[var(--bg-card)]">
-        <div
-          className={cn(
-            "pointer-events-none absolute inset-0 bg-gradient-to-br opacity-40",
-            visual.gradient.replace("/90", "/15").replace("/80", "/12")
-          )}
-        />
-        <div className={cn("absolute inset-x-0 top-0 h-px bg-gradient-to-r opacity-80", visual.gradient)} />
+      <div>
+        <CardImageBg mode={game.id} />
+        <div />
 
-        <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
+        <div>
           <GameModeIcon mode={game.id} size="lg" />
-          <div className="min-w-0 flex-1">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
+          <div>
+            <div>
               {game.tag && (
-                <span className="rounded-full border border-[var(--brand-red)]/30 bg-[var(--brand-red)]/10 px-2.5 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-[var(--brand-red)]">
+                <span>
                   {game.tag}
                 </span>
               )}
               <PlayerChip players={game.players} />
             </div>
-            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">{game.title}</h3>
-            <p className="text-body mt-2 line-clamp-2 text-[0.9375rem]">{game.description}</p>
+            <h3>{game.title}</h3>
+            <p>{game.description}</p>
           </div>
-          <span className="hidden shrink-0 items-center gap-1.5 text-sm font-medium text-[var(--accent)] transition-transform group-hover:translate-x-0.5 sm:flex">
+          <span>
             Jouer
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
+            <ArrowUpRight aria-hidden />
           </span>
         </div>
       </div>
@@ -73,25 +85,20 @@ function GameTile({
 
   if (compact) {
     return (
-      <div
-        className={cn(
-          "game-card-compact group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-3.5",
-          "transition-all duration-200 hover:border-white/12 hover:shadow-lg sm:p-4",
-          visual.glow
-        )}
-      >
-        <div
-          className={cn(
-            "pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gradient-to-br opacity-30 blur-2xl",
-            visual.gradient
-          )}
-        />
-        <GameModeIcon mode={game.id} size="sm" className="mb-2.5 shrink-0 sm:mb-3" />
-        <p className="line-clamp-2 min-h-0 flex-1 text-[0.8125rem] font-semibold leading-snug tracking-tight sm:text-sm">
-          {game.title}
-        </p>
-        <div className="mt-2 shrink-0 pt-1">
-          <PlayerChip players={game.players} />
+      <div>
+        <div>
+          <CardImageBg mode={game.id} />
+          <div>
+            <GameModeIcon mode={game.id} size="sm" />
+          </div>
+        </div>
+        <div>
+          <p>{game.title}</p>
+          <div>
+            <span>
+              {getPlayerMeta(game.players).label}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -99,48 +106,37 @@ function GameTile({
 
   return (
     <div
-      className={cn(
-        "game-card group relative flex h-[228px] flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-5",
-        "transition-all duration-200 hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl",
-        visual.glow
-      )}
     >
-      <div
-        className={cn(
-          "pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br opacity-25 blur-3xl transition-opacity group-hover:opacity-40",
-          visual.gradient
-        )}
-      />
+      <CardImageBg mode={game.id} />
 
-      <div className="relative mb-3 flex h-12 shrink-0 items-start justify-between gap-2">
+      <div>
         <GameModeIcon mode={game.id} size="md" />
-        <div className="flex h-12 flex-col items-end justify-between">
+        <div>
           {game.tag ? (
-            <span className="rounded-full border border-[var(--brand-red)]/25 bg-[var(--brand-red)]/10 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-[var(--brand-red)]">
+            <span>
               {game.tag}
             </span>
           ) : (
-            <span className="h-[22px]" aria-hidden />
+            <span aria-hidden />
           )}
           <PlayerChip players={game.players} />
         </div>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 flex-col">
-        <h3 className="line-clamp-2 h-10 text-[0.9375rem] font-semibold leading-snug tracking-tight sm:text-base">
+      <div>
+        <h3>
           {game.title}
         </h3>
-        <p className="mt-1 line-clamp-2 h-10 text-[0.8125rem] leading-relaxed text-[var(--text-muted)] opacity-80">
+        <p>
           {game.description}
         </p>
       </div>
 
-      <div className="relative mt-3 flex shrink-0 items-center justify-between border-t border-white/[0.05] pt-3">
-        <span className="text-[0.6875rem] font-medium uppercase tracking-widest text-[var(--text-dim)]">
+      <div>
+        <span>
           {visual.label}
         </span>
         <ArrowUpRight
-          className="h-4 w-4 text-[var(--text-dim)] transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[var(--accent)]"
           aria-hidden
         />
       </div>
@@ -150,22 +146,24 @@ function GameTile({
 
 export function GameCard({ game, featured = false, compact = false }: GameCardProps) {
   const content = (
-    <article className={cn("h-full", !game.available && "pointer-events-none opacity-45")}>
+    <article>
       <GameTile game={game} featured={featured} compact={compact} />
     </article>
   );
 
   if (!game.available) return content;
 
+  const wrapped = (
+    <InteractiveCard disabled={compact}>
+      {content}
+    </InteractiveCard>
+  );
+
   return (
     <Link
       href={game.href}
-      className={cn(
-        "block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]",
-        compact && "poster-card poster-card--game shrink-0"
-      )}
     >
-      {content}
+      {featured || !compact ? wrapped : content}
     </Link>
   );
 }

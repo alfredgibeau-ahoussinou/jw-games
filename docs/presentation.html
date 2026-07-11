@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JW Games — Présentation interactive</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #050507; --bg-card: #14141a; --text: #fafafa; --text-muted: #94949e;
+      --text-dim: #5c5c66; --accent: #00b8b8; --accent-light: rgba(0,184,184,0.16);
+      --accent-glow: rgba(0,184,184,0.45); --success: #6ee7a8;
+      --border: rgba(255,255,255,0.08); --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    html, body { height: 100%; overflow: hidden; font-family: var(--font); background: var(--bg); color: var(--text); }
+    body { display: flex; flex-direction: column; cursor: default; }
+
+    #bgCanvas, #fxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    #fxCanvas { z-index: 200; }
+
+    .progress { height: 4px; background: rgba(255,255,255,0.05); flex-shrink: 0; z-index: 10; position: relative; }
+    .progress-bar {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, #008888, var(--accent), #2dd4d4);
+      box-shadow: 0 0 12px var(--accent-glow);
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .stage { flex: 1; position: relative; overflow: hidden; z-index: 1; perspective: 1200px; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem 1.5rem 4.5rem; overflow-y: auto;
+      opacity: 0; pointer-events: none;
+      transform: translateX(80px) scale(0.94) rotateY(-4deg);
+      filter: blur(8px);
+      transition: none;
+    }
+    .slide.active {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(0) scale(1) rotateY(0);
+      filter: blur(0);
+      animation: slideIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .slide.exit-left { animation: slideOutLeft 0.45s ease forwards; pointer-events: none; }
+    .slide.exit-right { animation: slideOutRight 0.45s ease forwards; pointer-events: none; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(60px) scale(0.92); filter: blur(6px); }
+      to { opacity: 1; transform: none; filter: blur(0); }
+    }
+    @keyframes slideOutLeft { to { opacity: 0; transform: translateX(-50px) scale(0.95); filter: blur(4px); } }
+    @keyframes slideOutRight { to { opacity: 0; transform: translateX(50px) scale(0.95); filter: blur(4px); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+    @keyframes pop { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(0,184,184,0.1); transform: scale(1); }
+      50% { box-shadow: 0 0 35px var(--accent-glow), 0 0 60px rgba(0,184,184,0.2); transform: scale(1.05); }
+    }
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes dash { to { stroke-dashoffset: 0; } }
+    @keyframes typeBlink { 50% { border-color: transparent; } }
+    @keyframes badgeUnlock {
+      0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+      60% { transform: scale(1.2) rotate(5deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes flipIn { from { transform: rotateY(90deg); opacity: 0; } to { transform: rotateY(0); opacity: 1; } }
+
+    .slide-inner { width: 100%; max-width: 58rem; }
+    .slide.active .stagger > * { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) backwards; }
+    .slide.active .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger > *:nth-child(2) { animation-delay: 0.12s; }
+    .slide.active .stagger > *:nth-child(3) { animation-delay: 0.19s; }
+    .slide.active .stagger > *:nth-child(4) { animation-delay: 0.26s; }
+    .slide.active .stagger > *:nth-child(5) { animation-delay: 0.33s; }
+    .slide.active .stagger > *:nth-child(6) { animation-delay: 0.4s; }
+
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; }
+    .subtitle { color: var(--text-muted); margin-top: 0.5rem; }
+    .lead { font-size: 1.1rem; line-height: 1.65; color: #c4c4cc; margin-top: 1.25rem; }
+    .accent { color: var(--accent); }
+    .hidden { display: none !important; }
+    .center { text-align: center; }
+
+    .logo-orbit { position: relative; width: 7rem; height: 7rem; margin: 0 auto 1.75rem; }
+    .logo-ring {
+      position: absolute; inset: -8px; border-radius: 50%;
+      border: 2px dashed rgba(0,184,184,0.25);
+      animation: orbit 12s linear infinite;
+    }
+    .logo-box {
+      position: absolute; inset: 0; border-radius: 1.25rem;
+      background: var(--accent-light); border: 1px solid rgba(0,184,184,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 800; color: var(--accent);
+      animation: pulseGlow 2.5s ease-in-out infinite;
+    }
+
+    .fragment { transition: opacity 0.4s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+    .fragment.f-hidden { opacity: 0; transform: translateY(20px) scale(0.97); pointer-events: none; height: 0; margin: 0; overflow: hidden; }
+    .fragment.f-visible { opacity: 1; transform: none; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+    .quote {
+      margin-top: 1.25rem; padding: 1.1rem 1.35rem;
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      font-style: italic; border-radius: 0 0.75rem 0.75rem 0;
+      position: relative; overflow: hidden;
+    }
+    .quote::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,184,184,0.08), transparent);
+      background-size: 200% 100%; animation: shimmer 3s linear infinite;
+    }
+
+    .grid-3 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top: 1.25rem; }
+    .grid-games { display: grid; gap: 0.55rem; grid-template-columns: repeat(5, 1fr); margin-top: 1rem; max-height: 48vh; overflow-y: auto; }
+    @media (max-width: 700px) { .grid-games { grid-template-columns: repeat(3, 1fr); } }
+
+    .card {
+      position: relative; overflow: hidden;
+      border: 1px solid var(--border); background: var(--bg-card);
+      border-radius: 0.85rem; padding: 1rem; text-align: left;
+      cursor: pointer; font: inherit; color: inherit; width: 100%;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s, box-shadow 0.25s;
+      transform-style: preserve-3d;
+    }
+    .card::before {
+      content: ""; position: absolute; inset: 0; opacity: 0;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,184,184,0.15), transparent 60%);
+      transition: opacity 0.3s;
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover { transform: translateY(-4px) scale(1.02); border-color: rgba(0,184,184,0.35); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .card:active { transform: scale(0.97); }
+    .card.selected {
+      border-color: var(--accent); background: var(--accent-light);
+      animation: pop 0.4s ease; box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .card.flipped { animation: flipIn 0.45s ease; }
+    .card h3 { font-size: 0.85rem; font-weight: 600; margin-top: 0.35rem; position: relative; }
+    .card p { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; position: relative; }
+    .card .icon { font-size: 1.6rem; display: block; transition: transform 0.3s; }
+    .card:hover .icon { transform: scale(1.15) rotate(-5deg); }
+    .card .solution { color: var(--success); margin-top: 0.75rem; font-size: 0.8rem; animation: fadeUp 0.4s ease; }
+
+    .btn {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.85rem 1.75rem; border: none; border-radius: 0.65rem;
+      font: inherit; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .btn:active { transform: scale(0.94); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #2dd4d4);
+      color: #000; box-shadow: 0 4px 20px var(--accent-glow);
+      animation: float 3s ease-in-out infinite;
+    }
+    .btn-primary:hover { box-shadow: 0 6px 28px var(--accent-glow); }
+    .btn-lg { padding: 1.1rem 2.25rem; font-size: 1.1rem; margin-top: 2rem; }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .ripple {
+      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.35);
+      width: 20px; height: 20px; transform: scale(0); animation: ripple 0.6s ease-out; pointer-events: none;
+    }
+
+    .big-question { font-size: clamp(1.4rem, 4.5vw, 2.6rem); font-weight: 700; line-height: 1.4; margin-top: 1.5rem; min-height: 4em; }
+    .typewriter { border-right: 3px solid var(--accent); animation: typeBlink 0.8s step-end infinite; }
+    .word-pop { display: inline-block; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+    /* Bridge animation */
+    .bridge-wrap { margin-top: 2rem; position: relative; height: 140px; }
+    .bridge-svg { width: 100%; max-width: 420px; margin: 0 auto; display: block; }
+    .bridge-path { fill: none; stroke: rgba(0,184,184,0.25); stroke-width: 3; stroke-dasharray: 8 6; }
+    .bridge-glow { fill: none; stroke: var(--accent); stroke-width: 3; stroke-dasharray: 400; stroke-dashoffset: 400; }
+    .bridge-glow.animate { animation: dash 1.8s ease forwards; }
+    .bridge-dot {
+      position: absolute; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 16px var(--accent);
+      top: 50%; left: 15%; transform: translate(-50%, -50%);
+      opacity: 0;
+    }
+    .bridge-dot.run { animation: moveDot 2s ease-in-out forwards; }
+    @keyframes moveDot {
+      0% { left: 15%; opacity: 1; }
+      100% { left: 85%; opacity: 1; }
+    }
+    .bridge-nodes { display: flex; justify-content: space-between; max-width: 420px; margin: 0 auto; }
+    .bridge-node {
+      padding: 1rem 1.25rem; border-radius: 0.85rem; border: 1px solid var(--border);
+      background: var(--bg-card); text-align: center; min-width: 120px;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s;
+    }
+    .bridge-node.lit { border-color: var(--accent); box-shadow: 0 0 24px var(--accent-glow); transform: scale(1.06); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; margin-top: 1.5rem; }
+    @media (max-width: 500px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat {
+      text-align: center; padding: 1.35rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 0.85rem; background: var(--bg-card);
+      transform: scale(0); opacity: 0;
+    }
+    .stat.show { animation: pop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .stat .num { font-size: 2.2rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+    .stat .lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+    .tabs { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .tab {
+      flex: 1; padding: 0.7rem; border-radius: 0.55rem; border: 1px solid var(--border);
+      background: var(--bg-card); color: inherit; font: inherit; font-weight: 700; cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .tab.active { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
+    .panel {
+      margin-top: 1rem; padding: 1.25rem; border: 1px solid var(--border);
+      border-radius: 0.85rem; background: var(--bg-card);
+      transition: opacity 0.3s, transform 0.35s;
+    }
+    .panel.swap { animation: fadeUp 0.4s ease; }
+
+    /* XP demo */
+    .xp-demo { margin-top: 1.25rem; padding: 1.25rem; border-radius: 0.85rem; border: 1px solid var(--border); background: var(--bg-card); }
+    .xp-bar-wrap { height: 14px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin-top: 0.75rem; }
+    .xp-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #008888, var(--accent)); border-radius: 99px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 0 10px var(--accent-glow); }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .badge {
+      padding: 0.4rem 0.75rem; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--bg); font-size: 0.72rem; cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .badge:hover { transform: scale(1.08); }
+    .badge.unlocked { border-color: var(--accent); background: var(--accent-light); animation: badgeUnlock 0.5s ease; box-shadow: 0 0 12px var(--accent-glow); }
+
+    /* Mini memory */
+    .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; max-width: 320px; margin: 1rem auto 0; }
+    .mem-card {
+      aspect-ratio: 1; border-radius: 0.6rem; border: 1px solid var(--border);
+      background: var(--bg-card); cursor: pointer; font-size: 1.4rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.35s; transform-style: preserve-3d; position: relative;
+    }
+    .mem-card .back, .mem-card .front { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; backface-visibility: hidden; border-radius: 0.6rem; }
+    .mem-card .back { background: linear-gradient(135deg, #1a1a22, var(--bg-card)); transform: rotateY(0); }
+    .mem-card .front { background: var(--accent-light); transform: rotateY(180deg); font-size: 0.65rem; font-weight: 700; color: var(--accent); padding: 0.25rem; text-align: center; }
+    .mem-card.open { transform: rotateY(180deg); }
+    .mem-card.match { box-shadow: 0 0 16px var(--accent-glow); border-color: var(--accent); }
+
+    /* Mini quiz */
+    .quiz-opt {
+      display: block; width: 100%; text-align: left; margin-top: 0.5rem; padding: 0.85rem 1rem;
+      border-radius: 0.65rem; border: 1px solid var(--border); background: var(--bg-card);
+      color: inherit; font: inherit; cursor: pointer; transition: all 0.25s;
+    }
+    .quiz-opt:hover { border-color: rgba(0,184,184,0.4); transform: translateX(4px); }
+    .quiz-opt.correct { border-color: var(--success); background: rgba(110,231,168,0.12); animation: pop 0.4s ease; }
+    .quiz-opt.wrong { border-color: #ef4444; animation: shake 0.4s ease; }
+
+    .phone-mock {
+      width: 200px; height: 400px; margin: 1.5rem auto 0; border-radius: 1.75rem;
+      border: 3px solid rgba(255,255,255,0.15); background: var(--bg-card);
+      position: relative; overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px var(--accent-glow);
+      animation: float 4s ease-in-out infinite;
+    }
+    .phone-screen {
+      position: absolute; inset: 8px; border-radius: 1.4rem; overflow: hidden;
+      background: var(--bg); padding: 1rem;
+    }
+    .phone-pulse { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.08); margin-bottom: 0.5rem; animation: shimmer 2s linear infinite; background-size: 200% 100%; }
+    .phone-pulse.accent { background: linear-gradient(90deg, var(--accent-light), var(--accent), var(--accent-light)); background-size: 200% 100%; height: 40px; border-radius: 8px; }
+
+    .controls {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+      padding: 0.6rem 1rem; border-top: 1px solid var(--border);
+      background: rgba(5,5,7,0.92); backdrop-filter: blur(12px); z-index: 10;
+    }
+    .controls button { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.5rem 0.65rem; border-radius: 0.4rem; font: inherit; transition: all 0.2s; }
+    .controls button:hover { color: var(--text); background: rgba(255,255,255,0.07); }
+    .controls button:disabled { opacity: 0.25; }
+    .dots { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: center; max-width: 50%; }
+    .dot { width: 7px; height: 7px; border-radius: 99px; background: rgba(255,255,255,0.18); border: none; cursor: pointer; padding: 0; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    .dot.active { width: 22px; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+    .btn-next { background: var(--accent); color: #000; border: none; padding: 0.55rem 1.1rem; border-radius: 0.5rem; font-weight: 700; cursor: pointer; font: inherit; transition: transform 0.2s; }
+    .btn-next:hover { transform: scale(1.05); }
+
+    .hint { position: fixed; bottom: 4.2rem; left: 0; right: 0; text-align: center; font-size: 0.62rem; color: var(--text-dim); pointer-events: none; z-index: 5; }
+    .swipe-hint { animation: float 2s ease-in-out infinite; }
+
+    .overview {
+      position: fixed; inset: 0; z-index: 150; background: rgba(5,5,7,0.96);
+      padding: 1.5rem; display: none; flex-direction: column;
+      backdrop-filter: blur(8px);
+    }
+    .overview.open { display: flex; animation: fadeUp 0.35s ease; }
+    .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.65rem; overflow-y: auto; margin-top: 1rem; flex: 1; }
+    .overview-item {
+      padding: 0.85rem; border-radius: 0.75rem; border: 1px solid var(--border);
+      background: var(--bg-card); text-align: left; cursor: pointer; color: inherit; font: inherit;
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .overview-item:hover { transform: scale(1.04); border-color: rgba(0,184,184,0.4); }
+    .overview-item.current { border-color: var(--accent); background: var(--accent-light); }
+    .overview-item span { font-size: 0.62rem; color: var(--text-dim); }
+    .overview-item p { font-size: 0.8rem; font-weight: 600; margin-top: 0.2rem; }
+
+    .notes {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 140;
+      background: rgba(0,0,0,0.94); border-top: 2px solid var(--accent);
+      padding: 0.85rem 1.25rem; font-size: 0.82rem; color: #ccc;
+      transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      max-height: 28vh; overflow-y: auto;
+    }
+    .notes.open { transform: translateY(0); }
+    .notes strong { color: var(--accent); }
+
+    .notice { margin-top: 1rem; padding: 0.85rem; border-radius: 0.55rem; border: 1px solid rgba(245,165,36,0.4); background: rgba(245,165,36,0.1); font-size: 0.85rem; }
+    .link-demo {
+      display: inline-block; margin-top: 1.25rem; padding: 1rem 2rem;
+      border: 2px solid var(--accent); border-radius: 1rem;
+      color: var(--accent); font-size: 1.2rem; font-weight: 700; text-decoration: none;
+      transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .link-demo:hover { background: var(--accent-light); box-shadow: 0 0 24px var(--accent-glow); transform: scale(1.04); }
+    ul.check { list-style: none; margin-top: 0.65rem; }
+    ul.check li { padding: 0.3rem 0 0.3rem 1.4rem; position: relative; color: var(--text-muted); font-size: 0.88rem; }
+    ul.check li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1rem; }
+    .chip {
+      padding: 0.45rem 0.85rem; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--bg-card); font-size: 0.78rem; cursor: pointer; color: inherit; font: inherit;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .chip.done { background: var(--accent-light); border-color: var(--accent); transform: scale(1.05); }
+    .score-pop {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+      font-size: 3rem; font-weight: 800; color: var(--accent);
+      pointer-events: none; z-index: 300; text-shadow: 0 0 30px var(--accent-glow);
+    }
+    .score-pop.show { animation: pop 0.6s ease forwards; }
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<canvas id="fxCanvas"></canvas>
+<div class="score-pop" id="scorePop"></div>
+
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="stage" id="stage">
+
+  <!-- 0 -->
+  <section class="slide active" data-slide="0" data-fragments="0"
+    data-notes="Accueillez les anciens. Initiative personnelle — pas produit officiel. Cliquez Commencer ou secouez la souris sur le logo.">
+    <div class="slide-inner center stagger">
+      <div class="logo-orbit" id="logoOrbit">
+        <div class="logo-ring"></div>
+        <div class="logo-box">JW</div>
+      </div>
+      <h1>JW Games</h1>
+      <p class="subtitle" style="font-size:1.1rem">Rapprocher les jeunes de la Bible — par le jeu et la méditation</p>
+      <p class="accent" style="font-size:0.88rem; margin-top:0.5rem">Présentation aux anciens — Juin 2026</p>
+      <p style="margin-top:0.75rem; color:var(--text-muted); font-size:0.88rem">Alfred Gibeau-Ahoussinou</p>
+      <button class="btn btn-primary btn-lg" id="btnStart">Commencer la présentation →</button>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section class="slide" data-slide="1" data-fragments="3"
+    data-notes="Pas un manque de foi. Citez la phrase en italique — cœur du projet.">
+    <div class="slide-inner">
+      <h2 class="stagger">Pourquoi ce projet ?</h2>
+      <div id="whyFrags" style="margin-top:1rem">
+        <p class="lead fragment f-visible" data-f="0">De plus en plus de jeunes ont du mal à s'accrocher à la lecture et aux vidéos spirituelles — <strong>même lorsqu'ils aiment Jéhovah</strong>.</p>
+        <p class="lead fragment f-hidden" data-f="1">Ce n'est pas un manque de foi. C'est un <span class="accent">changement de façon d'apprendre</span> : écrans, jeux, récompenses instantanées.</p>
+        <blockquote class="quote fragment f-hidden" data-f="2">« Transformer l'étude en jeu, ce n'est pas baisser le niveau spirituel. C'est monter au niveau de ceux qu'on aime. »</blockquote>
+        <p class="accent fragment f-hidden" data-f="3" style="margin-top:1rem; font-weight:600">Ce projet, c'est de l'amour traduit en code.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 Constat interactif -->
+  <section class="slide" data-slide="2" data-fragments="0"
+    data-notes="Faites cliquer les 3 cartes. Chaque clic = animation + solution.">
+    <div class="slide-inner">
+      <h2>Le constat <span class="accent" id="constatScore" style="font-size:0.9rem"></span></h2>
+      <p class="subtitle">Cliquez chaque carte — révélez la solution JW Games</p>
+      <div class="grid-3 stagger" id="constatCards"></div>
+    </div>
+  </section>
+
+  <!-- 3 Question typewriter -->
+  <section class="slide" data-slide="3" data-fragments="0"
+    data-notes="Laissez le silence. La question s'écrit toute seule à l'entrée de la slide.">
+    <div class="slide-inner center">
+      <p class="subtitle swipe-hint">Et si…</p>
+      <p class="big-question" id="typewriter"></p>
+    </div>
+  </section>
+
+  <!-- 4 Principe animé -->
+  <section class="slide" data-slide="4" data-fragments="2"
+    data-notes="Cliquez « Lancer l'animation » pour le pont jeu → Bible.">
+    <div class="slide-inner center">
+      <h2>Le principe fondateur</h2>
+      <div class="bridge-wrap">
+        <svg class="bridge-svg" viewBox="0 0 400 60"><path class="bridge-path" d="M40,30 Q200,5 360,30"/><path class="bridge-glow" id="bridgeGlow" d="M40,30 Q200,5 360,30"/></svg>
+        <div class="bridge-dot" id="bridgeDot"></div>
+      </div>
+      <div class="bridge-nodes stagger" style="margin-top:0.5rem">
+        <div class="bridge-node" id="nodeGame">🎮<br><strong>Le jeu</strong><br><small style="color:var(--text-muted)">Le chemin</small></div>
+        <div class="bridge-node" id="nodeBible">📖<br><strong>La Parole</strong><br><small style="color:var(--text-muted)">La destination</small></div>
+      </div>
+      <button class="btn btn-primary" id="btnBridge" style="margin-top:1.25rem">▶ Lancer l'animation du pont</button>
+      <p class="lead fragment f-hidden center" data-f="2" style="margin-top:1.25rem">Aucun contenu doctrinal inventé — sources JW.org, WOL, TMON uniquement.</p>
+    </div>
+  </section>
+
+  <!-- 5 Stats + confetti -->
+  <section class="slide" data-slide="5" data-fragments="0"
+    data-notes="Révéler les chiffres — confetti ! Laissez les compteurs monter.">
+    <div class="slide-inner center">
+      <h2>Les chiffres</h2>
+      <button class="btn btn-primary btn-lg" id="btnStats">✨ Révéler les chiffres</button>
+      <div class="stat-grid hidden" id="statGrid"></div>
+    </div>
+  </section>
+
+  <!-- 6 Jeux flip -->
+  <section class="slide" data-slide="6" data-fragments="0"
+    data-notes="Survolez et cliquez les jeux. Montrez Undercover et Rapidité pour les ados.">
+    <div class="slide-inner">
+      <h2>15 modes de jeu <span id="gameCount" class="accent" style="font-size:0.85rem"></span></h2>
+      <p class="subtitle">Cliquez pour explorer — survolez pour l'effet 3D</p>
+      <div class="grid-games" id="gamesGrid"></div>
+    </div>
+  </section>
+
+  <!-- 7 Vidéos -->
+  <section class="slide" data-slide="7" data-fragments="0"
+    data-notes="137 vidéos CDN JW. Faites défiler les collections.">
+    <div class="slide-inner">
+      <h2>Médiathèque — 137 vidéos</h2>
+      <div style="display:flex; gap:1rem; margin-top:1rem; flex-wrap:wrap">
+        <div style="flex:1; min-width:200px" id="videoList" class="stagger"></div>
+        <div class="panel" style="flex:1; min-width:200px" id="videoDetail"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 Étude -->
+  <section class="slide" data-slide="8" data-fragments="0"
+    data-notes="Cliquez S1 à S4 — animation du panneau.">
+    <div class="slide-inner">
+      <h2>Étude personnelle</h2>
+      <p class="subtitle">23 thèmes · 48 articles · 5 parcours guidés</p>
+      <div class="tabs" id="weekTabs"></div>
+      <div class="panel" id="weekPanel"></div>
+    </div>
+  </section>
+
+  <!-- 9 Texte du jour + mini quiz -->
+  <section class="slide" data-slide="9" data-fragments="0"
+    data-notes="Mini quiz interactif + questions de méditation. Faites répondre l'auditoire.">
+    <div class="slide-inner">
+      <h2>Texte du jour</h2>
+      <div class="quote" style="margin-top:0.75rem">« Je viens vers toi au nom de Jéhovah des armées » — 1 Sam. 17:45</div>
+      <p style="margin-top:1rem; font-size:0.88rem; color:var(--text-muted)">Mini quiz — choisissez la bonne réponse :</p>
+      <p style="margin-top:0.5rem; font-weight:600">Selon le commentaire, sur quoi David fixait-il son attention ?</p>
+      <div id="miniQuiz"></div>
+      <div id="dtQuestions" style="margin-top:1rem"></div>
+    </div>
+  </section>
+
+  <!-- 10 Langues -->
+  <section class="slide" data-slide="10" data-fragments="0"
+    data-notes="Cliquez les drapeaux — phrase animée.">
+    <div class="slide-inner">
+      <h2>Langues — prédication</h2>
+      <div class="grid-3" id="langGrid"></div>
+      <div class="panel hidden" id="langPanel" style="margin-top:1rem"></div>
+    </div>
+  </section>
+
+  <!-- 11 Profil animé -->
+  <section class="slide" data-slide="11" data-fragments="0"
+    data-notes="Cliquez les étapes 1 à 5 — barre de progression se remplit.">
+    <div class="slide-inner">
+      <h2>Personnalisation</h2>
+      <div class="xp-bar-wrap" style="margin-top:0.75rem"><div class="xp-bar" id="profileBar" style="width:0%"></div></div>
+      <div class="chips" id="profileChips"></div>
+      <div class="panel hidden" id="profilePanel" style="margin-top:1rem"></div>
+    </div>
+  </section>
+
+  <!-- 12 Progression interactive -->
+  <section class="slide" data-slide="12" data-fragments="0"
+    data-notes="Cliquez « Gagner de l'XP » et débloquez les badges !">
+    <div class="slide-inner">
+      <h2>Progression & motivation</h2>
+      <div class="xp-demo">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <span>Niveau <strong id="xpLevel">1</strong></span>
+          <span class="accent"><strong id="xpVal">0</strong> XP</span>
+        </div>
+        <div class="xp-bar-wrap"><div class="xp-bar" id="xpBar"></div></div>
+        <button class="btn btn-primary" id="btnXp" style="margin-top:0.85rem; width:100%">🎯 Gagner de l'XP (+80)</button>
+      </div>
+      <p style="margin-top:1rem; font-size:0.82rem; color:var(--text-muted)">Cliquez les badges pour les débloquer :</p>
+      <div class="badge-row" id="badgeRow"></div>
+      <p style="margin-top:1rem; font-size:0.82rem; color:var(--text-muted)">Mini-jeu mémoire — trouvez les paires :</p>
+      <div class="memory-grid" id="memoryGrid"></div>
+    </div>
+  </section>
+
+  <!-- 13 Conformité -->
+  <section class="slide" data-slide="13" data-fragments="0"
+    data-notes="Cliquez chaque source — coche animée.">
+    <div class="slide-inner">
+      <h2>Conformité & sécurité</h2>
+      <div id="complianceList" style="margin-top:1rem; display:flex; flex-direction:column; gap:0.5rem"></div>
+      <div class="notice"><strong>Initiative personnelle</strong> — pas d'approbation officielle. Gratuit, sans pub, pas de chat.</div>
+    </div>
+  </section>
+
+  <!-- 14 Démo phone -->
+  <section class="slide" data-slide="14" data-fragments="0"
+    data-notes="Montrez le téléphone ou ouvrez jwgames.netlify.app.">
+    <div class="slide-inner center">
+      <h2>Démonstration live</h2>
+      <div class="phone-mock">
+        <div class="phone-screen">
+          <div class="phone-pulse accent"></div>
+          <div class="phone-pulse" style="width:60%"></div>
+          <div class="phone-pulse" style="width:80%"></div>
+          <div class="phone-pulse" style="width:45%"></div>
+          <p style="font-size:0.65rem; color:var(--accent); margin-top:0.75rem; font-weight:700">JW Games</p>
+        </div>
+      </div>
+      <a class="link-demo" href="https://jwgames.netlify.app" target="_blank" rel="noopener">jwgames.netlify.app ↗</a>
+    </div>
+  </section>
+
+  <!-- 15 Transmission -->
+  <section class="slide" data-slide="15" data-fragments="0"
+    data-notes="Options A/B/C — proposition humble.">
+    <div class="slide-inner">
+      <h2>Proposition</h2>
+      <div id="transOptions" style="margin-top:1rem; display:flex; flex-direction:column; gap:0.65rem"></div>
+    </div>
+  </section>
+
+  <!-- 16 Conclusion -->
+  <section class="slide" data-slide="16" data-fragments="2"
+    data-notes="Terminez avec sincérité. Merci.">
+    <div class="slide-inner center">
+      <div style="font-size:3rem; animation: pulseGlow 2s ease infinite; display:inline-block; border-radius:50%; padding:0.5rem">❤️</div>
+      <h2 style="margin-top:1rem">Je l'ai construit pour eux</h2>
+      <p class="lead fragment f-visible" data-f="0">Pour ce jeune qui doute. Cette adolescente qui s'ennuie en lisant. Ce parent qui cherche un outil sûr.</p>
+      <p class="accent fragment f-hidden" data-f="1" style="font-size:1.15rem; font-weight:700; margin-top:1.25rem">Si un seul jeune ouvre sa Bible avec un sourire — tout en aura valu la peine.</p>
+      <p class="fragment f-hidden" data-f="2" style="margin-top:1.5rem; color:var(--text-muted)">Merci pour votre attention — Alfred Gibeau-Ahoussinou</p>
+    </div>
+  </section>
+
+</div>
+
+<p class="hint swipe-hint">← → Espace · Glisser · O vue · F plein écran · N notes · Cliquez partout pour interagir</p>
+
+<div class="controls">
+  <button id="btnPrev">←</button>
+  <div class="dots" id="dots"></div>
+  <div style="display:flex; gap:0.35rem; align-items:center">
+    <button id="btnNotes" title="N">N</button>
+    <button id="btnOverview" title="O">O</button>
+    <button id="btnFullscreen" title="F">⛶</button>
+    <button class="btn-next" id="btnNext">Suivant →</button>
+  </div>
+</div>
+
+<div class="overview" id="overview">
+  <div style="display:flex; justify-content:space-between; align-items:center">
+    <h2>Vue d'ensemble</h2>
+    <button class="btn btn-ghost" id="btnCloseOverview">✕</button>
+  </div>
+  <div class="overview-grid" id="overviewGrid"></div>
+</div>
+
+<div class="notes" id="notesPanel"><strong>Note :</strong> <span id="notesText"></span></div>
+
+<script>
+(function () {
+  const SLIDES = [...document.querySelectorAll(".slide")];
+  const TOTAL = SLIDES.length;
+  const TITLES = ["Titre","Pourquoi","Constat","Question","Pont","Chiffres","15 jeux","Vidéos","Étude","Texte du jour","Langues","Profil","XP & Mémoire","Conformité","Démo","Proposition","Conclusion"];
+
+  let current = 0, fragment = 0, started = false, dir = 1;
+  let xp = 0, level = 1, gamesExplored = 0, constatSolved = 0;
+
+  /* ─── Particules fond ─── */
+  const bgC = document.getElementById("bgCanvas");
+  const fxC = document.getElementById("fxCanvas");
+  const bgCtx = bgC.getContext("2d");
+  const fxCtx = fxC.getContext("2d");
+  let particles = [], confetti = [], mx = 0, my = 0;
+
+  function resizeCanvas() {
+    [bgC, fxC].forEach(c => { c.width = innerWidth; c.height = innerHeight; });
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+  document.addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
+
+  for (let i = 0; i < 55; i++) {
+    particles.push({
+      x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+      r: Math.random() * 2 + 0.5, vx: (Math.random() - 0.5) * 0.35, vy: (Math.random() - 0.5) * 0.35,
+      a: Math.random() * 0.35 + 0.08
+    });
+  }
+
+  function burstConfetti(x, y, n = 80) {
+    for (let i = 0; i < n; i++) {
+      confetti.push({
+        x: x ?? innerWidth / 2, y: y ?? innerHeight / 2,
+        vx: (Math.random() - 0.5) * 14, vy: (Math.random() - 0.5) * 14 - 4,
+        r: Math.random() * 6 + 3, rot: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 12,
+        color: ["#00b8b8","#2dd4d4","#6ee7a8","#fff","#fcd34d"][Math.floor(Math.random()*5)],
+        life: 1
+      });
+    }
+  }
+
+  function animLoop() {
+    bgCtx.clearRect(0, 0, bgC.width, bgC.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = bgC.width; if (p.x > bgC.width) p.x = 0;
+      if (p.y < 0) p.y = bgC.height; if (p.y > bgC.height) p.y = 0;
+      const dist = Math.hypot(p.x - mx, p.y - my);
+      const boost = dist < 120 ? (120 - dist) / 120 * 0.8 : 0;
+      bgCtx.beginPath();
+      bgCtx.arc(p.x, p.y, p.r + boost, 0, Math.PI * 2);
+      bgCtx.fillStyle = `rgba(0,184,184,${p.a + boost * 0.3})`;
+      bgCtx.fill();
+    });
+
+    fxCtx.clearRect(0, 0, fxC.width, fxC.height);
+    confetti = confetti.filter(c => c.life > 0);
+    confetti.forEach(c => {
+      c.x += c.vx; c.y += c.vy; c.vy += 0.25; c.rot += c.vr; c.life -= 0.012;
+      fxCtx.save();
+      fxCtx.translate(c.x, c.y);
+      fxCtx.rotate(c.rot * Math.PI / 180);
+      fxCtx.globalAlpha = c.life;
+      fxCtx.fillStyle = c.color;
+      fxCtx.fillRect(-c.r/2, -c.r/2, c.r, c.r * 0.6);
+      fxCtx.restore();
+    });
+    requestAnimationFrame(animLoop);
+  }
+  animLoop();
+
+  /* ─── Ripple ─── */
+  document.addEventListener("click", e => {
+    if (e.target.closest(".controls, .overview, a")) return;
+    const r = document.createElement("span");
+    r.className = "ripple";
+    const rect = e.target.closest(".btn, .card, .tab, .quiz-opt")?.getBoundingClientRect();
+    if (rect) {
+      r.style.left = (e.clientX - rect.left) + "px";
+      r.style.top = (e.clientY - rect.top) + "px";
+      e.target.closest(".btn, .card, .tab, .quiz-opt")?.appendChild(r);
+      setTimeout(() => r.remove(), 600);
+    }
+  });
+
+  /* ─── Card glow follow mouse ─── */
+  document.addEventListener("mousemove", e => {
+    document.querySelectorAll(".card:hover").forEach(card => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", ((e.clientX - r.left) / r.width * 100) + "%");
+      card.style.setProperty("--my", ((e.clientY - r.top) / r.height * 100) + "%");
+    });
+  });
+
+  /* ─── Data ─── */
+  const constatData = [
+    ["Lecture en surface","Articles « trop longs »","Articles découpés + parcours 4 sem."],
+    ["Vidéos zappées","Message non ancré","Mini-quiz après visionnage + XP"],
+    ["Jeux & réseaux","Temps spirituel en concurrence","Badges, séries, format jeu natif"]
+  ];
+  const stats = [[15,"Jeux"],[137,"Vidéos"],[48,"Articles"],[8,"Langues"],[381,"Phrases"],[23,"Thèmes"]];
+  const games = [
+    ["🎬","Vidéo Quiz","Valide le visionnage"],["✅","Vrai/Faux","50 affirmations"],["📅","Ordre","Chronologie biblique"],
+    ["🔤","Mots","Puzzle"],["✍️","Versets","TMON active"],["🃏","Cartes","Mémoire visuelle"],
+    ["🕵️","Undercover","3–12 joueurs"],["📖","Quiz","75 questions"],["⚡","Rapidité","Chrono"],
+    ["🧠","Mémoire","Paires"],["🎯","Thèmes","8 sujets"],["👥","Équipe","2 équipes"],
+    ["💡","Devinettes","24 énigmes"],["📚","Livres","Canon"],["🔥","Quotidien","4 missions"]
+  ];
+  const videos = [["BJF",24],["Jeunes Spiritualité",20],["Chansons BJF",20],["Jeunes Social",16],["Familles",12],["GNJ",9]];
+  const weeks = [
+    ["Fondations",["La prière","Le Royaume","Prier efficacement"]],
+    ["Bonne nouvelle",["Qui est Jésus ?","Pourquoi prêcher ?","Royaume"]],
+    ["Vie quotidienne",["Confiance","Famille","Intégrité"]],
+    ["Approfondir",["Résurrection","Adoration","Étude"]]
+  ];
+  const langs = [["🇬🇧","Anglais","Hello! We're sharing good news from the Bible."],["🇪🇸","Espagnol","¡Hola! Compartimos buenas noticias de la Biblia."],["🇰🇷","Coréen","안녕하세요! 성경의 좋은 소식을 전합니다."],["🇸🇦","Arabe","مرحبًا! نشارك أخبارًا سارة من الكتاب المقدس."]];
+  const badges = ["Premier pas","Apprenti","Sans faute","Assidu","Fidèle","Mémoire","Éclair","Érudit","Lettré","Détective"];
+  const compliance = [["JW.org / CDN","Vidéos & images"],["WOL","Texte du jour"],["TMON","Tous les versets"],["Publications","Articles d'étude"]];
+  const trans = [["A","Adoption officielle","Dépôt, domaine, doc, accompagnement"],["B","Usage interne","Infrastructure org."],["C","Retour","Recommandations"]];
+  const memPairs = ["📖","📖","🙏","🙏","⭐","⭐","❤️","❤️"];
+
+  /* ─── Build UI ─── */
+  constatData.forEach((d, i) => {
+    const b = document.createElement("button");
+    b.className = "card";
+    b.innerHTML = `<p class="accent" style="font-size:0.65rem;text-transform:uppercase;font-weight:700">Problème</p><h3>${d[0]}</h3><p>${d[1]}</p><p class="solution hidden">→ ${d[2]}</p>`;
+    b.onclick = () => {
+      if (!b.classList.contains("selected")) {
+        constatSolved++;
+        document.getElementById("constatScore").textContent = `(${constatSolved}/3 résolus)`;
+        if (constatSolved === 3) { burstConfetti(); showPop("+3 ✓"); }
+      }
+      b.classList.toggle("selected");
+      b.querySelector(".solution").classList.toggle("hidden");
+      b.classList.add("flipped");
+    };
+    document.getElementById("constatCards").appendChild(b);
+  });
+
+  const gamesGrid = document.getElementById("gamesGrid");
+  games.forEach(g => {
+    const b = document.createElement("button");
+    b.className = "card";
+    b.innerHTML = `<span class="icon">${g[0]}</span><h3>${g[1]}</h3><p class="desc">${g[2]}</p>`;
+    b.onclick = () => {
+      gamesGrid.querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      b.classList.add("selected", "flipped");
+      if (!b.dataset.seen) { b.dataset.seen = "1"; gamesExplored++; document.getElementById("gameCount").textContent = `(${gamesExplored}/15 explorés)`; }
+    };
+    gamesGrid.appendChild(b);
+  });
+
+  let vidIdx = 0;
+  const videoList = document.getElementById("videoList");
+  const videoDetail = document.getElementById("videoDetail");
+  function renderVid() {
+    videoDetail.classList.add("swap");
+    videoDetail.innerHTML = `<p style="font-size:2.8rem;font-weight:800;color:var(--accent)">${videos[vidIdx][1]}</p><p style="font-weight:600;margin-top:0.35rem">${videos[vidIdx][0]}</p><ul class="check"><li>Sous-titres JW</li><li>Mini-quiz</li><li>+25 XP</li></ul>`;
+    setTimeout(() => videoDetail.classList.remove("swap"), 400);
+  }
+  videos.forEach((v, i) => {
+    const b = document.createElement("button");
+    b.className = "card" + (i ? "" : " selected");
+    b.style.display = "flex"; b.style.justifyContent = "space-between"; b.style.alignItems = "center";
+    b.innerHTML = `<span>${v[0]}</span><span style="background:rgba(255,255,255,0.1);padding:0.15rem 0.5rem;border-radius:99px;font-size:0.72rem">${v[1]}</span>`;
+    b.onclick = () => { vidIdx = i; videoList.querySelectorAll(".card").forEach(c => c.classList.remove("selected")); b.classList.add("selected"); renderVid(); };
+    videoList.appendChild(b);
+  });
+  renderVid();
+
+  let weekIdx = 0;
+  const weekTabs = document.getElementById("weekTabs");
+  const weekPanel = document.getElementById("weekPanel");
+  function renderWeek() {
+    weekPanel.classList.add("swap");
+    weekPanel.innerHTML = `<p style="font-weight:700;font-size:1.05rem">${weeks[weekIdx][0]}</p><ul class="check">${weeks[weekIdx][1].map(x => `<li>${x}</li>`).join("")}</ul>`;
+    setTimeout(() => weekPanel.classList.remove("swap"), 400);
+  }
+  weeks.forEach((w, i) => {
+    const b = document.createElement("button");
+    b.className = "tab" + (i ? "" : " active");
+    b.textContent = "S" + (i + 1);
+    b.onclick = () => { weekIdx = i; weekTabs.querySelectorAll(".tab").forEach(t => t.classList.remove("active")); b.classList.add("active"); renderWeek(); };
+    weekTabs.appendChild(b);
+  });
+  renderWeek();
+
+  const miniQuiz = document.getElementById("miniQuiz");
+  ["Les provocations de Goliath","Jéhovah et sa fidélité","La taille du géant"].forEach((opt, i) => {
+    const b = document.createElement("button");
+    b.className = "quiz-opt";
+    b.textContent = opt;
+    b.onclick = () => {
+      miniQuiz.querySelectorAll(".quiz-opt").forEach(o => o.disabled = true);
+      if (i === 1) { b.classList.add("correct"); showPop("+10 XP"); burstConfetti(innerWidth/2, innerHeight/2, 40); }
+      else b.classList.add("wrong");
+    };
+    miniQuiz.appendChild(b);
+  });
+
+  ["Comment appliquer cette leçon aujourd'hui ?","Sur quoi fixer votre attention ?","Que retenir pour votre foi ?"].forEach((q, i) => {
+    const b = document.createElement("button");
+    b.className = "card"; b.style.marginBottom = "0.45rem";
+    b.innerHTML = `<span style="color:var(--text-dim)">Question ${i+1} — cliquer</span>`;
+    b.onclick = () => { b.innerHTML = `<span class="accent" style="font-weight:600">Q${i+1}.</span> ${q}`; b.classList.add("selected","flipped"); };
+    document.getElementById("dtQuestions").appendChild(b);
+  });
+
+  const langPanel = document.getElementById("langPanel");
+  langs.forEach(l => {
+    const b = document.createElement("button");
+    b.className = "card center";
+    b.innerHTML = `<span style="font-size:2rem">${l[0]}</span><h3>${l[1]}</h3>`;
+    b.onclick = () => {
+      document.getElementById("langGrid").querySelectorAll(".card").forEach(c => c.classList.remove("selected"));
+      b.classList.add("selected");
+      langPanel.classList.remove("hidden");
+      langPanel.classList.add("swap");
+      langPanel.innerHTML = `<p style="font-size:0.72rem;color:var(--text-dim)">Phrase</p><p style="font-size:1.05rem;margin-top:0.35rem">${l[2]}</p>`;
+    };
+    document.getElementById("langGrid").appendChild(b);
+  });
+
+  const profileSteps = [["Prénom","Léa"],["Âge","13–17"],["Objectif","Étude+jeux"],["Niveau","Intermédiaire"],["Résultat","Accueil personnalisé !"]];
+  profileSteps.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = (i+1) + ". " + s[0];
+    b.onclick = () => {
+      document.getElementById("profileBar").style.width = ((i+1)/5*100) + "%";
+      document.getElementById("profileChips").querySelectorAll(".chip").forEach((c,j) => c.classList.toggle("done", j <= i));
+      const p = document.getElementById("profilePanel");
+      p.classList.remove("hidden"); p.classList.add("swap");
+      p.innerHTML = `<p style="color:var(--text-muted)">${s[0]}</p><p style="font-size:1.4rem;font-weight:700;color:var(--accent);margin-top:0.25rem">${s[1]}</p>`;
+      if (i === 4) burstConfetti(0,0,50);
+    };
+    document.getElementById("profileChips").appendChild(b);
+  });
+
+  badges.forEach(b => {
+    const el = document.createElement("button");
+    el.className = "badge"; el.textContent = b;
+    el.onclick = () => { el.classList.add("unlocked"); showPop("🏆"); };
+    document.getElementById("badgeRow").appendChild(el);
+  });
+
+  let memOpen = [], memMatched = 0;
+  const shuffled = [...memPairs].sort(() => Math.random() - 0.5);
+  shuffled.forEach((emoji, i) => {
+    const d = document.createElement("div");
+    d.className = "mem-card";
+    d.innerHTML = `<div class="back">?</div><div class="front">${emoji}</div>`;
+    d.onclick = () => {
+      if (d.classList.contains("open") || d.classList.contains("match") || memOpen.length >= 2) return;
+      d.classList.add("open");
+      memOpen.push({ el: d, emoji });
+      if (memOpen.length === 2) {
+        const [a, b] = memOpen;
+        if (a.emoji === b.emoji) {
+          a.el.classList.add("match"); b.el.classList.add("match");
+          memMatched++;
+          if (memMatched === 4) { showPop("Mémoire !"); burstConfetti(0,0,60); }
+        } else setTimeout(() => { a.el.classList.remove("open"); b.el.classList.remove("open"); }, 700);
+        memOpen = [];
+      }
+    };
+    document.getElementById("memoryGrid").appendChild(d);
+  });
+
+  compliance.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "card";
+    b.style.display = "flex"; b.style.justifyContent = "space-between"; b.style.alignItems = "center";
+    b.innerHTML = `<span class="accent">${c[0]}</span><span id="c-${c[0]}" style="font-size:0.85rem;color:var(--text-muted)">${c[1]}</span>`;
+    b.onclick = () => { b.classList.add("selected"); document.getElementById("c-"+c[0]).innerHTML = "✓ Validé"; document.getElementById("c-"+c[0]).style.color = "var(--success)"; };
+    document.getElementById("complianceList").appendChild(b);
+  });
+
+  trans.forEach(t => {
+    const b = document.createElement("button");
+    b.className = "card";
+    b.innerHTML = `<span class="accent" style="font-size:0.78rem">Option ${t[0]}</span><h3>${t[1]}</h3><p class="detail hidden" style="margin-top:0.35rem">${t[2]}</p>`;
+    b.onclick = () => {
+      document.getElementById("transOptions").querySelectorAll(".card").forEach(c => { c.classList.remove("selected"); c.querySelector(".detail").classList.add("hidden"); });
+      b.classList.add("selected"); b.querySelector(".detail").classList.remove("hidden");
+    };
+    document.getElementById("transOptions").appendChild(b);
+  });
+
+  const dots = document.getElementById("dots");
+  const overviewGrid = document.getElementById("overviewGrid");
+  TITLES.forEach((t, i) => {
+    const d = document.createElement("button"); d.className = "dot" + (i ? "" : " active");
+    d.onclick = () => goTo(i, i > current ? 1 : -1);
+    dots.appendChild(d);
+    const o = document.createElement("button"); o.className = "overview-item";
+    o.innerHTML = `<span>#${i+1}</span><p>${t}</p>`;
+    o.onclick = () => { goTo(i); closeOverview(); };
+    overviewGrid.appendChild(o);
+  });
+
+  /* ─── Typewriter ─── */
+  const twText = "L'énergie qu'ils mettent à jouer servait à ancrer la Bible dans leur cœur ?";
+  let twIdx = 0, twTimer = null;
+  function runTypewriter() {
+    const el = document.getElementById("typewriter");
+    el.innerHTML = ""; twIdx = 0;
+    clearInterval(twTimer);
+    twTimer = setInterval(() => {
+      if (twIdx >= twText.length) { clearInterval(twTimer); el.classList.add("typewriter"); return; }
+      const ch = twText[twIdx++];
+      const isKey = ["jouer","Bible","cœur"].some(w => twText.slice(twIdx-1).startsWith(w) || twText.slice(0,twIdx).endsWith(w));
+      el.innerHTML = twText.slice(0, twIdx).replace(/jouer/g,'<span class="accent word-pop">jouer</span>').replace(/Bible/g,'<span class="accent word-pop">Bible</span>').replace(/cœur/g,'<span class="accent word-pop">cœur</span>');
+    }, 38);
+  }
+
+  /* ─── Bridge ─── */
+  document.getElementById("btnBridge").onclick = function () {
+    this.disabled = true;
+    document.getElementById("bridgeGlow").classList.add("animate");
+    const dot = document.getElementById("bridgeDot");
+    dot.classList.add("run");
+    document.getElementById("nodeGame").classList.add("lit");
+    setTimeout(() => document.getElementById("nodeBible").classList.add("lit"), 1600);
+    setTimeout(() => { fragment = 2; updateFragments(); burstConfetti(0,0,50); }, 2000);
+  };
+
+  /* ─── Stats ─── */
+  document.getElementById("btnStats").onclick = function () {
+    this.classList.add("hidden");
+    const grid = document.getElementById("statGrid");
+    grid.classList.remove("hidden");
+    burstConfetti();
+    stats.forEach((s, i) => {
+      const d = document.createElement("div");
+      d.className = "stat";
+      d.innerHTML = `<div class="num">0</div><div class="lbl">${s[1]}</div>`;
+      grid.appendChild(d);
+      setTimeout(() => {
+        d.classList.add("show");
+        const num = d.querySelector(".num");
+        const t0 = performance.now();
+        const anim = now => {
+          const p = Math.min((now - t0) / 1000, 1);
+          num.textContent = Math.round((1 - Math.pow(1-p, 4)) * s[0]);
+          if (p < 1) requestAnimationFrame(anim);
+        };
+        requestAnimationFrame(anim);
+      }, i * 100);
+    });
+  };
+
+  /* ─── XP ─── */
+  document.getElementById("btnXp").onclick = function () {
+    xp += 80;
+    document.getElementById("xpVal").textContent = xp;
+    const pct = (xp % 500) / 500 * 100;
+    document.getElementById("xpBar").style.width = pct + "%";
+    if (xp >= level * 500) { level++; document.getElementById("xpLevel").textContent = level; showPop("Niveau " + level + " !"); burstConfetti(0,0,50); }
+    else showPop("+80 XP");
+    this.style.animation = "shake 0.3s ease";
+    setTimeout(() => this.style.animation = "", 300);
+  };
+
+  function showPop(txt) {
+    const p = document.getElementById("scorePop");
+    p.textContent = txt; p.classList.remove("show");
+    void p.offsetWidth; p.classList.add("show");
+    setTimeout(() => p.classList.remove("show"), 900);
+  }
+
+  document.getElementById("btnStart").onclick = () => { started = true; burstConfetti(); next(); };
+
+  /* ─── Nav ─── */
+  function maxFrag() { return +(SLIDES[current].dataset.fragments || 0); }
+
+  function updateFragments() {
+    SLIDES[current].querySelectorAll(".fragment").forEach(el => {
+      const f = +(el.dataset.f || 0);
+      el.classList.toggle("f-hidden", f > fragment);
+      el.classList.toggle("f-visible", f <= fragment);
+    });
+  }
+
+  function onSlideEnter(n) {
+    if (n === 3) runTypewriter();
+    if (n === 0) document.getElementById("logoOrbit").style.animation = "float 3s ease infinite";
+  }
+
+  function goTo(n, direction) {
+    dir = direction ?? (n > current ? 1 : -1);
+    const prev = SLIDES[current];
+    prev.classList.remove("active");
+    prev.classList.add(dir > 0 ? "exit-left" : "exit-right");
+    setTimeout(() => prev.classList.remove("exit-left", "exit-right"), 450);
+
+    current = Math.max(0, Math.min(n, TOTAL - 1));
+    fragment = 0;
+    SLIDES[current].classList.add("active");
+    dots.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === current));
+    overviewGrid.querySelectorAll(".overview-item").forEach((o, i) => o.classList.toggle("current", i === current));
+    document.getElementById("progressBar").style.width = ((current + 1) / TOTAL * 100) + "%";
+    document.getElementById("notesText").textContent = SLIDES[current].dataset.notes || "";
+    updateFragments();
+    onSlideEnter(current);
+    document.getElementById("btnPrev").disabled = current === 0;
+  }
+
+  function next() {
+    if (current === 0 && !started) return;
+    if (fragment < maxFrag()) { fragment++; updateFragments(); return; }
+    if (current < TOTAL - 1) goTo(current + 1, 1);
+  }
+  function prev() {
+    if (fragment > 0) { fragment--; updateFragments(); return; }
+    if (current > 0) { goTo(current - 1, -1); fragment = maxFrag(); updateFragments(); }
+  }
+
+  function openOverview() { document.getElementById("overview").classList.add("open"); }
+  function closeOverview() { document.getElementById("overview").classList.remove("open"); }
+
+  document.getElementById("btnNext").onclick = next;
+  document.getElementById("btnPrev").onclick = prev;
+  document.getElementById("btnOverview").onclick = openOverview;
+  document.getElementById("btnCloseOverview").onclick = closeOverview;
+  document.getElementById("btnFullscreen").onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  document.getElementById("btnNotes").onclick = () => document.getElementById("notesPanel").classList.toggle("open");
+
+  document.addEventListener("keydown", e => {
+    if (document.getElementById("overview").classList.contains("open")) { if (e.key === "Escape") closeOverview(); return; }
+    if (["ArrowRight"," ","PageDown"].includes(e.key)) { e.preventDefault(); next(); }
+    if (["ArrowLeft","PageUp"].includes(e.key)) { e.preventDefault(); prev(); }
+    if (e.key === "Home") goTo(0);
+    if (e.key === "End") goTo(TOTAL - 1);
+    if (e.key === "o" || e.key === "O") openOverview();
+    if (e.key === "f" || e.key === "F") document.getElementById("btnFullscreen").click();
+    if (e.key === "n" || e.key === "N") document.getElementById("btnNotes").click();
+  });
+
+  /* Swipe */
+  let tx = 0;
+  document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 60) dx < 0 ? next() : prev();
+  }, { passive: true });
+
+  goTo(0);
+})();
+</script>
+</body>
+</html>

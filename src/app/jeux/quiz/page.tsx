@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { GameShell, GameResults } from "@/components/layout/GameShell";
 import { QuizGame } from "@/components/game/QuizGame";
 import { Button } from "@/components/ui/Button";
@@ -10,21 +10,47 @@ import { GameStartMenu } from "@/components/game/shared/GameStartMenu";
 import { SAMPLE_QUIZ, getQuizByDifficulty, getQuizCount } from "@/data/sample-quiz";
 import { DIFFICULTY_LABELS } from "@/lib/constants";
 import { calcXp, getAccuracyLabel } from "@/lib/daily-challenges";
+import {
+  defaultDifficultyForBibleLevel,
+  filterQuestionsByDifficulties,
+  getRecommendedQuizDifficulties,
+} from "@/lib/quiz-personalization";
+import { DEFAULT_PREFERENCES } from "@/lib/user-preferences";
 import { useUserStore } from "@/stores/user-store";
 import type { DifficultyLevel } from "@/types/content";
 
 type Phase = "menu" | "playing" | "results";
 
+const ALL_DIFFICULTIES: DifficultyLevel[] = ["facile", "moyen", "difficile", "expert"];
+
 export default function QuizPage() {
+  const preferences = useUserStore((s) => s.profile?.preferences) ?? DEFAULT_PREFERENCES;
+  const recommended = useMemo(
+    () => getRecommendedQuizDifficulties(preferences.bibleLevel),
+    [preferences.bibleLevel]
+  );
+  const defaultDifficulty = defaultDifficultyForBibleLevel(preferences.bibleLevel);
+
   const [phase, setPhase] = useState<Phase>("menu");
   const [difficulty, setDifficulty] = useState<DifficultyLevel | undefined>();
+  const [mixedMode, setMixedMode] = useState(false);
   const [results, setResults] = useState({ score: 0, total: 0, bestStreak: 0 });
   const recordGame = useUserStore((s) => s.recordGame);
   const trackDailyProgress = useUserStore((s) => s.trackDailyProgress);
   const lastEarnedBadges = useUserStore((s) => s.lastEarnedBadges);
   const clearLastBadges = useUserStore((s) => s.clearLastBadges);
 
-  const questions = difficulty ? getQuizByDifficulty(difficulty) : SAMPLE_QUIZ;
+  const questions = useMemo(() => {
+    if (mixedMode) {
+      return filterQuestionsByDifficulties(SAMPLE_QUIZ, recommended);
+    }
+    if (difficulty) {
+      return getQuizByDifficulty(difficulty);
+    }
+    return SAMPLE_QUIZ;
+  }, [mixedMode, difficulty, recommended]);
+
+  const mixedCount = filterQuestionsByDifficulties(SAMPLE_QUIZ, recommended).length;
 
   function handleComplete(score: number, total: number, meta?: { bestStreak: number }) {
     setResults({ score, total, bestStreak: meta?.bestStreak ?? 0 });
@@ -35,6 +61,8 @@ export default function QuizPage() {
 
   function handleReplay() {
     clearLastBadges();
+    setMixedMode(false);
+    setDifficulty(undefined);
     setPhase("menu");
   }
 
@@ -45,12 +73,12 @@ export default function QuizPage() {
       emoji="📖"
     >
       {phase === "menu" && (
-        <div className="space-y-6">
+        <div>
           <GameStartMenu
             emoji="📖"
             title="Testez vos connaissances"
             description="Questions à choix multiples avec explications et sources bibliques officielles."
-            stats={[{ label: "Questions", value: getQuizCount() }]}
+            stats={[{ label: "Questions", value: mixedCount }]}
             tips={[
               "Touches 1–4 ou A–D pour répondre rapidement",
               "Chaque réponse affiche une explication détaillée",
@@ -58,24 +86,28 @@ export default function QuizPage() {
             ]}
             onStart={() => {}}
             showStartButton={false}
-            className="max-w-none"
           />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {(["facile", "moyen", "difficile", "expert"] as DifficultyLevel[]).map((d) => {
+          <p>
+            Niveau adapté à votre profil — recommandé : {DIFFICULTY_LABELS[defaultDifficulty]}
+          </p>
+          <div>
+            {ALL_DIFFICULTIES.map((d) => {
               const count = getQuizByDifficulty(d).length;
+              const isRecommended = recommended.includes(d);
+              if (!isRecommended) return null;
               return (
                 <Card
                   key={d}
                   hover
                   interactive
-                  className={count === 0 ? "opacity-40 pointer-events-none" : ""}
-                  onClick={() => count > 0 && (setDifficulty(d), setPhase("playing"))}
+                  onClick={() => count > 0 && (setMixedMode(false), setDifficulty(d), setPhase("playing"))}
                 >
-                  <Badge variant={count > 0 ? "neon" : "warning"} className="mb-3">
+                  <Badge variant={count > 0 ? "neon" : "warning"}>
                     {DIFFICULTY_LABELS[d]}
+                    {d === defaultDifficulty ? " · recommandé" : ""}
                   </Badge>
-                  <p className="text-2xl font-bold text-[var(--text)]">{count}</p>
-                  <p className="text-sm text-[var(--text-muted)]">questions</p>
+                  <p>{count}</p>
+                  <p>questions</p>
                 </Card>
               );
             })}
@@ -83,13 +115,13 @@ export default function QuizPage() {
           <Button
             variant="outline"
             size="lg"
-            className="w-full sm:w-auto"
             onClick={() => {
+              setMixedMode(true);
               setDifficulty(undefined);
               setPhase("playing");
             }}
           >
-            Mode mixte — {getQuizCount()} questions
+            Mode mixte — {mixedCount} questions
           </Button>
         </div>
       )}

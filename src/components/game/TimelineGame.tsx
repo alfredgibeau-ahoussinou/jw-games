@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { motion, LayoutGroup } from "framer-motion";
+import { LayoutGroup } from "framer-motion";
 import type { TimelineSet } from "@/types/content";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { GameHud } from "@/components/game/GameHud";
-import { cn } from "@/lib/cn";
 import { ChevronUp, ChevronDown, Check, X, Lightbulb, Star, Lock } from "lucide-react";
 
 interface TimelineGameProps {
@@ -108,32 +107,32 @@ export function TimelineGame({ set, onComplete }: TimelineGameProps) {
   }, [focusedIndex, move, submitted]);
 
   return (
-    <div className="mx-auto max-w-lg">
-      <Card glow className="mb-6 text-center">
-        <p className="text-xl font-bold text-[var(--text)]">{set.title}</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">{set.description}</p>
+    <div>
+      <Card glow>
+        <p>{set.title}</p>
+        <p>{set.description}</p>
       </Card>
 
       <GameHud
         current={submitted ? set.events.length : liveCorrect}
         total={set.events.length}
-        score={submitted ? score : liveCorrect}
-        scoreLabel={submitted ? "bonnes positions" : "en place"}
-        showProgress
+        score={submitted ? score : undefined}
+        scoreLabel="bonnes positions"
+        showProgress={submitted}
         extra={
           !submitted && !hintUsed ? (
             <Button variant="outline" size="sm" onClick={useHint}>
-              <Lightbulb className="h-3.5 w-3.5" aria-hidden />
+              <Lightbulb aria-hidden />
               Indice
             </Button>
           ) : hintUsed ? (
-            <span className="text-xs text-[var(--text-muted)]">Indice utilisé</span>
+            <span>Indice utilisé</span>
           ) : null
         }
       />
 
       <LayoutGroup>
-        <div className="mb-6 space-y-3" role="list">
+        <div role="list">
           {items.map((item, i) => {
             const isCorrect =
               submitted && correctOrder[i]?.id === item.id;
@@ -142,44 +141,29 @@ export function TimelineGame({ set, onComplete }: TimelineGameProps) {
             const isFocused = focusedIndex === i && !submitted;
 
             return (
-              <motion.div
+              <div
                 key={item.id}
-                layout
                 role="listitem"
                 tabIndex={submitted ? -1 : 0}
                 onFocus={() => setFocusedIndex(i)}
                 onClick={() => !submitted && setFocusedIndex(i)}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl border p-4 transition-colors",
-                  "border-[var(--border)] bg-[var(--bg-elevated)]",
-                  isFocused && !submitted && "ring-2 ring-[var(--accent)]/50",
-                  submitted && isCorrect && "game-option--correct",
-                  submitted && isWrong && "border-[var(--danger-border)]/40 opacity-80",
-                  isLocked && "border-[var(--warning-border)]/50"
-                )}
               >
                 <span
-                  className={cn(
-                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-bold",
-                    isLocked
-                      ? "bg-[var(--warning-bg)] text-[var(--warning)]"
-                      : "bg-[var(--accent-light)] text-[var(--accent)]"
-                  )}
                 >
-                  {isLocked ? <Lock className="h-4 w-4" aria-hidden /> : i + 1}
+                  {isLocked ? <Lock aria-hidden /> : i + 1}
                 </span>
 
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium leading-snug text-[var(--text)]">{item.event}</p>
+                <div>
+                  <p>{item.event}</p>
                   {submitted && (
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+                    <p>
                       Position chronologique n° {item.yearOrder}
                     </p>
                   )}
                 </div>
 
                 {!submitted && (
-                  <div className="flex flex-col gap-1">
+                  <div>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -187,10 +171,9 @@ export function TimelineGame({ set, onComplete }: TimelineGameProps) {
                         move(i, -1);
                       }}
                       disabled={i === 0 || isLocked || (i === 1 && items[0]?.id === lockedId)}
-                      className="flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--accent-light)] hover:text-[var(--accent)] disabled:opacity-30"
                       aria-label="Monter"
                     >
-                      <ChevronUp className="h-6 w-6" />
+                      <ChevronUp />
                     </button>
                     <button
                       type="button"
@@ -203,21 +186,20 @@ export function TimelineGame({ set, onComplete }: TimelineGameProps) {
                         isLocked ||
                         (i === items.length - 2 && items[items.length - 1]?.id === lockedId)
                       }
-                      className="flex h-10 w-10 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-[var(--accent-light)] hover:text-[var(--accent)] disabled:opacity-30"
                       aria-label="Descendre"
                     >
-                      <ChevronDown className="h-6 w-6" />
+                      <ChevronDown />
                     </button>
                   </div>
                 )}
 
                 {submitted && isCorrect && (
-                  <Check className="h-5 w-5 shrink-0 text-[var(--success)]" aria-hidden />
+                  <Check aria-hidden />
                 )}
                 {submitted && isWrong && (
-                  <X className="h-5 w-5 shrink-0 text-[var(--danger)]" aria-hidden />
+                  <X aria-hidden />
                 )}
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -225,61 +207,51 @@ export function TimelineGame({ set, onComplete }: TimelineGameProps) {
 
       {!submitted ? (
         <>
-          <p className="mb-3 text-center text-xs text-[var(--text-muted)]">
+          <p>
             Utilisez ↑ ↓ pour réordonner · sélectionnez une carte puis les flèches
           </p>
-          <Button className="w-full" size="lg" onClick={submit}>
+          <Button size="lg" onClick={submit}>
             Valider l&apos;ordre
           </Button>
         </>
       ) : (
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <Card glow className="mb-4 text-center">
-            <p className="text-3xl font-bold gradient-text-gold">
+        <div>
+          <Card glow>
+            <p>
               {score}/{set.events.length}
             </p>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
+            <p>
               événements dans le bon ordre
             </p>
 
-            <div className="my-4 flex justify-center gap-1" aria-label={`${stars} étoiles sur 3`}>
+            <div aria-label={`${stars} étoiles sur 3`}>
               {[1, 2, 3].map((i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ scale: 0, rotate: -30 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: i * 0.1, type: "spring" }}
                 >
                   <Star
-                    className={cn(
-                      "h-7 w-7",
-                      i <= stars
-                        ? "fill-[var(--warning)] text-[var(--warning)]"
-                        : "text-[var(--border-strong)]"
-                    )}
                     aria-hidden
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
           </Card>
 
-          <Card className="mb-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+          <Card>
+            <p>
               Ordre chronologique correct
             </p>
-            <ol className="space-y-2">
+            <ol>
               {correctOrder.map((event, i) => (
                 <li
                   key={event.id}
-                  className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-[var(--surface-subtle)] px-3 py-2.5"
                 >
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent-light)] text-xs font-bold text-[var(--accent)]">
+                  <span>
                     {i + 1}
                   </span>
                   <div>
-                    <p className="text-sm font-medium text-[var(--text)]">{event.event}</p>
-                    <p className="text-xs text-[var(--text-muted)]">
+                    <p>{event.event}</p>
+                    <p>
                       Étape chronologique n° {event.yearOrder}
                     </p>
                   </div>
@@ -287,7 +259,7 @@ export function TimelineGame({ set, onComplete }: TimelineGameProps) {
               ))}
             </ol>
           </Card>
-        </motion.div>
+        </div>
       )}
     </div>
   );

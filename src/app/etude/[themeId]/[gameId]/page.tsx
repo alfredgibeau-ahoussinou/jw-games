@@ -1,24 +1,34 @@
-"use client";
-
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { GameShell } from "@/components/layout/GameShell";
 import { StudyGamePlayer } from "@/components/study/StudyGamePlayer";
-import { getStudyMiniGame, getStudyTheme } from "@/data/study-themes";
+import {
+  getStudyGameParams,
+  getStudyMiniGame,
+  getStudyTheme,
+} from "@/data/study-themes";
 
-export default function StudyGamePage() {
-  const params = useParams<{ themeId: string; gameId: string }>();
-  const theme = getStudyTheme(params.themeId);
-  const game = getStudyMiniGame(params.themeId, params.gameId);
+export function generateStaticParams() {
+  return getStudyGameParams();
+}
+
+export default async function StudyGamePage({
+  params,
+}: {
+  params: Promise<{ themeId: string; gameId: string }>;
+}) {
+  const { themeId, gameId } = await params;
+  const theme = getStudyTheme(themeId);
+  const game = getStudyMiniGame(themeId, gameId);
   if (!theme || !game) notFound();
 
   return (
     <GameShell
       title={game.title}
       description={`${theme.title} · étude personnelle`}
-      backHref={`/etude/${params.themeId}`}
+      backHref={`/etude/${theme.id}`}
       backLabel={theme.title}
     >
-      <StudyGamePlayer themeId={params.themeId} gameId={params.gameId} />
+      <StudyGamePlayer themeId={theme.id} gameId={game.id} />
     </GameShell>
   );
 }

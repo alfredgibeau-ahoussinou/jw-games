@@ -17,7 +17,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/video-quiz",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "vraifaux",
@@ -28,7 +27,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/vrai-faux",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "ordre",
@@ -39,7 +37,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/ordre",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "mots",
@@ -50,7 +47,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/mots",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "versets",
@@ -61,7 +57,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/versets",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "cartes",
@@ -72,7 +67,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/cartes",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "undercover",
@@ -126,8 +120,8 @@ export const GAME_MODES: GameModeConfig[] = [
   },
   {
     id: "equipe",
-    title: "Défis en équipe",
-    description: "Deux équipes s'affrontent sur des questions bibliques.",
+    title: "Quiz en équipe",
+    description: "Deux équipes alternent — questions bibliques, ambiance conviviale.",
     icon: "👥",
     color: "from-sky-500 to-sky-600",
     href: "/jeux/equipe",
@@ -154,7 +148,6 @@ export const GAME_MODES: GameModeConfig[] = [
     href: "/jeux/biblio",
     players: "solo",
     available: true,
-    tag: "Nouveau",
   },
   {
     id: "quotidien",

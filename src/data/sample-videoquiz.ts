@@ -1,7 +1,8 @@
 import type { VideoQuizItem } from "@/types/content";
+import { prepareQuizQuestions } from "@/lib/quiz-options";
 import { EXTRA_VIDEO_QUIZ } from "./extra/extra-videoquiz";
 
-export const VIDEO_QUIZ_ITEMS: VideoQuizItem[] = [
+const RAW_VIDEO_QUIZ_ITEMS: VideoQuizItem[] = [
   {
     id: "vq-01", type: "videoquiz", category: "personnages", difficulty: "facile",
     title: "Jésus — lumière du monde", description: "",
@@ -59,6 +60,8 @@ export const VIDEO_QUIZ_ITEMS: VideoQuizItem[] = [
   },
   ...EXTRA_VIDEO_QUIZ,
 ];
+
+export const VIDEO_QUIZ_ITEMS: VideoQuizItem[] = prepareQuizQuestions(RAW_VIDEO_QUIZ_ITEMS);
 
 export function getVideoQuizItems() {
   return VIDEO_QUIZ_ITEMS;

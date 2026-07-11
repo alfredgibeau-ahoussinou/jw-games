@@ -8,6 +8,15 @@ export type StudyPublicationKind =
   | "livre"
   | "brochure";
 
+export type StudyArticleBlock =
+  | { type: "p"; text: string }
+  | { type: "h2"; text: string }
+  | { type: "h3"; text: string }
+  | { type: "scripture"; text: string; ref: string }
+  | { type: "ul"; items: string[] }
+  | { type: "question"; text: string }
+  | { type: "note"; title: string; text: string };
+
 export interface StudyArticle {
   id: string;
   kind: StudyPublicationKind;
@@ -15,8 +24,10 @@ export interface StudyArticle {
   subtitle?: string;
   /** Résumé affiché sur la carte */
   excerpt: string;
-  /** Contenu complet lu sur le site */
-  body: string[];
+  /** Contenu structuré lu sur le site */
+  body: StudyArticleBlock[];
+  /** Questions de révision en fin d'article */
+  studyQuestions?: string[];
   year?: string;
   issue?: string;
   scriptureRefs?: string[];

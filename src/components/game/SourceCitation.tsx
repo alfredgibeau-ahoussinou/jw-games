@@ -9,11 +9,11 @@ interface SourceCitationProps {
 
 export function SourceCitation({ text, sources, className }: SourceCitationProps) {
   return (
-    <blockquote className={className}>
-      <p className="scripture-block">{text}</p>
-      <footer className="mt-3 flex items-center gap-2">
-        <BookOpen className="h-3.5 w-3.5 text-[var(--jw-teal-glow)]" />
-        <cite className="scripture-ref not-italic">
+    <blockquote>
+      <p>{text}</p>
+      <footer>
+        <BookOpen />
+        <cite>
           {sources.map((s) => s.reference).join(" · ")}
           {sources[0]?.bibleEdition && ` — ${sources[0].bibleEdition}`}
         </cite>

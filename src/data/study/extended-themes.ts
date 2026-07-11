@@ -654,14 +654,14 @@ export const EXTENDED_STUDY_THEMES: StudyTheme[] = [
     ],
   },
   {
-    id: "prophéties",
+    id: "propheties",
     title: "Prophéties bibliques",
     subtitle: "Des paroles qui s'accomplissent",
     description:
       "Jéhovah a annoncé à l'avance des événements majeurs. Reconnaître leur accomplissement renforce notre foi.",
     scriptureHighlight: "« Je suis le Dieu […] qui déclare la fin dès le commencement. »",
     scriptureRef: "Ésaïe 46:10",
-    articleIds: ["prophéties-wt-fil", "prophéties-livre-apocalypse"],
+    articleIds: ["propheties-wt-fil", "propheties-livre-apocalypse"],
     readings: [
       reading("pro-r1", "Pourquoi Dieu prophétise ?", [
         "Les prophéties prouvent que Jéhovah connaît l'avenir et tient ses promesses. Quand nous voyons leur accomplissement, notre confiance grandit.",
@@ -670,7 +670,7 @@ export const EXTENDED_STUDY_THEMES: StudyTheme[] = [
     ],
     miniGames: [
       {
-        id: "prophéties-quiz",
+        id: "propheties-quiz",
         title: "Prophéties et accomplissement",
         description: "5 questions",
         type: "quiz",
@@ -684,7 +684,7 @@ export const EXTENDED_STUDY_THEMES: StudyTheme[] = [
         ],
       },
       {
-        id: "prophéties-vf",
+        id: "propheties-vf",
         title: "Vrai ou faux — Prophéties",
         description: "4 affirmations",
         type: "vraifaux",
@@ -697,7 +697,7 @@ export const EXTENDED_STUDY_THEMES: StudyTheme[] = [
         ],
       },
       {
-        id: "prophéties-verset",
+        id: "propheties-verset",
         title: "Versets prophétiques",
         description: "3 versets",
         type: "verset",

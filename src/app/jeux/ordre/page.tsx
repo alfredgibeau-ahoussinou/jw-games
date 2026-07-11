@@ -52,9 +52,9 @@ export default function OrdrePage() {
       )}
 
       {phase === "pick" && (
-        <div className="space-y-4">
-          <p className="text-center text-sm text-[var(--text-muted)]">Quelle chronologie voulez-vous tester ?</p>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p>Quelle chronologie voulez-vous tester ?</p>
+          <div>
             {sets.map((s) => (
               <Card
                 key={s.id}
@@ -65,15 +65,15 @@ export default function OrdrePage() {
                   setPhase("playing");
                 }}
               >
-                <div className="mb-2 flex items-center gap-2 text-[var(--accent)]">
-                  <CalendarDays className="h-4 w-4" aria-hidden />
-                  <p className="font-bold text-[var(--text)]">{s.title}</p>
+                <div>
+                  <CalendarDays aria-hidden />
+                  <p>{s.title}</p>
                 </div>
-                <p className="text-sm text-[var(--text-muted)]">{s.events.length} événements</p>
+                <p>{s.events.length} événements</p>
               </Card>
             ))}
           </div>
-          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
+          <Button variant="outline" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

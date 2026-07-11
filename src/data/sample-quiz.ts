@@ -1,8 +1,9 @@
 import type { QuizQuestion } from "@/types/content";
+import { prepareQuizQuestions, fisherYatesShuffle } from "@/lib/quiz-options";
 import { EXTRA_QUIZ } from "./extra/extra-quiz";
 
 /** Contenu d'exemple — chaque entrée cite une source officielle vérifiable */
-export const SAMPLE_QUIZ: QuizQuestion[] = [
+const RAW_SAMPLE_QUIZ: QuizQuestion[] = [
   {
     id: "quiz-001",
     type: "quiz",
@@ -659,6 +660,8 @@ export const SAMPLE_QUIZ: QuizQuestion[] = [
   ...EXTRA_QUIZ,
 ];
 
+export const SAMPLE_QUIZ: QuizQuestion[] = prepareQuizQuestions(RAW_SAMPLE_QUIZ);
+
 export function getQuizByDifficulty(
   difficulty?: QuizQuestion["difficulty"]
 ): QuizQuestion[] {
@@ -675,6 +678,6 @@ export function getQuizCount() {
 }
 
 export function shuffleQuiz(questions: QuizQuestion[], limit?: number) {
-  const arr = [...questions].sort(() => Math.random() - 0.5);
+  const arr = fisherYatesShuffle(questions);
   return limit ? arr.slice(0, limit) : arr;
 }

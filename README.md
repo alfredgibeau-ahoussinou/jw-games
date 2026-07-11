@@ -26,7 +26,6 @@ Application web de **jeux bibliques** et **médiathèque vidéo**, basée exclus
 | Tailwind CSS 4 | Styles |
 | Zustand | État global |
 | Framer Motion | Animations |
-| Supabase | Sync optionnelle |
 | Netlify | Hébergement |
 
 ---
@@ -54,16 +53,7 @@ npm run build   # pré-cache le texte du jour + build Next.js
 npm run start
 ```
 
-### Variables d'environnement (optionnelles)
-
-Créer `.env.local` pour activer Supabase :
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=votre-cle-anonyme
-```
-
-Sans ces variables, l'application fonctionne entièrement en stockage local.
+Sans variables d'environnement supplémentaires, l'application fonctionne entièrement en stockage local (navigateur).
 
 ---
 
@@ -87,6 +77,7 @@ src/
 |----------|-------------|
 | [docs/PITCH-BETHEL.md](docs/PITCH-BETHEL.md) | Pitch de présentation au Bethel |
 | [docs/PITCH-BETHEL.pdf](docs/PITCH-BETHEL.pdf) | Version PDF du pitch |
+| [docs/presentation.html](docs/presentation.html) | **Slides interactives** (fichier autonome — double-clic pour présenter aux anciens, hors application) |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Architecture technique détaillée |
 | [docs/FIGMA-GUIDE.md](docs/FIGMA-GUIDE.md) | Guide pour recréer le design dans Figma |
 | [docs/figma/design-tokens.json](docs/figma/design-tokens.json) | Tokens design (Tokens Studio) |

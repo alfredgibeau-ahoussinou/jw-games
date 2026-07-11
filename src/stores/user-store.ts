@@ -2,16 +2,26 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { UserProfile, UserStats, Badge } from "@/types/user";
+import type { UserProfile, UserStats, Badge, UserPreferences } from "@/types/user";
 import { DEFAULT_USER_STATS, normalizeProfile, normalizeUserStats } from "@/types/user";
+import { normalizePreferences } from "@/lib/user-preferences";
 import type { GameMode } from "@/types/game";
 import type { DailyProgress } from "@/lib/db/types";
 import { emptyDailyProgress, resetDailyIfNeeded } from "@/lib/db/types";
-import { XP_PER_LEVEL, VIDEO_WATCH_XP } from "@/lib/constants";
+import { XP_PER_LEVEL } from "@/lib/constants";
 import { getDeviceId } from "@/lib/device-id";
-import { syncProfile, recordSession } from "@/lib/api";
 import { getNewBadges } from "@/lib/badges";
-import { DAILY_THRESHOLDS } from "@/lib/daily-challenges";
+import { DAILY_THRESHOLDS, getDailyTasksForUser } from "@/lib/daily-challenges";
+import {
+  normalizeStreakForToday,
+  streakAfterDailyClaim,
+} from "@/lib/streak";
+import {
+  emptyStudyProgress,
+  studyGameKey,
+  type StudyProgress,
+} from "@/lib/study-progress";
+import { getStudyPathKey } from "@/lib/study-paths";
 
 interface RecordGameOptions {
   moves?: number;
@@ -22,10 +32,16 @@ interface UserStore {
   isOnboarded: boolean;
   deviceId: string;
   dailyProgress: DailyProgress;
-  isSyncing: boolean;
+  studyProgress: StudyProgress;
   lastEarnedBadges: Badge[];
 
-  initProfile: (displayName: string) => void;
+  initProfile: (displayName: string, preferences: UserPreferences) => void;
+  updatePreferences: (preferences: UserPreferences) => void;
+  openStudyArticle: (articleId: string, themeId?: string) => void;
+  markStudyArticleRead: (articleId: string) => void;
+  markStudyGameComplete: (themeId: string, gameId: string) => void;
+  advanceStudyPathWeek: () => void;
+  setStudyPathWeek: (week: number) => void;
   addXp: (amount: number, options?: { skipSession?: boolean }) => void;
   recordGame: (
     mode: GameMode,
@@ -39,16 +55,23 @@ interface UserStore {
   resetStreak: () => void;
   trackDailyProgress: (taskId: keyof typeof DAILY_THRESHOLDS, amount?: number) => void;
   claimDailyReward: () => boolean;
+  tryClaimDailyTextQuizXp: () => boolean;
+  tryClaimVideoQuizXp: (videoId: string) => boolean;
   clearLastBadges: () => void;
   watchVideo: (videoId: string) => void;
-  syncToServer: () => Promise<void>;
-  hydrateFromServer: () => Promise<void>;
+  exportLocalData: () => string;
+  clearAllLocalData: () => void;
 }
 
-function createDefaultProfile(displayName: string, deviceId: string): UserProfile {
+function createDefaultProfile(
+  displayName: string,
+  deviceId: string,
+  preferences: UserPreferences
+): UserProfile {
   return {
     id: deviceId,
     displayName,
+    preferences: normalizePreferences(preferences),
     createdAt: new Date().toISOString(),
     level: 1,
     xp: 0,
@@ -64,24 +87,6 @@ function levelFromXp(xp: number) {
   return Math.floor(xp / XP_PER_LEVEL) + 1;
 }
 
-function profileToSyncPayload(
-  profile: UserProfile,
-  deviceId: string,
-  dailyProgress: DailyProgress
-) {
-  return {
-    deviceId,
-    displayName: profile.displayName,
-    xp: profile.xp,
-    level: profile.level,
-    streak: profile.streak,
-    totalGamesPlayed: profile.totalGamesPlayed,
-    stats: profile.stats,
-    badges: profile.badges,
-    dailyProgress,
-  };
-}
-
 export const useUserStore = create<UserStore>()(
   persist(
     (set, get) => ({
@@ -89,14 +94,101 @@ export const useUserStore = create<UserStore>()(
       isOnboarded: false,
       deviceId: "",
       dailyProgress: emptyDailyProgress(),
-      isSyncing: false,
+      studyProgress: emptyStudyProgress(),
       lastEarnedBadges: [],
 
-      initProfile: (displayName) => {
+      initProfile: (displayName, preferences) => {
         const deviceId = getDeviceId();
-        const profile = createDefaultProfile(displayName, deviceId);
-        set({ profile, isOnboarded: true, deviceId });
-        get().syncToServer();
+        const profile = createDefaultProfile(displayName, deviceId, preferences);
+        set({
+          profile,
+          isOnboarded: true,
+          deviceId,
+          studyProgress: {
+            ...emptyStudyProgress(),
+            pathStartedAt: new Date().toISOString(),
+          },
+        });
+      },
+
+      openStudyArticle: (articleId, themeId) => {
+        set((state) => ({
+          studyProgress: {
+            ...state.studyProgress,
+            lastArticleId: articleId,
+            lastThemeId: themeId ?? state.studyProgress.lastThemeId,
+            pathStartedAt: state.studyProgress.pathStartedAt ?? new Date().toISOString(),
+          },
+        }));
+      },
+
+      markStudyArticleRead: (articleId) => {
+        set((state) => {
+          const read = state.studyProgress.readArticleIds;
+          if (read.includes(articleId)) return state;
+          return {
+            studyProgress: {
+              ...state.studyProgress,
+              readArticleIds: [...read, articleId],
+            },
+          };
+        });
+      },
+
+      markStudyGameComplete: (themeId, gameId) => {
+        const key = studyGameKey(themeId, gameId);
+        set((state) => {
+          if (state.studyProgress.completedStudyGames.includes(key)) return state;
+          return {
+            studyProgress: {
+              ...state.studyProgress,
+              completedStudyGames: [...state.studyProgress.completedStudyGames, key],
+            },
+          };
+        });
+      },
+
+      advanceStudyPathWeek: () => {
+        set((state) => ({
+          studyProgress: {
+            ...state.studyProgress,
+            currentPathWeek: Math.min(4, state.studyProgress.currentPathWeek + 1),
+          },
+        }));
+      },
+
+      setStudyPathWeek: (week) => {
+        set((state) => ({
+          studyProgress: {
+            ...state.studyProgress,
+            currentPathWeek: Math.min(4, Math.max(1, week)),
+          },
+        }));
+      },
+
+      updatePreferences: (preferences) => {
+        set((state) => {
+          if (!state.profile) return state;
+          const normalized = normalizePreferences(preferences);
+          const prevKey = getStudyPathKey(state.profile.preferences);
+          const nextKey = getStudyPathKey(normalized);
+          const pathChanged = prevKey !== nextKey;
+          return {
+            profile: {
+              ...state.profile,
+              preferences: normalized,
+            },
+            ...(pathChanged
+              ? {
+                  studyProgress: {
+                    ...state.studyProgress,
+                    currentPathWeek: 1,
+                    pathStartedAt: new Date().toISOString(),
+                  },
+                }
+              : {}),
+          };
+        });
       },
 
       addXp: (amount, options) => {
@@ -114,14 +206,11 @@ export const useUserStore = create<UserStore>()(
             },
           };
         });
-        if (!options?.skipSession) get().syncToServer();
       },
 
       recordGame: (mode, score, total, xpEarned, options) => {
-        const { profile, deviceId } = get();
-        if (!profile || !deviceId) return;
-
-        let updatedProfile: UserProfile | null = null;
+        const { profile } = get();
+        if (!profile) return;
 
         set((state) => {
           if (!state.profile) return state;
@@ -167,14 +256,8 @@ export const useUserStore = create<UserStore>()(
             profile.badges = [...profile.badges, ...newBadges];
           }
 
-          updatedProfile = profile;
           return { profile, lastEarnedBadges: newBadges };
         });
-
-        if (updatedProfile) {
-          recordSession({ deviceId, mode, score, total, xpEarned }).catch(() => {});
-          get().syncToServer();
-        }
       },
 
       updateStats: (partial) =>
@@ -201,7 +284,6 @@ export const useUserStore = create<UserStore>()(
             lastEarnedBadges: newBadges,
           };
         });
-        get().syncToServer();
       },
 
       resetStreak: () => {
@@ -209,7 +291,6 @@ export const useUserStore = create<UserStore>()(
           if (!state.profile) return state;
           return { profile: { ...state.profile, streak: 0 } };
         });
-        get().syncToServer();
       },
 
       trackDailyProgress: (taskId, amount = 1) => {
@@ -224,22 +305,52 @@ export const useUserStore = create<UserStore>()(
             dailyProgress: { ...progress, counts, tasks },
           };
         });
-        get().syncToServer();
       },
 
       claimDailyReward: () => {
-        const { dailyProgress } = get();
+        const { dailyProgress, profile } = get();
         const progress = resetDailyIfNeeded(dailyProgress);
-        const allDone = (Object.keys(DAILY_THRESHOLDS) as (keyof typeof DAILY_THRESHOLDS)[]).every(
-          (t) => progress.tasks[t]
-        );
+        const tasks = getDailyTasksForUser(profile?.preferences);
+        const allDone = tasks.every((t) => progress.tasks[t.id]);
 
         if (!allDone || progress.claimed) return false;
 
         set({ dailyProgress: { ...progress, claimed: true } });
         get().addXp(100, { skipSession: true });
-        get().incrementStreak();
-        get().syncToServer();
+
+        if (profile) {
+          const { streak, lastStreakClaimDate } = streakAfterDailyClaim(
+            profile.streak,
+            profile.lastStreakClaimDate
+          );
+          set((state) => {
+            if (!state.profile) return state;
+            const updated = { ...state.profile, streak, lastStreakClaimDate };
+            const newBadges = getNewBadges(updated);
+            return {
+              profile: {
+                ...updated,
+                badges: [...updated.badges, ...newBadges],
+              },
+              lastEarnedBadges: newBadges,
+            };
+          });
+        }
+        return true;
+      },
+
+      tryClaimDailyTextQuizXp: () => {
+        const progress = resetDailyIfNeeded(get().dailyProgress);
+        if (progress.dailyTextQuizXp) return false;
+        set({ dailyProgress: { ...progress, dailyTextQuizXp: true } });
+        return true;
+      },
+
+      tryClaimVideoQuizXp: (videoId: string) => {
+        const progress = resetDailyIfNeeded(get().dailyProgress);
+        const ids = progress.videoQuizXpIds ?? [];
+        if (ids.includes(videoId)) return false;
+        set({ dailyProgress: { ...progress, videoQuizXpIds: [...ids, videoId] } });
         return true;
       },
 
@@ -252,14 +363,10 @@ export const useUserStore = create<UserStore>()(
 
         set((state) => {
           if (!state.profile) return state;
-          const newXp = state.profile.xp + VIDEO_WATCH_XP;
           return {
             profile: {
               ...state.profile,
               watchedVideos: [...(state.profile.watchedVideos ?? []), videoId],
-              xp: newXp,
-              level: levelFromXp(newXp),
-              xpToNextLevel: XP_PER_LEVEL - (newXp % XP_PER_LEVEL),
               stats: {
                 ...state.profile.stats,
                 videosWatched: (state.profile.stats.videosWatched ?? 0) + 1,
@@ -268,58 +375,49 @@ export const useUserStore = create<UserStore>()(
           };
         });
         get().trackDailyProgress("video", 1);
-        get().syncToServer();
       },
 
-      syncToServer: async () => {
-        const { profile, deviceId, dailyProgress, isSyncing } = get();
-        if (!profile || !deviceId || isSyncing) return;
-
-        set({ isSyncing: true });
-        try {
-          await syncProfile(profileToSyncPayload(profile, deviceId, dailyProgress));
-        } catch {
-          // hors-ligne
-        } finally {
-          set({ isSyncing: false });
+      exportLocalData: () => {
+        const state = get();
+        let languageProgress: unknown = {};
+        if (typeof window !== "undefined") {
+          try {
+            languageProgress = JSON.parse(
+              localStorage.getItem("jw-games-language-progress") ?? "{}"
+            );
+          } catch {
+            languageProgress = {};
+          }
         }
+        return JSON.stringify(
+          {
+            exportedAt: new Date().toISOString(),
+            notice:
+              "Export local JW Games — données stockées sur cet appareil uniquement.",
+            profile: state.profile,
+            dailyProgress: state.dailyProgress,
+            studyProgress: state.studyProgress,
+            languageProgress,
+          },
+          null,
+          2
+        );
       },
 
-      hydrateFromServer: async () => {
-        const deviceId = getDeviceId();
-        set({ deviceId });
-
-        try {
-          const res = await fetch(
-            `/api/profile?deviceId=${encodeURIComponent(deviceId)}`
-          );
-          if (!res.ok) return;
-
-          const data = await res.json();
-          const dp = resetDailyIfNeeded(data.daily_progress ?? emptyDailyProgress());
-          set({
-            isOnboarded: true,
-            dailyProgress: {
-              ...dp,
-              counts: dp.counts ?? {},
-              tasks: dp.tasks ?? {},
-            },
-            profile: normalizeProfile({
-              id: data.id,
-              displayName: data.display_name,
-              createdAt: data.created_at,
-              level: data.level,
-              xp: data.xp,
-              xpToNextLevel: XP_PER_LEVEL - (data.xp % XP_PER_LEVEL),
-              totalGamesPlayed: data.total_games_played,
-              streak: data.streak,
-              badges: data.badges ?? [],
-              stats: normalizeUserStats(data.stats),
-            }),
-          });
-        } catch {
-          // local only
+      clearAllLocalData: () => {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("jw-games-user");
+          localStorage.removeItem("jw-games-language-progress");
+          localStorage.removeItem("jw-games-device-id");
         }
+        set({
+          profile: null,
+          isOnboarded: false,
+          deviceId: getDeviceId(),
+          dailyProgress: emptyDailyProgress(),
+          studyProgress: emptyStudyProgress(),
+          lastEarnedBadges: [],
+        });
       },
     }),
     {
@@ -330,15 +428,31 @@ export const useUserStore = create<UserStore>()(
         isOnboarded: state.isOnboarded,
         deviceId: state.deviceId,
         dailyProgress: state.dailyProgress,
+        studyProgress: state.studyProgress,
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.dailyProgress) {
           state.dailyProgress = resetDailyIfNeeded(state.dailyProgress);
         }
-        if (state?.profile) {
-          state.profile = normalizeProfile(state.profile);
+        if (state?.studyProgress) {
+          state.studyProgress = { ...emptyStudyProgress(), ...state.studyProgress };
+        } else if (state) {
+          state.studyProgress = emptyStudyProgress();
         }
-        state?.hydrateFromServer();
+        if (state?.profile) {
+          const normalized = normalizeProfile({
+            ...state.profile,
+            preferences: normalizePreferences(state.profile.preferences),
+          });
+          const { streak, lastStreakClaimDate } = normalizeStreakForToday(
+            normalized.streak,
+            normalized.lastStreakClaimDate
+          );
+          state.profile = { ...normalized, streak, lastStreakClaimDate };
+        }
+        if (state && !state.deviceId) {
+          state.deviceId = getDeviceId();
+        }
       },
     }
   )

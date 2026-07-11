@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { cn } from "@/lib/cn";
 
 interface SectionProps {
   title: string;
@@ -19,14 +18,14 @@ export function Section({
   className,
 }: SectionProps) {
   return (
-    <section className={cn("section-block", className)}>
+    <section className="page-section">
       <div className="section-header">
         <div>
-          <h2 className="text-heading">{title}</h2>
-          {description && <p className="text-caption mt-1">{description}</p>}
+          <h2>{title}</h2>
+          {description && <p>{description}</p>}
         </div>
         {href && (
-          <Link href={href} className="link-primary shrink-0">
+          <Link href={href}>
             {linkLabel} →
           </Link>
         )}

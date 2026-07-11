@@ -2,276 +2,672 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JW Games — Proposition au Bethel</title>
+  <title>JW Games — Document complet — Proposition au Bethel</title>
   <style>
-  @page { size: A4; margin: 18mm 16mm; }
+  @page { size: A4; margin: 12mm 11mm; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 10.5pt;
-    line-height: 1.55;
-    color: #1a1a1a;
-    background: #fff;
-    max-width: 210mm;
-    margin: 0 auto;
-    padding: 18mm 16mm;
+    font-size: 8.6pt; line-height: 1.48; color: #1c1c1c;
+    max-width: 210mm; margin: 0 auto; padding: 12mm 11mm;
   }
+
+  /* ——— Couverture ——— */
   .cover {
-    text-align: center;
-    padding: 48mm 0 32mm;
+    text-align: center; padding: 22mm 6mm 18mm;
     page-break-after: always;
-    border-bottom: 3px solid #00b8b8;
-    margin-bottom: 8mm;
+    border-bottom: 4px solid #00b0b0;
   }
   .cover-logo {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 16px;
-    background: #050507;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #00b8b8;
-    font-size: 28pt;
-    font-weight: 800;
+    width: 80px; height: 80px; margin: 0 auto 14px; background: #050507;
+    border-radius: 18px; line-height: 80px; color: #00c4c4;
+    font-size: 28pt; font-weight: 800;
   }
-  .cover h1 {
-    font-size: 26pt;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 8px;
-    color: #050507;
+  .cover h1 { font-size: 28pt; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.6px; }
+  .cover .tagline { font-size: 11.5pt; color: #2a2a2a; max-width: 160mm; margin: 0 auto 10px; line-height: 1.5; }
+  .cover .edition { font-size: 9pt; color: #008888; font-weight: 600; margin-bottom: 16px; }
+  .cover .meta { font-size: 9pt; color: #555; line-height: 1.8; }
+  .cover .meta a { color: #008888; text-decoration: none; }
+
+  /* ——— Structure des parties ——— */
+  .part-banner {
+    background: linear-gradient(135deg, #006666 0%, #00a8a8 100%);
+    color: #fff; padding: 10px 16px; margin: 0 0 12px;
+    border-radius: 6px; page-break-before: always; page-break-after: avoid;
   }
-  .cover .tagline {
-    font-size: 13pt;
-    color: #555;
-    margin-bottom: 24px;
+  .part-banner.first { page-break-before: avoid; margin-top: 0; }
+  .part-banner .part-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.85; }
+  .part-banner h2 { font-size: 14pt; font-weight: 700; margin: 2px 0 0; border: none; color: #fff; padding: 0; }
+
+  /* ——— Titres ——— */
+  h2.section {
+    font-size: 11.5pt; font-weight: 700; color: #007777;
+    margin: 14px 0 6px; padding-bottom: 3px;
+    border-bottom: 2px solid #cce8e8; page-break-after: avoid;
   }
-  .cover .meta {
-    font-size: 10pt;
-    color: #777;
-    line-height: 1.8;
+  h3.sub {
+    font-size: 9.8pt; font-weight: 700; color: #2a2a2a;
+    margin: 10px 0 4px; page-break-after: avoid;
   }
-  .cover .meta a { color: #009999; text-decoration: none; }
-  h2 {
-    font-size: 14pt;
-    font-weight: 700;
-    color: #009999;
-    margin: 20px 0 8px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid #e0e0e0;
-    page-break-after: avoid;
+  h4.sub2 {
+    font-size: 8.8pt; font-weight: 600; color: #444;
+    margin: 7px 0 3px; page-break-after: avoid;
   }
-  h3 {
-    font-size: 11pt;
-    font-weight: 600;
-    margin: 14px 0 6px;
-    color: #333;
-    page-break-after: avoid;
-  }
-  p { margin-bottom: 8px; }
-  ul, ol { margin: 6px 0 10px 20px; }
-  li { margin-bottom: 3px; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0 14px;
-    font-size: 9.5pt;
+  p { margin-bottom: 6px; }
+  ul, ol { margin: 4px 0 8px 16px; }
+  li { margin-bottom: 2.5px; }
+  li ul { margin-top: 2px; }
+
+  /* ——— Encadrés ——— */
+  .letter {
+    background: #f8fdfd; border-left: 4px solid #00b0b0;
+    padding: 12px 16px; margin: 0 0 12px; line-height: 1.55;
     page-break-inside: avoid;
   }
-  th, td {
-    border: 1px solid #ddd;
-    padding: 6px 8px;
-    text-align: left;
-    vertical-align: top;
+  .letter p { margin-bottom: 7px; }
+  .letter .sign { margin-top: 8px; font-style: italic; color: #444; }
+
+  .summary-box {
+    background: #f0fafa; border: 1px solid #b8e0e0; border-radius: 6px;
+    padding: 11px 14px; margin: 0 0 12px; page-break-inside: avoid;
   }
-  th { background: #f4fafa; font-weight: 600; color: #006666; }
-  tr:nth-child(even) td { background: #fafafa; }
+  .summary-box h2 { font-size: 11pt; color: #007777; border: none; margin: 0 0 8px; padding: 0; }
+
   blockquote {
-    border-left: 3px solid #00b8b8;
-    padding: 8px 14px;
-    margin: 10px 0;
-    background: #f4fafa;
-    font-style: italic;
-    color: #333;
+    border-left: 3px solid #00b0b0; padding: 7px 12px; margin: 8px 0;
+    background: #f4fafa; font-style: italic; color: #333;
+    page-break-inside: avoid; font-size: 8.8pt;
+  }
+
+  .explain {
+    background: #fafafa; border: 1px solid #ddd; border-radius: 5px;
+    padding: 8px 12px; margin: 8px 0; font-size: 8.3pt; color: #444;
     page-break-inside: avoid;
   }
+  .explain strong { color: #006666; }
+
+  .highlight {
+    background: #fff8ee; border: 1px solid #e8d0a0; border-radius: 5px;
+    padding: 9px 12px; margin: 8px 0; page-break-inside: avoid;
+  }
+  .highlight strong { color: #886600; }
+
   .notice {
-    background: #fff8e6;
-    border: 1px solid #f5d78e;
-    border-radius: 6px;
-    padding: 10px 14px;
-    margin: 12px 0;
-    font-size: 9.5pt;
-    page-break-inside: avoid;
+    background: #fff8e6; border: 1px solid #e8c860; border-radius: 5px;
+    padding: 8px 11px; margin: 8px 0; font-size: 8.2pt; page-break-inside: avoid;
   }
-  .footer-note {
-    margin-top: 24px;
-    padding-top: 12px;
-    border-top: 1px solid #ddd;
-    font-size: 9.5pt;
-    color: #666;
-    text-align: center;
+
+  /* ——— Tableaux ——— */
+  table {
+    width: 100%; border-collapse: collapse; margin: 6px 0 10px;
+    font-size: 7.8pt; page-break-inside: avoid;
   }
+  th, td { border: 1px solid #bbb; padding: 4px 6px; text-align: left; vertical-align: top; }
+  th { background: #e8f6f6; font-weight: 700; color: #005555; }
+  tr:nth-child(even) td { background: #f9f9f9; }
+  td.num { text-align: center; font-weight: 600; white-space: nowrap; }
+
+  /* ——— Table des matières ——— */
+  .toc { margin: 10px 0 16px; }
+  .toc-part { font-weight: 700; color: #007777; margin: 8px 0 3px; font-size: 9pt; }
+  .toc-item { display: flex; justify-content: space-between; padding: 2px 0 2px 12px; font-size: 8.3pt; border-bottom: 1px dotted #ddd; }
+  .toc-item span:last-child { color: #888; }
+
   .page-break { page-break-before: always; }
-  @media print {
-    body { padding: 0; }
-    a { color: #009999; }
-  }
+  code { font-size: 7.5pt; background: #eee; padding: 0 3px; border-radius: 2px; }
+  .footer-note { margin-top: 14px; padding-top: 8px; border-top: 1px solid #ccc; font-size: 8pt; color: #666; text-align: center; }
+  .cols2 { columns: 2; column-gap: 12px; }
+  @media print { body { padding: 0; } }
   </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════ COUVERTURE -->
 <section class="cover">
   <div class="cover-logo">JW</div>
   <h1>JW Games</h1>
-  <p class="tagline">Jeux bibliques et médiathèque — basés sur les sources officielles</p>
+  <p class="tagline">Rapprocher les jeunes de la Bible et des publications officielles — par le jeu, la méditation et l'amour fraternel</p>
+  <p class="edition">DOCUMENT COMPLET DE PRÉSENTATION — PROPOSITION AU BETHEL<br>Édition juin 2026 — Version détaillée</p>
   <div class="meta">
-  <p><strong>Proposition de transmission au Bethel</strong></p>
-  <p>Juin 2026</p>
-  <p style="margin-top:16px">
-    Démonstration : <a href="https://jwgames.netlify.app">jwgames.netlify.app</a><br>
-    Code source : <a href="https://github.com/alfredgibeau-ahoussinou/jw-games">github.com/alfredgibeau-ahoussinou/jw-games</a>
-  </p>
+    <p><strong>Alfred Gibeau-Ahoussinou</strong></p>
+    <p style="margin-top:8px">
+      Site : <a href="https://jwgames.netlify.app">jwgames.netlify.app</a><br>
+      Code : <a href="https://github.com/alfredgibeau-ahoussinou/jw-games">github.com/alfredgibeau-ahoussinou/jw-games</a>
+    </p>
   </div>
 </section>
 
-<h2>1. Objet de ce document</h2>
-<p>Je souhaite mettre à disposition de l'organisation <strong>JW Games</strong>, une application web gratuite conçue pour aider frères, sœurs, jeunes et familles à <strong>réviser et approfondir la Bible</strong> de manière ludique, en s'appuyant <strong>exclusivement sur le contenu officiel</strong> publié sur JW.org et dans JW Library (Traduction du monde nouveau).</p>
-<p>Ce document présente la vision du projet, ses fonctionnalités, les garanties de conformité des sources, l'architecture technique et ma proposition de transmission — sans prétention commerciale ni revendication d'approbation officielle.</p>
+<!-- ═══════════════════════════════════════════════════════════ PARTIE I -->
+<div class="part-banner first">
+  <div class="part-label">Partie I</div>
+  <h2>Lettre, vision et résumé</h2>
+</div>
 
-<h2>2. Le problème que nous cherchons à résoudre</h2>
-<ul>
-  <li>Les jeunes et les familles utilisent déjà des jeux et des applications sur leurs appareils.</li>
-  <li>La révision biblique peut parfois sembler répétitive ou difficile à intégrer au quotidien.</li>
-  <li>Les ressources officielles JW.org sont riches, mais dispersées entre vidéos, articles, texte du jour et publications.</li>
-</ul>
-<p><strong>JW Games</strong> propose un espace unique, sobre et respectueux, qui <strong>canalise l'attention vers les sources officielles</strong> plutôt que de les remplacer.</p>
+<div class="letter">
+  <p><strong>Chers frères,</strong></p>
+  <p>Permettez-moi de vous parler franchement. Ce document n'est pas un catalogue technique froid. C'est le récit d'un projet né de ce que j'observe chaque semaine : des jeunes qui <strong>aiment Jéhovah</strong>, qui <strong>veulent bien faire</strong>, mais qui peinent à s'accrocher à la lecture et aux vidéos spirituelles comme leurs parents l'ont fait à leur âge.</p>
+  <p>Je ne les juge pas. Je les comprends. Ils grandissent dans un monde d'écrans, de défis, de récompenses instantanées. Leur attention est sollicitée en permanence par des applications conçues pour les retenir des heures. Et pourtant, quand on leur propose un <strong>quiz biblique</strong>, un <strong>puzzle de verset</strong>, un <strong>défi entre amis</strong> — ils s'engagent avec une énergie remarquable.</p>
+  <p><strong>JW Games est né de cette observation.</strong> Pas pour concurrencer JW.org ou JW Library — que j'utilise et respecte — mais pour créer un pont entre leur monde numérique et les trésors spirituels que l'organisation met gracieusement à notre disposition.</p>
+  <p>J'ai passé des mois à construire, tester, ajuster. Chaque fonctionnalité répond à une question : <em>est-ce qu'un jeune choisirait d'ouvrir ça par lui-même ?</em> Le texte du jour avec des questions qui disent « comment <strong>vous</strong> pouvez appliquer ». Un parcours d'étude sur quatre semaines pour ne pas se perdre dans 48 articles. Des phrases de prédication en huit langues pour oser parler à son voisin. Tout cela, gratuitement, sans publicité, sans collecter d'adresse e-mail.</p>
+  <p>Je vous présente ce projet avec humilité. Il n'a pas d'approbation officielle. Il est prêt à être transmis, audité, enrichi ou orienté selon votre sagesse.</p>
+  <p class="sign">— Alfred Gibeau-Ahoussinou</p>
+</div>
 
-<h2>3. Vision et principes directeurs</h2>
+<div class="summary-box">
+  <h2>Résumé exécutif</h2>
+  <p><strong>JW Games</strong> est une application web progressive (PWA) gratuite, installable sur téléphone, conçue pour les jeunes et les familles. Elle transforme l'accès aux sources officielles (JW.org, JW Library, bibliothèque en ligne WOL) en expérience ludique, personnalisée et respectueuse de la vie privée.</p>
+  <table>
+    <tr><th>Domaine</th><th>Chiffre</th><th>Domaine</th><th>Chiffre</th></tr>
+    <tr><td>Modes de jeu</td><td class="num">15</td><td>Vidéos officielles JW</td><td class="num">137</td></tr>
+    <tr><td>Collections vidéo</td><td class="num">11</td><td>Questions de jeu (tous types)</td><td class="num">400+</td></tr>
+    <tr><td>Thèmes d'étude</td><td class="num">23</td><td>Articles d'étude lisibles</td><td class="num">48</td></tr>
+    <tr><td>Mini-jeux d'étude</td><td class="num">69</td><td>Parcours guidés (4 sem.)</td><td class="num">5 variantes</td></tr>
+    <tr><td>Langues prédication</td><td class="num">8</td><td>Phrases de terrain</td><td class="num">381</td></tr>
+    <tr><td>Badges</td><td class="num">10</td><td>Coût utilisateur</td><td class="num">Gratuit</td></tr>
+    <tr><td>Pages de l'application</td><td class="num">27</td><td>Données confidentielles</td><td class="num">Aucune</td></tr>
+  </table>
+  <p><strong>Proposition :</strong> transmission intégrale du projet (code source, documentation, hébergement Netlify) à l'organisation, sous la direction que le Bethel jugera appropriée.</p>
+</div>
+
+<h2 class="section">Table des matières</h2>
+<div class="toc">
+  <div class="toc-part">Partie II — Pourquoi ce projet existe</div>
+  <div class="toc-item"><span>2.1 Le constat : jeunes et Parole aujourd'hui</span></div>
+  <div class="toc-item"><span>2.2 Ma motivation et ce que je crois</span></div>
+  <div class="toc-item"><span>2.3 Le principe fondateur : le jeu comme pont</span></div>
+  <div class="toc-item"><span>2.4 Ce que j'ai voulu éviter et construire</span></div>
+  <div class="toc-part">Partie III — L'expérience utilisateur pas à pas</div>
+  <div class="toc-item"><span>3.1 Première visite et onboarding (5 étapes)</span></div>
+  <div class="toc-item"><span>3.2 Page d'accueil personnalisée</span></div>
+  <div class="toc-item"><span>3.3 Navigation et architecture des pages</span></div>
+  <div class="toc-part">Partie IV — Catalogue fonctionnel détaillé</div>
+  <div class="toc-item"><span>4.1 Les 15 modes de jeu (fiche par jeu)</span></div>
+  <div class="toc-item"><span>4.2 Médiathèque : 137 vidéos, 11 collections</span></div>
+  <div class="toc-item"><span>4.3 Étude : 23 thèmes, 48 articles, 69 mini-jeux</span></div>
+  <div class="toc-item"><span>4.4 Texte du jour et questions de méditation</span></div>
+  <div class="toc-item"><span>4.5 Module Langues : 8 langues, 381 phrases</span></div>
+  <div class="toc-item"><span>4.6 Défi quotidien, XP et badges</span></div>
+  <div class="toc-item"><span>4.7 Profil, personnalisation et progression</span></div>
+  <div class="toc-item"><span>4.8 Page Découvrir et liens JW.org</span></div>
+  <div class="toc-part">Partie V — Technique, conformité et livrables</div>
+  <div class="toc-item"><span>5.1 Architecture et stack technique</span></div>
+  <div class="toc-item"><span>5.2 Sources officielles et limites</span></div>
+  <div class="toc-item"><span>5.3 Vie privée, sécurité et PWA</span></div>
+  <div class="toc-item"><span>5.4 Structure des données et enrichissement</span></div>
+  <div class="toc-part">Partie VI — Transmission et conclusion</div>
+  <div class="toc-item"><span>6.1 Scénario de démonstration (20 min)</span></div>
+  <div class="toc-item"><span>6.2 Cas d'usage par profil</span></div>
+  <div class="toc-item"><span>6.3 Évolutions possibles</span></div>
+  <div class="toc-item"><span>6.4 Proposition de transmission</span></div>
+  <div class="toc-item"><span>6.5 FAQ Bethel</span></div>
+  <div class="toc-item"><span>6.6 Conclusion</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ PARTIE II -->
+<div class="part-banner">
+  <div class="part-label">Partie II</div>
+  <h2>Pourquoi ce projet existe</h2>
+</div>
+
+<h2 class="section">2.1 Le constat : jeunes et Parole aujourd'hui</h2>
+<p>En tant que proclamateur, j'observe une réalité que beaucoup de parents et d'anciens partagent : les jeunes d'aujourd'hui ne sont pas moins spirituels qu'hier, mais ils <strong>apprennent autrement</strong>. Voici ce que je constate concrètement :</p>
 <table>
-  <tr><th>Principe</th><th>Application concrète</th></tr>
-  <tr><td>Sources officielles uniquement</td><td>Questions, versets, vidéos et articles renvoient vers JW.org / JW Library</td></tr>
-  <tr><td>Pas de contenu doctrinal inventé</td><td>Données curatées ou issues d'API publiques JW</td></tr>
-  <tr><td>Gratuit et sans publicité</td><td>Aucune monétisation, aucun tracking commercial</td></tr>
-  <tr><td>Respect de la vie privée</td><td>Profil local ; synchronisation cloud optionnelle</td></tr>
-  <tr><td>Accessibilité mobile</td><td>PWA installable, interface adaptée téléphone et tablette</td></tr>
-  <tr><td>Humilité</td><td>Projet personnel offert à l'organisation, ouvert aux retours du Bethel</td></tr>
+  <tr><th>Tendance observée</th><th>Conséquence sur la vie spirituelle</th><th>Ce que JW Games apporte</th></tr>
+  <tr><td>Lecture courte, en surface, sur écran</td><td>Les articles paraissent « trop longs » même quand le contenu est excellent</td><td>Articles découpés en blocs, mini-jeux de validation, parcours guidé</td></tr>
+  <tr><td>Vidéos zappées ou en arrière-plan</td><td>Le message ne s'ancre pas ; on « a regardé » sans retenir</td><td>Mini-quiz obligatoire après visionnage, XP, suivi profil</td></tr>
+  <tr><td>Jeux et réseaux sociaux très présents</td><td>Le temps personnel spirituel est en concurrence directe</td><td>Format jeu natif, badges, séries, récompenses XP</td></tr>
+  <tr><td>Besoin de feedback immédiat</td><td>L'étude passive semble « sans résultat visible »</td><td>Score, progression, niveaux, statistiques par jeu</td></tr>
+  <tr><td>Monde visuel et interactif</td><td>Un format passif décroche, même avec bonne volonté</td><td>Interface sombre premium, animations, cartes retournables</td></tr>
+  <tr><td>Apps installées sur l'écran d'accueil</td><td>JW.org perçu comme un « site » parmi d'autres</td><td>PWA installable avec icône dédiée, comme TikTok ou un jeu</td></tr>
 </table>
 
-<h2>4. Fonctionnalités principales</h2>
+<div class="explain">
+  <strong>Ce que je ne dis pas :</strong> que les jeunes ne veulent plus de Jéhovah · que les publications actuelles sont inadaptées · qu'il faut changer le message ou la doctrine.<br>
+  <strong>Ce que je crois :</strong> ils ont soif de vérité — il faut changer le <em>véhicule</em>, pas le trésor qu'il transporte.
+</div>
 
-<h3>4.1 Accueil et navigation</h3>
+<h2 class="section">2.2 Ma motivation et ce que je ressens</h2>
+<p>J'ai créé JW Games parce qu'une question me hantait : <strong>et si l'énergie qu'ils mettent à jouer pouvait servir à ancrer la Bible dans leur cœur ?</strong></p>
+<p>Chaque fonctionnalité a une histoire :</p>
 <ul>
-  <li>Tableau de bord : jeux, étude thématique, médiathèque, texte du jour</li>
-  <li>Barre officielle rappelant la source JW.org</li>
-  <li>Installation en application (PWA) sur iOS et Android</li>
+  <li><strong>Le texte du jour</strong> — J'en avais assez de voir des questions du type « quelle référence biblique ? » qui ne font pas méditer. J'ai construit un moteur qui lit le commentaire officiel du jour et génère des questions personnelles : « comment <em>vous</em> pouvez appliquer », « sur quoi <em>vous</em> fixer votre attention ».</li>
+  <li><strong>Les parcours de 4 semaines</strong> — 48 articles, c'est intimidant pour un adolescent. J'ai créé cinq parcours adaptés (jeune, famille, proclamateur, visiteur, général) avec trois lectures par semaine et une bannière « Continuer votre parcours ».</li>
+  <li><strong>Les langues</strong> — Pour le jeune pionnier qui veut oser parler à son voisin en espagnol ou en arabe, avec la prononciation sous les yeux et des cartes à retourner comme en cours de langue.</li>
+  <li><strong>La PWA</strong> — Parce qu'un jeune n'ouvrira pas un « site » tous les jours, mais il ouvrira une icône sur son écran d'accueil.</li>
+</ul>
+<blockquote>« Transformer l'étude en jeu, ce n'est pas baisser le niveau spirituel. C'est monter au niveau de ceux qu'on aime. »</blockquote>
+
+<h2 class="section">2.3 Le principe fondateur : le jeu comme pont</h2>
+<div class="highlight">
+  <strong>Règle d'or :</strong> JW Games ne crée <em>aucun</em> contenu doctrinal. Il <strong>gamifie l'accès</strong> au contenu existant sur JW.org, JW Library et la bibliothèque en ligne (WOL). Le jeu est le <strong>chemin</strong> ; la Parole de Dieu reste la <strong>destination</strong>.
+</div>
+<table>
+  <tr><th>Activité traditionnelle</th><th>Dans JW Games</th><th>Bénéfice pour le jeune</th></tr>
+  <tr><td>Lire un article des Tours de Garde</td><td>Article structuré + questions d'étude + mini-jeu (quiz, V/F, verset)</td><td>Valide sa compréhension, marque « Lu » / « Terminé »</td></tr>
+  <tr><td>Regarder une vidéo JW</td><td>Lecteur intégré + sous-titres + mini-quiz post-visionnage</td><td>Retient le message, gagne 25 XP</td></tr>
+  <tr><td>Mémoriser un verset</td><td>Mots manquants, mots mélangés, cartes mémoire</td><td>Répétition active sans lassitude</td></tr>
+  <tr><td>Réviser pour l'école biblique</td><td>Quiz thématiques, rapidité, ordre chronologique</td><td>Adrénaline, score, compétition saine</td></tr>
+  <tr><td>Soirée de réunion de jeunes</td><td>Undercover (3–12 joueurs), défis en équipe</td><td>Social, rires, mots bibliques</td></tr>
+  <tr><td>Texte du jour du matin</td><td>Verset WOL + commentaire + 4 questions de méditation</td><td>Application personnelle, pas test de mémoire</td></tr>
+  <tr><td>Prédication multilingue</td><td>8 langues, 381 phrases, cartes et quiz</td><td>Confiance sur le terrain</td></tr>
+</table>
+
+<h2 class="section">2.4 Ce que j'ai voulu éviter et construire</h2>
+<table>
+  <tr><th style="width:50%">❌ Évité</th><th>✅ Construit</th></tr>
+  <tr><td>Concurrent des applications officielles JW</td><td>Complément moderne avec liens vers JW.org</td></tr>
+  <tr><td>Doctrine ou interprétations inventées</td><td>Sources exclusives : TMON, publications, WOL</td></tr>
+  <tr><td>Collecte d'e-mails, adresses, congrégations</td><td>Prénom/pseudo uniquement, stockage local</td></tr>
+  <tr><td>Publicité, monétisation, tracking commercial</td><td>100 % gratuit, sans pub</td></tr>
+  <tr><td>Divertissement creux « religieux »</td><td>Chaque partie cite des références bibliques</td></tr>
+  <tr><td>Chat, contenu utilisateur, liens externes</td><td>Environnement fermé et sûr</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ PARTIE III -->
+<div class="part-banner">
+  <div class="part-label">Partie III</div>
+  <h2>L'expérience utilisateur pas à pas</h2>
+</div>
+
+<h2 class="section">3.1 Première visite et onboarding (5 étapes)</h2>
+<p>À la première ouverture, une bannière invite à <strong>personnaliser l'expérience</strong>. L'onboarding comporte cinq étapes simples, sans compte ni e-mail :</p>
+<table>
+  <tr><th>Étape</th><th>Question posée</th><th>Options</th><th>Pourquoi c'est important</th></tr>
+  <tr><td>1 — Identité</td><td>Comment vous appeler ?</td><td>Prénom ou pseudo (3–20 car.)</td><td>Salutation personnalisée sur l'accueil</td></tr>
+  <tr><td>2 — Âge</td><td>Votre tranche d'âge ?</td><td>7–12, 13–17, 18–29, 30–49, 50+, en famille</td><td>Jeux et vidéos recommandés, parcours d'étude</td></tr>
+  <tr><td>3 — Habitudes</td><td>Comment utilisez-vous l'app ?</td><td>Solo, famille, groupe, assemblée · fréquence</td><td>Modes multi-joueurs mis en avant si groupe</td></tr>
+  <tr><td>4 — Objectifs</td><td>Que cherchez-vous ?</td><td>Jouer, étude, vidéos, versets, famille</td><td>Ordre des sections sur l'accueil</td></tr>
+  <tr><td>5 — Avatar</td><td>Couleur et récapitulatif</td><td>6 couleurs · niveau biblique (débutant/inter/avancé)</td><td>Difficulté des contenus, avatar profil</td></tr>
+</table>
+<div class="explain">
+  <strong>Données NON collectées :</strong> nom de famille, e-mail, adresse, téléphone, congrégation, date de naissance exacte, photo. Tout reste sur l'appareil (identifiant anonyme UUID). Aucune synchronisation cloud ni classement joueurs.
+</div>
+
+<h2 class="section">3.2 Page d'accueil personnalisée</h2>
+<p>L'accueil est le cœur de l'expérience. Selon le profil créé, il réorganise dynamiquement :</p>
+<ul>
+  <li><strong>Salutation</strong> — « Bonjour [prénom] » avec sous-titre adapté à l'objectif (étude, jeux, vidéos…)</li>
+  <li><strong>Texte du jour</strong> — Verset officiel, commentaire WOL, 4 questions de méditation avec XP</li>
+  <li><strong>Continuer l'étude</strong> — Bannière si un parcours est en cours (semaine X/4, dernier article)</li>
+  <li><strong>Jeux recommandés</strong> — Jusqu'à 5 modes adaptés à l'âge (enfants → mémoire, versets ; ados → rapidité, undercover)</li>
+  <li><strong>Vidéos</strong> — Carrousel principal selon l'âge : enfants (BJF), ados (spiritualité), adultes (GNJ)</li>
+  <li><strong>Langues</strong> — Rangée des langues de prédication avec progression</li>
+  <li><strong>Étude</strong> — Thèmes recommandés selon rôle ministériel et niveau biblique</li>
+  <li><strong>Défi du jour</strong> — Raccourci vers les 4 missions quotidiennes</li>
 </ul>
 
-<h3>4.2 Quinze modes de jeu bibliques</h3>
+<h2 class="section">3.3 Navigation et architecture des pages</h2>
 <table>
-  <tr><th>Jeu</th><th>Description</th></tr>
-  <tr><td>Quiz biblique</td><td>Questions à choix multiples par thème et difficulté</td></tr>
-  <tr><td>Vrai ou Faux</td><td>Affirmations à valider avec explication</td></tr>
-  <tr><td>Mémoire</td><td>Association de paires (personnages, événements, versets)</td></tr>
-  <tr><td>Versets à compléter</td><td>Texte biblique avec mots manquants</td></tr>
-  <tr><td>Mots mélangés</td><td>Réorganisation de mots pour reconstituer un verset</td></tr>
-  <tr><td>Rapidité</td><td>Réponses dans un temps limité</td></tr>
-  <tr><td>Ordre chronologique</td><td>Classement d'événements bibliques</td></tr>
-  <tr><td>Cartes flash</td><td>Révision par retournement de cartes</td></tr>
-  <tr><td>Devinettes</td><td>Énigmes basées sur les récits bibliques</td></tr>
-  <tr><td>Bibliothèque</td><td>Questions sur les publications</td></tr>
-  <tr><td>Thématique</td><td>Quiz par sujet (foi, prière, etc.)</td></tr>
-  <tr><td>Undercover</td><td>Jeu d'équipe pour réunions</td></tr>
-  <tr><td>Quiz vidéo</td><td>Questions liées aux vidéos JW</td></tr>
-  <tr><td>Jeu d'équipe</td><td>Mode collaboratif</td></tr>
-  <tr><td>Mots croisés bibliques</td><td>Variante textuelle</td></tr>
+  <tr><th>Zone</th><th>Liens</th><th>Rôle</th></tr>
+  <tr><td>Barre mobile (5 icônes)</td><td>Accueil · Jeux · Étude · Vidéos · Profil</td><td>Navigation principale, pouce-accessible</td></tr>
+  <tr><td>Menu secondaire</td><td>Langues · Défi du jour · Découvrir</td><td>Fonctions complémentaires</td></tr>
+  <tr><td>Desktop (7 liens)</td><td>Idem + Langues et Défi intégrés</td><td>Navigation complète sans menu caché</td></tr>
 </table>
-<p>Chaque partie affiche les <strong>références bibliques</strong> et, le cas échéant, un lien vers la source officielle.</p>
+<p><strong>27 pages</strong> au total : accueil, hub jeux + 14 sous-pages de jeux, 5 routes étude (hub, thème, mini-jeu, articles, article), langues + 8 langues, médiathèque, découvrir, profil, quotidien.</p>
 
-<h3>4.3 Étude thématique — 18 parcours</h3>
-<p>Parcours structurés (foi, prière, qualités chrétiennes, événements bibliques…) avec articles de référence et mini-jeux intégrés.</p>
+<!-- ═══════════════════════════════════════════════════════════ PARTIE IV -->
+<div class="part-banner">
+  <div class="part-label">Partie IV</div>
+  <h2>Catalogue fonctionnel détaillé</h2>
+</div>
 
-<h3>4.4 Médiathèque vidéo — 137 vidéos</h3>
-<p>Collections organisées (Bible, famille, jeunes…), lecteur intégré avec sous-titres JW, mini-quiz optionnel.</p>
+<h2 class="section">4.1 Les 15 modes de jeu — fiche détaillée</h2>
+<p>Les jeux sont organisés en <strong>4 pôles</strong> sur le hub : Vidéo &amp; réflexion · Mémoire &amp; versets · Quiz &amp; rapidité · Groupe &amp; social. Chaque partie affiche les <strong>références bibliques</strong> et les sources. Voici le détail de chaque mode :</p>
 
-<h3>4.5 Texte du jour</h3>
-<p>Affichage depuis WOL (Watchtower Online Library), mis en cache au déploiement pour garantir la disponibilité.</p>
+<table>
+  <tr><th>#</th><th>Jeu</th><th>Route</th><th>Contenu</th><th>Joueurs</th><th>Description et intérêt</th></tr>
+  <tr><td>1</td><td><strong>Vidéo Quiz</strong></td><td>/jeux/video-quiz</td><td>15 questions liées aux vidéos JW</td><td>Solo</td><td>Valide le visionnage : regarder puis répondre. Lie médias et compréhension.</td></tr>
+  <tr><td>2</td><td><strong>Vrai ou Faux</strong></td><td>/jeux/vrai-faux</td><td>50 affirmations</td><td>Solo</td><td>Format court, mobile. Chaque erreur affiche l'explication et la référence.</td></tr>
+  <tr><td>3</td><td><strong>Ordre chronologique</strong></td><td>/jeux/ordre</td><td>9 séries d'événements</td><td>Solo</td><td>Comprendre l'histoire biblique en classant création, déluge, exode…</td></tr>
+  <tr><td>4</td><td><strong>Mots mélangés</strong></td><td>/jeux/mots</td><td>40 mots bibliques</td><td>Solo</td><td>Puzzle : retrouver le mot caché parmi les lettres mélangées.</td></tr>
+  <tr><td>5</td><td><strong>Versets à trous</strong></td><td>/jeux/versets</td><td>40 versets TMON</td><td>Solo</td><td>Compléter les mots manquants — mémorisation active des Écritures.</td></tr>
+  <tr><td>6</td><td><strong>Cartes mémoire</strong></td><td>/jeux/cartes</td><td>4 paquets (personnages, versets, événements)</td><td>Solo</td><td>Cartes retournables, révision en petites doses, très visuel.</td></tr>
+  <tr><td>7</td><td><strong>Undercover</strong></td><td>/jeux/undercover</td><td>19 paires de mots bibliques</td><td>3–12</td><td>Jeu social : bluff, vote, rires. Idéal soirées jeunes et familles.</td></tr>
+  <tr><td>8</td><td><strong>Quiz biblique</strong></td><td>/jeux/quiz</td><td>75 questions, 4 niveaux</td><td>Solo &amp; groupe</td><td>Le classique : QCM par difficulté, XP, références à chaque réponse.</td></tr>
+  <tr><td>9</td><td><strong>Rapidité</strong></td><td>/jeux/rapidite</td><td>18 défis chronométrés</td><td>Solo</td><td>Adrénaline maximale : répondre avant la fin du temps. Très engageant.</td></tr>
+  <tr><td>10</td><td><strong>Mémoire</strong></td><td>/jeux/memoire</td><td>30 paires, 5 sets</td><td>Solo</td><td>Retourner les cartes, associer les paires. Badge « Mémoire d'éléphant » si ≤ 8 coups.</td></tr>
+  <tr><td>11</td><td><strong>Thématiques</strong></td><td>/jeux/thematique</td><td>8 thèmes, pool 75 Q</td><td>Solo &amp; groupe</td><td>Quiz filtré : foi, prière, Royaume, Jésus, famille, création…</td></tr>
+  <tr><td>12</td><td><strong>Défis en équipe</strong></td><td>/jeux/equipe</td><td>2 manches × 5 questions</td><td>Multi</td><td>Deux équipes s'affrontent. Parfait pour école biblique ou soirée.</td></tr>
+  <tr><td>13</td><td><strong>Devinettes</strong></td><td>/jeux/devinettes</td><td>24 énigmes</td><td>Solo</td><td>Énigmes sur les récits bibliques — curiosité et découverte.</td></tr>
+  <tr><td>14</td><td><strong>Livres de la Bible</strong></td><td>/jeux/biblio</td><td>3 sets (Torah, Évangiles, historiques)</td><td>Solo</td><td>Classer les livres dans l'ordre canonique.</td></tr>
+  <tr><td>15</td><td><strong>Défi quotidien</strong></td><td>/quotidien</td><td>4 missions/jour</td><td>Solo</td><td>Hub des missions quotidiennes (voir § 4.6). Maintient l'habitude.</td></tr>
+</table>
+<div class="explain">
+  <strong>Système de jeu partagé :</strong> chaque mode utilise <code>GameShell</code> (cadre uniforme), <code>GameHud</code> (score, progression), <code>GameFeedbackPanel</code> (explication + référence après chaque réponse), et calcule l'XP selon une formule adaptée au mode (ex. quiz = score × 20, mémoire = max(50, 220 − coups × 6)).
+</div>
 
-<h3>4.6 Page Découvrir</h3>
-<p>Liens organisés vers les sections officielles de JW.org.</p>
-
-<h3>4.7 Profil personnel (local)</h3>
-<p>Pseudonyme, points d'expérience, badges, historique — sans donnée personnelle sensible.</p>
+<h2 class="section">4.2 Médiathèque : 137 vidéos officielles, 11 collections</h2>
+<p>Toutes les vidéos proviennent du <strong>CDN officiel JW</strong> (<code>cfp2.jw-cdn.org</code>). Aucune vidéo n'est hébergée par l'application — elle lit les flux officiels. Chaque visionnage rapporte <strong>25 XP</strong> et est enregistré dans le profil.</p>
+<table>
+  <tr><th>Collection</th><th class="num">Vidéos</th><th>Public cible</th><th>Exemples de contenu</th></tr>
+  <tr><td>Deviens l'ami de Jéhovah</td><td class="num">24</td><td>Enfants 7–12</td><td>Récits bibliques animés, personnages bibliques</td></tr>
+  <tr><td>Chansons — Deviens l'ami de Jéhovah</td><td class="num">20</td><td>Enfants</td><td>Chansons mémorables sur la création, Noé, Daniel…</td></tr>
+  <tr><td>Jeunes — Spiritualité</td><td class="num">20</td><td>Ados 13–17</td><td>Prière, intégrité, choix, relation avec Jéhovah</td></tr>
+  <tr><td>Jeunes — Vie sociale</td><td class="num">16</td><td>Ados</td><td>Amitiés, réseaux sociaux, pression des pairs</td></tr>
+  <tr><td>Chansons pour enfants</td><td class="num">16</td><td>Enfants</td><td>Comptines et chansons courtes</td></tr>
+  <tr><td>Défis pour les familles</td><td class="num">12</td><td>Familles</td><td>Activités à faire ensemble</td></tr>
+  <tr><td>La bonne nouvelle selon Jésus</td><td class="num">9</td><td>Tous, adultes</td><td>Épisodes sur la vie de Jésus</td></tr>
+  <tr><td>Films — Époque biblique</td><td class="num">8</td><td>Ados et adultes</td><td>Productions longues format film</td></tr>
+  <tr><td>Films — Époque moderne</td><td class="num">7</td><td>Ados et adultes</td><td>Témoignages et mises en scène contemporaines</td></tr>
+  <tr><td>Films pour jeunes</td><td class="num">3</td><td>Ados</td><td>Films ciblés adolescents</td></tr>
+  <tr><td>Films pour enfants</td><td class="num">2</td><td>Enfants</td><td>Films courts pour les plus jeunes</td></tr>
+  <tr><th colspan="2">Total : 137 vidéos</th><th colspan="2">7 catégories : jésus, enfants, jeunes, famille, histoire, enseignement, broadcast</th></tr>
+</table>
+<h3 class="sub">Fonctionnalités du lecteur vidéo</h3>
+<ul>
+  <li><strong>Lecteur intégré</strong> — <code>JwVideoPlayer</code> : lecture, pause, plein écran, poster officiel JW</li>
+  <li><strong>Sous-titres</strong> — Chargés via l'API <code>/api/video-subtitles</code> depuis les fichiers VTT officiels JW</li>
+  <li><strong>Mini-quiz post-visionnage</strong> — ~100 questions dans la banque, matchées par titre/publication ; 12 XP par bonne réponse</li>
+  <li><strong>Lien JW.org</strong> — Chaque vidéo renvoie vers la page officielle sur jw.org</li>
+  <li><strong>Suivi profil</strong> — Liste des vidéos regardées, compteur pour le défi quotidien</li>
+</ul>
 
 <div class="page-break"></div>
 
-<h2>5. Conformité et sources</h2>
-<blockquote>Tout le contenu est basé exclusivement sur les sources officielles : JW.org et JW Library (Traduction du monde nouveau).</blockquote>
-<ul>
-  <li>Images : CDN média JW (jw.org / jw-cdn)</li>
-  <li>Vidéos : flux officiels</li>
-  <li>Versets : Traduction du monde nouveau</li>
-  <li>Le site <strong>ne remplace pas</strong> JW Library ni l'application officielle JW.org</li>
-</ul>
+<h2 class="section">4.3 Étude personnelle : 23 thèmes, 48 articles, 69 mini-jeux</h2>
+<p>Le module d'étude est le plus profond de l'application. Il ne se contente pas de lier vers JW.org : il propose <strong>48 articles lisibles directement</strong> sur le site, structurés avec versets TMON complets et questions d'étude personnelle.</p>
 
-<div class="notice">
-  <strong>Note importante :</strong> Ce projet est une initiative personnelle. Il n'a pas reçu d'approbation officielle de l'organisation et ne doit pas être présenté comme un produit du Bethel sans autorisation expresse.
-</div>
+<h3 class="sub">4.3.1 — Les 23 thèmes d'étude</h3>
+<p class="cols2">
+  <strong>Base (6) :</strong> Prière · Confiance en Jéhovah · Qualités chrétiennes · Jésus, le Fils de Dieu · Famille &amp; culte · Service &amp; prédication<br><br>
+  <strong>Étendus (12) :</strong> Royaume de Dieu · Résurrection · Adoration en vérité · Étudier la Bible · Sagesse pratique · Endurance · L'amour · La création · Perspectives pour les jeunes · Paix intérieure · Intégrité · Prophéties bibliques<br><br>
+  <strong>Par rôle ministériel (5) :</strong> Découvrir la Bible · Prédication · Vie de pionnier · École biblique · Vie chrétienne
+</p>
 
-<h2>6. Démonstration — scénario suggéré (5 min)</h2>
+<h3 class="sub">4.3.2 — Structure d'un article d'étude</h3>
+<p>Chaque article (ex. « La prière — comment Jéhovah nous écoute ») contient :</p>
 <ol>
-  <li>Accueil → texte du jour et jeux vedettes</li>
-  <li>Quiz → référence biblique en fin de question</li>
-  <li>Médiathèque → vidéo avec sous-titres (30 s)</li>
-  <li>Étude thématique → article + mini-jeu</li>
-  <li>Installation PWA sur mobile</li>
+  <li><strong>Titre et extrait</strong> — Accroche claire sur la page catalogue</li>
+  <li><strong>Corps structuré</strong> — Paragraphes avec sous-titres, citations en exergue</li>
+  <li><strong>Versets complets</strong> — Traduction du monde nouveau, référence cliquable</li>
+  <li><strong>Questions d'étude personnelle</strong> — 3 à 5 questions de méditation en fin d'article</li>
+  <li><strong>Source</strong> — Type de publication (Tours de Garde, Réveillez-vous !, livre, brochure) avec année</li>
+  <li><strong>3 mini-jeux</strong> — Quiz (10 Q), Vrai/Faux (8), Verset à compléter (5) liés au thème</li>
 </ol>
 
-<h2>7. Architecture technique (résumé)</h2>
+<h3 class="sub">4.3.3 — Les 5 parcours guidés sur 4 semaines</h3>
+<p>Pour éviter que le jeune se perde, cinq parcours de <strong>12 étapes</strong> (3 articles/semaine × 4 semaines) sont proposés selon le profil :</p>
 <table>
-  <tr><th>Couche</th><th>Technologie</th></tr>
-  <tr><td>Framework</td><td>Next.js 16 (React 19, TypeScript)</td></tr>
-  <tr><td>Styles</td><td>Tailwind CSS 4, design system sombre</td></tr>
-  <tr><td>État</td><td>Zustand (profil, progression)</td></tr>
-  <tr><td>Données</td><td>Supabase (optionnel) + IndexedDB local</td></tr>
-  <tr><td>Hébergement</td><td>Netlify (déploiement automatique)</td></tr>
-  <tr><td>PWA</td><td>Manifest + installation native</td></tr>
+  <tr><th>Parcours</th><th>Déclenché par</th><th>Semaine 1 (exemple)</th><th>Objectif spirituel</th></tr>
+  <tr><td><strong>Général</strong></td><td>Adulte par défaut</td><td>Prière · Royaume · Prier efficacement</td><td>Fondations : prière et Royaume</td></tr>
+  <tr><td><strong>Jeunes</strong></td><td>7–17 ans, rôle « jeune »</td><td>Jeunes force du Royaume · Prière · Honnêteté à l'école</td><td>Défis d'aujourd'hui, intégrité</td></tr>
+  <tr><td><strong>Famille</strong></td><td>Objectif « famille »</td><td>Famille spirituelle · Culte en famille · Communication</td><td>Vie spirituelle à la maison</td></tr>
+  <tr><td><strong>Proclamateur</strong></td><td>Pionnier, proclamateur</td><td>Pourquoi prêcher · Motivation · Endurance</td><td>Service et prédication</td></tr>
+  <tr><td><strong>Visiteur</strong></td><td>Étudiant de la Bible</td><td>Qui est Jéhovah · Bible fiable · Premiers pas</td><td>Découverte pour les nouveaux</td></tr>
 </table>
-<p>Détails complets dans <code>docs/ARCHITECTURE.md</code> du dépôt GitHub.</p>
+<p>Le parcours affiche des <strong>pastilles S1–S4</strong> cliquables, une barre de progression, et une bannière « Continuer votre parcours » sur l'accueil. Si le profil change, le parcours se réinitialise intelligemment.</p>
 
-<h2>8. Proposition de transmission</h2>
-<p>Je propose de <strong>transmettre l'intégralité du projet</strong> à l'organisation :</p>
-
-<h3>Option A — Adoption officielle</h3>
-<p>Transfert du dépôt GitHub, du domaine, documentation technique et guide Figma. Accompagnement pour la maintenance.</p>
-
-<h3>Option B — Usage interne / branche</h3>
-<p>Déploiement sur l'infrastructure de l'organisation, adaptation du branding selon les directives du Service des publications.</p>
-
-<h3>Option C — Retour et orientation</h3>
-<p>Si le projet ne correspond pas aux priorités actuelles, je reste ouvert à vos recommandations.</p>
-
-<p><strong>Ce que je ne demande pas :</strong> rémunération, reconnaissance publique.</p>
-<p><strong>Ce que je demande :</strong> orientation sur la conformité, la poursuite éventuelle sous l'égide de l'organisation, et les ajustements souhaités.</p>
-
-<h2>9. Maintenance et évolutivité</h2>
+<h3 class="sub">4.3.4 — Suivi de progression</h3>
 <ul>
-  <li><strong>Contenu :</strong> fichiers <code>src/data/*.ts</code> — enrichissement sans modifier le code des jeux</li>
-  <li><strong>Traductions :</strong> structure prête pour l'internationalisation</li>
-  <li><strong>Sécurité :</strong> pas de secrets dans le code source</li>
-  <li><strong>Coûts :</strong> hébergement gratuit Netlify pour un usage modéré</li>
+  <li>Articles marqués <strong>« Lu »</strong> ou <strong>« Terminé »</strong> (lecture + mini-jeu)</li>
+  <li>Filtres sur le catalogue : <strong>Tous · À lire · Lus</strong></li>
+  <li>Barres de progression par thème (X/3 mini-jeux complétés)</li>
+  <li>Résumé dans le profil : X/48 articles, X/69 mini-jeux</li>
+  <li>Thèmes triés par pertinence selon âge, rôle, objectif et niveau biblique</li>
 </ul>
 
-<h2>10. Conclusion</h2>
-<p><strong>JW Games</strong> est né d'un désir sincère : aider nos frères et sœurs, en particulier les jeunes, à <strong>aimer davantage l'étude de la Bible</strong> en utilisant les outils qu'ils connaissent déjà — toujours en ramenant vers les publications officielles.</p>
-<p>Je mets ce travail entre vos mains avec reconnaissance pour tout ce que l'organisation accomplit au service de Jéhovah et de notre prochain.</p>
+<h2 class="section">4.4 Texte du jour et questions de méditation personnelle</h2>
+<div class="highlight">
+  <strong>Nouveauté majeure :</strong> les questions ne testent plus « quelle référence ? » ou « quelle source WOL ? ». Elles sont <strong>générées à partir du commentaire officiel du jour</strong> et s'adressent directement à la personne.
+</div>
+
+<h3 class="sub">Fonctionnement technique (simplifié)</h3>
+<ol>
+  <li><strong>Source</strong> — Bibliothèque en ligne WOL (<code>wol.jw.org</code>), texte officiel « Examinons les Écritures chaque jour »</li>
+  <li><strong>Cache</strong> — Pré-téléchargé au build pour J-1, J, J+1 dans <code>public/cache/daily-text/</code></li>
+  <li><strong>API</strong> — <code>GET /api/daily-text</code> : cache → CDN → live → fallback</li>
+  <li><strong>Analyse</strong> — Le moteur <code>daily-text-questions.ts</code> découpe le commentaire en phrases et détecte : applications « nous pouvons », rôle de Jéhovah, personnages bibliques, contrastes, peur vs foi</li>
+  <li><strong>Génération</strong> — 8 types de questions tentés ; 4 retenues max, sans doublon ; seed déterministe par date</li>
+  <li><strong>Affichage</strong> — Section sur l'accueil : verset, commentaire, source, liens JW.org/WOL, quiz intégré</li>
+</ol>
+
+<h3 class="sub">Exemples de questions générées</h3>
+<table>
+  <tr><th>Type</th><th>Exemple de question</th><th>Objectif spirituel</th></tr>
+  <tr><td>Application personnelle</td><td>« Selon ce commentaire, comment pouvez-vous appliquer cette leçon dans votre vie aujourd'hui ? »</td><td>Passer de la lecture à l'action</td></tr>
+  <tr><td>Verset + commentaire</td><td>« Le verset du jour vous invite aujourd'hui à… »</td><td>Lier le verset au quotidien</td></tr>
+  <tr><td>Perspective foi/épreuve</td><td>« Lorsque vous faites face à des épreuves, sur quoi ce texte vous invite-t-il à fixer votre attention ? »</td><td>Méditer sur Jéhovah vs les problèmes</td></tr>
+  <tr><td>Exemple biblique</td><td>« Que pouvez-vous retenir de l'exemple de David pour votre propre foi ? »</td><td>Imiter la foi, pas seulement lire l'histoire</td></tr>
+  <tr><td>Contraste</td><td>« Quel contraste ce texte met-il en lumière pour vous aider à méditer ? »</td><td>Comprendre la portée du verset</td></tr>
+</table>
+<p>Chaque bonne réponse rapporte <strong>10 XP</strong>. L'explication complète du commentaire s'affiche après la réponse.</p>
+
+<h2 class="section">4.5 Module Langues : 8 langues, 381 phrases de prédication</h2>
+<p>Ce module aide les proclamateurs — en particulier les jeunes — à <strong>oser parler dans une autre langue</strong> sur le terrain. Ce n'est pas un cours de langue complet : c'est une boîte à outils de phrases utiles pour la prédication.</p>
+<table>
+  <tr><th>Langue</th><th class="num">Phrases</th><th>Particularité</th></tr>
+  <tr><td>🇬🇧 Anglais</td><td class="num">46</td><td>Territoires anglophones et bilingues</td></tr>
+  <tr><td>🇪🇸 Espagnol</td><td class="num">45</td><td>Espagne, Amérique latine, voisins hispanophones</td></tr>
+  <tr><td>🇰🇷 Coréen</td><td class="num">50</td><td>Prononciation romanisée</td></tr>
+  <tr><td>🇫🇷 Français</td><td class="num">50</td><td>Pour apprendre le français en pays francophone</td></tr>
+  <tr><td>🇸🇦 Arabe</td><td class="num">50</td><td>Prononciation romanisée, Moyen-Orient / Afrique du Nord</td></tr>
+  <tr><td>🇨🇳 Chinois</td><td class="num">50</td><td>Pinyin affiché</td></tr>
+  <tr><td>🇧🇷 Portugais</td><td class="num">45</td><td>Brésil, Portugal, lusophones</td></tr>
+  <tr><td>🇹🇷 Turc</td><td class="num">45</td><td>Turquie et communautés turcophones</td></tr>
+</table>
+<h3 class="sub">7 catégories de phrases</h3>
+<p class="cols2">👋 Première approche · 📖 Présentation &amp; pitch · 🔤 Mots utiles · 🙏 Politesse · 🔄 Retour visite · ✨ Conclusion · 💬 Situations courantes</p>
+<h3 class="sub">3 modes d'apprentissage par langue</h3>
+<ul>
+  <li><strong>Cartes flash</strong> — Retourner la carte (français ↔ langue cible), marquer « connu », écouter la prononciation (synthèse vocale Web Speech API)</li>
+  <li><strong>Quiz</strong> — QCM sur les phrases, XP = score × 15</li>
+  <li><strong>Liste de référence</strong> — Consultation rapide sur le terrain, filtrable par catégorie</li>
+</ul>
+<p>Progression sauvegardée localement par langue (phrases connues, pourcentage affiché).</p>
+
+<div class="page-break"></div>
+
+<h2 class="section">4.6 Défi quotidien, XP et badges</h2>
+
+<h3 class="sub">Système d'XP (points d'expérience)</h3>
+<table>
+  <tr><th>Action</th><th>XP gagné</th><th>Explication</th></tr>
+  <tr><td>Partie de quiz</td><td>Score × 20</td><td>Plus on répond juste, plus on progresse</td></tr>
+  <tr><td>Partie de mémoire</td><td>max(50, 220 − coups × 6)</td><td>Récompense l'efficacité</td></tr>
+  <tr><td>Vidéo regardée</td><td>25</td><td>Encourage le visionnage complet</td></tr>
+  <tr><td>Mini-quiz vidéo</td><td>12 par bonne réponse</td><td>Valide la compréhension</td></tr>
+  <tr><td>Texte du jour (bonne réponse)</td><td>10</td><td>Méditation quotidienne</td></tr>
+  <tr><td>Quiz langues</td><td>Score × 15</td><td>Encourage l'apprentissage des phrases</td></tr>
+  <tr><td>Niveau</td><td>500 XP / niveau</td><td>Progression visible sur le profil et l'accueil</td></tr>
+</table>
+
+<h3 class="sub">Défi du jour — 4 missions quotidiennes</h3>
+<table>
+  <tr><th>Mission</th><th>Objectif</th><th>Lien</th></tr>
+  <tr><td>🎯 Quiz</td><td>3 bonnes réponses</td><td>/jeux/quiz</td></tr>
+  <tr><td>⚡ Rapidité</td><td>1 défi réussi</td><td>/jeux/rapidite</td></tr>
+  <tr><td>🧠 Mémoire</td><td>1 partie terminée</td><td>/jeux/memoire</td></tr>
+  <tr><td>🎬 Vidéo</td><td>1 vidéo regardée</td><td>/mediatheque</td></tr>
+</table>
+<p>Compléter les <strong>4 missions</strong> rapporte un bonus de <strong>+100 XP</strong>. La <strong>série quotidienne</strong> (streak) compte les jours consécutifs — même logique que les applications que les jeunes utilisent déjà.</p>
+
+<h3 class="sub">Les 10 badges</h3>
+<table>
+  <tr><th>Badge</th><th>Condition</th><th>Message pour le jeune</th></tr>
+  <tr><td>🎮 Premier pas</td><td>1 partie jouée</td><td>« Tu as commencé l'aventure ! »</td></tr>
+  <tr><td>📖 Apprenti</td><td>10 bonnes réponses cumulées</td><td>« Tu progresses dans la Parole »</td></tr>
+  <tr><td>⭐ Sans faute</td><td>Quiz 100 %</td><td>« Parfait ! »</td></tr>
+  <tr><td>🔥 Assidu</td><td>Série de 3 jours</td><td>« Tu reviens chaque jour »</td></tr>
+  <tr><td>💎 Fidèle</td><td>Série de 7 jours</td><td>« Une vraie habitude »</td></tr>
+  <tr><td>🧠 Mémoire d'éléphant</td><td>Mémoire en ≤ 8 coups</td><td>« Quelle concentration ! »</td></tr>
+  <tr><td>⚡ Éclair</td><td>3 rapidités parfaites</td><td>« Tu es rapide ! »</td></tr>
+  <tr><td>🏆 Érudit</td><td>Niveau 5 atteint</td><td>« Tu maîtrises la Bible »</td></tr>
+  <tr><td>📖 Lettré</td><td>50 bonnes réponses totales</td><td>« Érudit des Écritures »</td></tr>
+  <tr><td>🕵️ Détective</td><td>3 parties Undercover</td><td>« Maître du bluff biblique »</td></tr>
+</table>
+
+<h2 class="section">4.7 Profil et personnalisation — effets concrets</h2>
+<table>
+  <tr><th>Préférence choisie</th><th>Effet visible dans l'app</th></tr>
+  <tr><td>Âge 7–12</td><td>Vidéos « Deviens l'ami de Jéhovah » en premier, jeux mémoire/versets recommandés, parcours jeunes</td></tr>
+  <tr><td>Âge 13–17</td><td>Vidéos jeunes spiritualité/vie sociale, rapidité et undercover, parcours jeunes</td></tr>
+  <tr><td>Objectif « étude »</td><td>Section étude remontée avant les jeux sur l'accueil</td></tr>
+  <tr><td>Objectif « famille »</td><td>Parcours famille, vidéos défis familles, modes équipe</td></tr>
+  <tr><td>Rôle pionnier</td><td>Thèmes service/prédication priorisés, parcours proclamateur</td></tr>
+  <tr><td>Niveau débutant</td><td>Quiz faciles, articles d'introduction</td></tr>
+  <tr><td>Niveau avancé</td><td>Quiz difficiles, thèmes prophéties et approfondissement</td></tr>
+</table>
+<p>Tout est modifiable à tout moment dans la page <strong>Profil</strong> via l'éditeur de préférences.</p>
+
+<h2 class="section">4.8 Page Découvrir — liens organisés vers JW.org</h2>
+<p>La page <code>/decouvrir</code> sert de <strong>pont vers l'écosystème officiel</strong> :</p>
+<ul>
+  <li><strong>5 liens internes</strong> — Médiathèque, Jeux (15 modes), Étude, Langues (8), Défi du jour</li>
+  <li><strong>3 sections externes (9 cartes)</strong> — Par public (enfants, ados, familles) · Étudier la Bible · Vidéos et publications</li>
+  <li><strong>Liens officiels</strong> — JW.org, JW Library, Texte du jour JW.org</li>
+  <li><strong>Notice</strong> — Rappel que toutes les sources proviennent exclusivement de JW.org / JW Library</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════════════════════ PARTIE V -->
+<div class="part-banner">
+  <div class="part-label">Partie V</div>
+  <h2>Technique, conformité et livrables</h2>
+</div>
+
+<h2 class="section">5.1 Architecture et stack technique</h2>
+<table>
+  <tr><th>Couche</th><th>Technologie</th><th>Pourquoi ce choix</th></tr>
+  <tr><td>Framework</td><td>Next.js 16, React 19, TypeScript</td><td>Moderne, maintenable, SSG pour les 178 pages statiques</td></tr>
+  <tr><td>Styles</td><td>Tailwind CSS 4</td><td>Design system sombre cohérent, responsive mobile-first</td></tr>
+  <tr><td>État</td><td>Zustand 5 + localStorage</td><td>Profil, XP, badges, progression étude, langues — sans serveur obligatoire</td></tr>
+  <tr><td>Animations</td><td>Framer Motion</td><td>Transitions fluides, cartes retournables, feedback visuel</td></tr>
+  <tr><td>Données</td><td>Fichiers TypeScript curatés</td><td>Contenu auditable, enrichissable sans toucher aux moteurs de jeu</td></tr>
+  <tr><td>Stockage</td><td>localStorage (navigateur)</td><td>Profil, XP, badges — aucune donnée personnelle côté serveur</td></tr>
+  <tr><td>Hébergement</td><td>Netlify</td><td>jwgames.netlify.app — build : cache texte du jour + next build</td></tr>
+  <tr><td>PWA</td><td>Manifest + icônes 192/512/maskable</td><td>Installable iOS/Android, guide Safari intégré</td></tr>
+</table>
+
+<h3 class="sub">3 routes API actives</h3>
+<table>
+  <tr><th>Route</th><th>Rôle</th></tr>
+  <tr><td><code>GET /api/daily-text</code></td><td>Texte du jour + 4 questions de méditation</td></tr>
+  <tr><td><code>GET /api/jw-media</code></td><td>Proxy métadonnées média JW CDN</td></tr>
+  <tr><td><code>GET /api/video-subtitles</code></td><td>Sous-titres VTT officiels par vidéo</td></tr>
+</table>
+<p class="note">Aucune route API ne collecte de profil, de pseudo ni d'historique de parties.</p>
+
+<h2 class="section">5.2 Sources officielles et limites</h2>
+<blockquote>Tout le contenu est basé exclusivement sur les sources officielles : JW.org, JW Library et la bibliothèque en ligne (Traduction du monde nouveau).</blockquote>
+<table>
+  <tr><th>Source</th><th>Usage dans JW Games</th></tr>
+  <tr><td>JW.org / jw-cdn.org</td><td>Images, vignettes, flux vidéo, métadonnées</td></tr>
+  <tr><td>WOL (wol.jw.org)</td><td>Texte du jour quotidien</td></tr>
+  <tr><td>Traduction du monde nouveau</td><td>Tous les versets affichés dans les jeux et l'étude</td></tr>
+  <tr><td>Publications officielles</td><td>Articles d'étude (thèmes Tours de Garde, Réveillez-vous !, etc.)</td></tr>
+</table>
+<div class="notice"><strong>Initiative personnelle</strong> — pas d'approbation officielle. JW Games ne remplace pas JW Library ni l'application JW.org. Ne pas présenter comme produit du Bethel sans autorisation expresse.</div>
+
+<h2 class="section">5.3 Vie privée, sécurité et PWA</h2>
+<ul>
+  <li><strong>Pas de compte obligatoire</strong> — Identifiant appareil anonyme (UUID local)</li>
+  <li><strong>Pas de chat ni contenu utilisateur</strong> — Environnement fermé</li>
+  <li><strong>Pas de liens externes</strong> hors JW.org / JW Library / WOL</li>
+  <li><strong>En-têtes HTTP</strong> — X-Frame-Options DENY, X-Content-Type-Options nosniff</li>
+  <li><strong>Code auditable</strong> — Dépôt GitHub public</li>
+  <li><strong>PWA Android/Desktop</strong> — Prompt d'installation natif (<code>beforeinstallprompt</code>)</li>
+  <li><strong>PWA iOS</strong> — Guide visuel : Partager Safari → « Sur l'écran d'accueil » (limitation Apple)</li>
+  <li><strong>Hors-ligne</strong> — Partiel : profil et jeux locaux fonctionnent ; vidéos et texte du jour nécessitent connexion</li>
+</ul>
+
+<h2 class="section">5.4 Structure des données — enrichissement sans code</h2>
+<p>Le contenu est séparé du code des jeux dans <code>src/data/</code> :</p>
+<ul>
+  <li><code>sample-*.ts</code> + <code>extra/</code> — Questions, versets, énigmes, mémoire, rapidité</li>
+  <li><code>jw-videos.ts</code> — Catalogue 137 vidéos</li>
+  <li><code>study/</code> — 48 articles, 23 thèmes, snippets bibliques</li>
+  <li><code>languages/</code> — 8 fichiers de phrases</li>
+  <li><code>discover-links.ts</code> — Liens page Découvrir</li>
+</ul>
+<p>Un rédacteur avec accompagnement technique peut enrichir les questions, thèmes et phrases <strong>sans modifier les moteurs de jeu</strong>.</p>
+
+<h3 class="sub">Livrables fournis</h3>
+<table>
+  <tr><th>Document</th><th>Contenu</th></tr>
+  <tr><td><code>README.md</code></td><td>Installation, stack, liens</td></tr>
+  <tr><td><code>docs/ARCHITECTURE.md</code></td><td>Architecture détaillée du code</td></tr>
+  <tr><td><code>docs/FIGMA-GUIDE.md</code></td><td>Design system pour Figma</td></tr>
+  <tr><td><code>docs/figma/design-tokens.json</code></td><td>Tokens importables (Tokens Studio)</td></tr>
+  <tr><td><code>docs/PITCH-BETHEL.pdf</code></td><td>Ce document</td></tr>
+  <tr><td>Dépôt GitHub</td><td>Code complet, 250+ fichiers</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ PARTIE VI -->
+<div class="part-banner">
+  <div class="part-label">Partie VI</div>
+  <h2>Transmission, démonstration et conclusion</h2>
+</div>
+
+<h2 class="section">6.1 Scénario de démonstration (20 minutes)</h2>
+<ol>
+  <li><strong>Accueil sans profil</strong> (1 min) — Bannière « Personnalisez votre expérience »</li>
+  <li><strong>Onboarding ado 13–17</strong> (2 min) — 5 étapes, objectif « jeux + étude »</li>
+  <li><strong>Accueil personnalisé</strong> (2 min) — Salutation, jeux recommandés, vidéos jeunes</li>
+  <li><strong>Texte du jour</strong> (3 min) — Lire verset + commentaire, répondre aux questions de méditation</li>
+  <li><strong>Quiz biblique</strong> (2 min) — Question, réponse, référence affichée, XP</li>
+  <li><strong>Médiathèque</strong> (3 min) — Vidéo jeunes 30 s, sous-titres, mini-quiz, +25 XP</li>
+  <li><strong>Étude</strong> (3 min) — Parcours semaine 1, article « Perspectives pour les jeunes », mini-jeu</li>
+  <li><strong>Langues espagnol</strong> (2 min) — Cartes flash, quiz phrase de présentation</li>
+  <li><strong>Défi du jour</strong> (1 min) — 4 missions, série, bonus +100 XP</li>
+  <li><strong>Profil</strong> (1 min) — Badges, stats, progression étude X/48</li>
+  <li><strong>PWA</strong> (1 min) — Installer sur l'écran d'accueil du téléphone</li>
+</ol>
+
+<h2 class="section">6.2 Cas d'usage détaillés par profil</h2>
+<table>
+  <tr><th>Profil</th><th>Situation concrète</th><th>Parcours JW Games</th></tr>
+  <tr><td>Enfant 9 ans</td><td>Dimanche après-midi, parents occupés</td><td>Mémoire personnages BJF → vidéo « Deviens l'ami de Jéhovah » → mots mélangés verset</td></tr>
+  <tr><td>Ado 15 ans</td><td>Après l'école biblique, entre amis</td><td>Rapidité en groupe → Undercover en soirée → texte du jour du lendemain matin</td></tr>
+  <tr><td>Jeune pionnier 22 ans</td><td>Territoire multilingue</td><td>Langues espagnol : cartes + quiz → thème « Prédication » → article service</td></tr>
+  <tr><td>Mère de famille</td><td>Soirée culte familial</td><td>Vidéo « Défis familles » → quiz équipe parents/enfants → article « Famille spirituelle »</td></tr>
+  <tr><td>Ancien</td><td>Retour visite avec adolescent</td><td>Montrer l'app, créer profil ensemble, lancer un quiz thématique « Qualités chrétiennes »</td></tr>
+</table>
+
+<h2 class="section">6.3 Évolutions possibles (sous direction du Bethel)</h2>
+<ul>
+  <li>Contenu aligné sur les publications en cours (nouveaux articles, nouvelles vidéos)</li>
+  <li>Traductions de l'interface (structure i18n prête)</li>
+  <li>Mode hors-ligne complet (service worker, cache jeux + texte du jour)</li>
+  <li>Parcours « école biblique » semaine par semaine</li>
+  <li>Profils multiples sur un même appareil (famille)</li>
+  <li>Déploiement sur infrastructure organisationnelle</li>
+  <li>Nouvelles langues de territoire</li>
+</ul>
+
+<h2 class="section">6.4 Proposition de transmission</h2>
+<table>
+  <tr><th>Option</th><th>Contenu</th></tr>
+  <tr><td><strong>A — Adoption officielle</strong></td><td>Transfert dépôt GitHub, domaine Netlify, documentation, guide Figma, accompagnement maintenance et enrichissement contenu jeunesse</td></tr>
+  <tr><td><strong>B — Usage interne</strong></td><td>Déploiement sur infrastructure organisation, branding selon Service des publications</td></tr>
+  <tr><td><strong>C — Retour et orientation</strong></td><td>Recommandations pour améliorer ou rediriger selon priorités actuelles</td></tr>
+</table>
+<p><strong>Je ne demande pas</strong> de rémunération, de reconnaissance publique, ni d'usage commercial.</p>
+<p><strong>Je demande</strong> que cet outil puisse servir les jeunes comme je l'ai imaginé — et l'orientation du Bethel sur la conformité.</p>
+
+<h2 class="section">6.5 FAQ Bethel</h2>
+<table>
+  <tr><th>Question</th><th>Réponse détaillée</th></tr>
+  <tr><td>Le contenu doctrinal est-il vérifié ?</td><td>Tout provient des sources officielles. Aucune doctrine inventée. Auditable dans <code>src/data/</code>. Chaque entrée peut citer sa source biblique ou publication.</td></tr>
+  <tr><td>Contenu inapproprié possible ?</td><td>Non : pas de chat, pas de contenu généré par les utilisateurs, pas de liens hors JW.org. Environnement fermé et contrôlé.</td></tr>
+  <tr><td>Les questions du texte du jour sont-elles fiables ?</td><td>Générées depuis le commentaire WOL officiel du jour. Les réponses correctes sont des phrases du commentaire, pas des inventions.</td></tr>
+  <tr><td>Fonctionne hors-ligne ?</td><td>Partiellement : profil, jeux et progression en local. Vidéos et texte du jour nécessitent connexion (cache texte au build pour 3 jours).</td></tr>
+  <tr><td>Qui paie l'hébergement ?</td><td>Plan gratuit Netlify actuellement. Transférable à l'organisation.</td></tr>
+  <tr><td>Sans être développeur ?</td><td>Fichiers data structurés en TypeScript. Enrichissement possible avec accompagnement technique.</td></tr>
+  <tr><td>Remplace JW Library ?</td><td>Non. Complément pour l'engagement ludique. Liens systématiques vers les sources officielles.</td></tr>
+</table>
+
+<h2 class="section">6.6 Conclusion — ce que j'espère du fond du cœur</h2>
+<p>Nous vivons une époque où <strong>retenir l'attention des jeunes pour les choses spirituelles</strong> est plus exigeant qu'avant. Ce n'est pas leur faute. Ce n'est pas un défaut de caractère. C'est un <strong>nouveau terrain</strong> — et nous pouvons nous y adapter avec sagesse, sans compromettre la pureté du message.</p>
+<p><strong>JW Games</strong> est ma réponse à ce défi. Pas une réponse parfaite — une réponse sincère, construite avec amour, testée, déployée, documentée. Quinze jeux. Cent trente-sept vidéos. Quarante-huit articles. Huit langues. Un texte du jour qui parle à la personne. Un parcours qui guide semaine après semaine. Des badges qui célèbrent chaque pas.</p>
+<p>Si un seul jeune ouvre sa Bible avec un sourire… retient un verset en jouant… médite sur le texte du jour parce que la question lui parle directement… ose dire « Bonjour » dans une autre langue sur le terrain… ou choisit d'ouvrir l'icône JW Games plutôt qu'un jeu vide — <strong>alors tout le travail, toutes les nuits, toutes les prières en auront valu la peine</strong>.</p>
+<p>Je n'ai pas construit JW Games pour moi. Je l'ai construit pour <strong>eux</strong> — pour ce jeune qui doute de sa capacité à étudier, pour cette adolescente qui s'ennuie en lisant mais adore les défis, pour ce pionnier qui veut progresser, pour ce parent qui cherche un outil sûr et gratuit à recommander sans crainte.</p>
+<p>Je mets ce projet entre vos mains avec reconnaissance profonde pour tout ce que l'organisation accomplit au service de Jéhovah et de notre prochain — en particulier pour les jeunes qui représentent l'avenir de notre culte unifié.</p>
+<p>Je reste à votre entière disposition pour une démonstration en personne, une visioconférence, ou toute question technique.</p>
+<p style="margin-top:14px"><strong>Avec mon affection fraternelle,</strong><br><strong>Alfred Gibeau-Ahoussinou</strong></p>
 
 <div class="footer-note">
-  <p><em>Document préparé par Alfred Gibeau-Ahoussinou — Juin 2026</em></p>
+  <p><em>JW Games — Document complet — Juin 2026</em></p>
   <p>jwgames.netlify.app · github.com/alfredgibeau-ahoussinou/jw-games</p>
+  <p style="margin-top:4px;font-size:7.5pt">Initiative personnelle — pas d'approbation officielle de l'organisation</p>
 </div>
 
 </body>

@@ -4,6 +4,7 @@ import {
   Flame,
   Film,
   Gamepad2,
+  Globe,
   Home,
   Compass,
   User,
@@ -27,12 +28,14 @@ export const PRIMARY_NAV: NavItem[] = [
 
 /** Liens secondaires — menu latéral mobile */
 export const SECONDARY_NAV: NavItem[] = [
+  { href: "/langues", label: "Langues", icon: Globe },
   { href: "/quotidien", label: "Défi du jour", icon: Flame },
   { href: "/decouvrir", label: "Découvrir", icon: Compass },
 ];
 
 export const DESKTOP_NAV: NavItem[] = [
   ...PRIMARY_NAV.slice(0, 4),
+  { href: "/langues", label: "Langues", icon: Globe },
   { href: "/quotidien", label: "Défi", icon: Flame },
   PRIMARY_NAV[4],
 ];

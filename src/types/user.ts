@@ -1,15 +1,57 @@
 import type { GameMode } from "./game";
+import type { PreachLanguageId } from "./language";
+import { normalizePreferences } from "@/lib/user-preferences";
+
+export type AgeRange = "7-12" | "13-17" | "18-29" | "30-49" | "50+" | "famille";
+
+export type UserGoal = "jeux" | "etude" | "videos" | "versets" | "famille";
+
+export type BibleLevel = "debutant" | "intermediaire" | "avance";
+
+/** Rôle au ministère — pas d'identité personnelle */
+export type MinistryRole =
+  | "publieur"
+  | "pionnier-auxiliaire"
+  | "pionnier-permanent"
+  | "etudiant-bible"
+  | "jeune"
+  | "parent"
+  | "visiteur";
+
+/** Comment la personne utilise l'application */
+export type UsageMode = "solo" | "famille" | "groupe" | "assemblee";
+
+export type PlayFrequency = "quotidien" | "hebdomadaire" | "occasionnel";
+
+/** balanced = progression visible · calm = étude sans combos ni XP affichés en jeu */
+export type StudyFocus = "balanced" | "calm";
+
+export interface UserPreferences {
+  ageRange: AgeRange;
+  goal: UserGoal;
+  bibleLevel: BibleLevel;
+  avatarColor: string;
+  ministryRole: MinistryRole;
+  usageMode: UsageMode;
+  playFrequency: PlayFrequency;
+  studyFocus: StudyFocus;
+  /** Langue cible préférée pour la prédication (proclamateurs) */
+  preferredLanguageId?: PreachLanguageId;
+}
 
 export interface UserProfile {
   id: string;
   displayName: string;
   avatarUrl?: string;
+  preferences?: UserPreferences;
   createdAt: string;
   level: number;
   xp: number;
   xpToNextLevel: number;
   totalGamesPlayed: number;
   streak: number;
+  /** Date ISO (YYYY-MM-DD) de la dernière réclamation du défi quotidien */
+  lastStreakClaimDate?: string;
   badges: Badge[];
   stats: UserStats;
   watchedVideos?: string[];
@@ -88,9 +130,13 @@ export function normalizeUserStats(stats?: Partial<UserStats> | null): UserStats
 }
 
 export function normalizeProfile(profile: UserProfile): UserProfile {
+  const stats = normalizeUserStats(profile.stats);
+  const fromStats = (stats as UserStats & { userPreferences?: UserPreferences }).userPreferences;
+
   return {
     ...profile,
-    stats: normalizeUserStats(profile.stats),
+    stats,
+    preferences: normalizePreferences(profile.preferences ?? fromStats),
     watchedVideos: profile.watchedVideos ?? [],
     favoriteVideoIds: profile.favoriteVideoIds ?? [],
   };

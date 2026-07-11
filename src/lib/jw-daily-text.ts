@@ -1,4 +1,5 @@
-import type { DailyTextQuestion, JwDailyText } from "@/types/daily-text";
+import type { JwDailyText } from "@/types/daily-text";
+import { buildDailyTextQuestions } from "@/lib/daily-text-questions";
 
 const WOL_RS = "r30";
 const WOL_LIB = "lp-f";
@@ -55,6 +56,11 @@ async function fetchWithTimeout(url: string, init: RequestInit, ms: number) {
   const timer = setTimeout(() => controller.abort(), ms);
   try {
     return await fetch(url, { ...init, signal: controller.signal });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error("La bibliothèque en ligne met trop de temps à répondre");
+    }
+    throw err;
   } finally {
     clearTimeout(timer);
   }
@@ -107,102 +113,6 @@ export function parseWolDailyTextContent(content: string): {
     commentary,
     commentarySource,
   };
-}
-
-function shuffleWithSeed<T>(arr: T[], seed: number): T[] {
-  const out = [...arr];
-  let s = seed;
-  for (let i = out.length - 1; i > 0; i--) {
-    s = (s * 1103515245 + 12345) & 0x7fffffff;
-    const j = s % (i + 1);
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-function buildOptions(correct: string, wrong: string[], seed: number) {
-  const options = shuffleWithSeed([correct, ...wrong.filter((w) => w !== correct).slice(0, 3)], seed);
-  return { options, correctIndex: options.indexOf(correct) };
-}
-
-function firstSentence(text: string): string {
-  const m = text.match(/^[^.!?]+[.!?]?/);
-  return (m ? m[0] : text).trim();
-}
-
-function buildQuizQuestions(
-  data: Omit<JwDailyText, "questions">,
-  dateSeed: number
-): DailyTextQuestion[] {
-  const { scripture, scriptureReference, commentary, commentarySource } = data;
-  const intro = firstSentence(commentary);
-
-  const refBook = scriptureReference.split(/[\s.:]/)[0] ?? scriptureReference;
-
-  const q1 = buildOptions(
-    scriptureReference,
-    ["Psaume 23:1", "Jean 3:16", "Matthieu 6:33", "Romains 8:28"],
-    dateSeed
-  );
-
-  const q2 = buildOptions(
-    scripture,
-    [
-      "Jéhovah est mon berger. Je ne manquerai de rien.",
-      "Aimez-vous les uns les autres.",
-      "Confie-toi en Jéhovah de tout ton cœur.",
-      "Celui qui endure jusqu'à la fin sera sauvé.",
-    ],
-    dateSeed + 1
-  );
-
-  const q3 = buildOptions(
-    intro,
-    [
-      "Ce commentaire ne s'applique qu'aux premiers chrétiens.",
-      "Il encourage à ignorer la Parole de Jéhovah.",
-      "Il met l'accent sur la vengeance personnelle.",
-      "Il parle uniquement de richesse matérielle.",
-    ],
-    dateSeed + 2
-  );
-
-  const q4Correct = commentarySource || scriptureReference.replace(/\s+\d.*$/, "").trim() || scriptureReference;
-  const q4Wrong = commentarySource
-    ? ["w23.01 15 § 10", "g22.2 4 § 3", "it-1 512", "bh 15 § 2"]
-    : ["Psaumes", "Proverbes", "Apocalypse", "Actes"];
-  const q4 = buildOptions(q4Correct, q4Wrong, dateSeed + 3);
-
-  return [
-    {
-      id: "jw-dt-q1",
-      question: "Quelle référence biblique accompagne le texte du jour ?",
-      ...q1,
-      explanation: `Le verset cité provient de ${scriptureReference}.`,
-    },
-    {
-      id: "jw-dt-q2",
-      question: "Quel verset est cité en introduction du texte du jour ?",
-      ...q2,
-      explanation: `Texte du jour : « ${scripture} » (${scriptureReference}).`,
-    },
-    {
-      id: "jw-dt-q3",
-      question: "Comment commence le commentaire officiel du texte du jour ?",
-      ...q3,
-      explanation: intro,
-    },
-    {
-      id: "jw-dt-q4",
-      question: commentarySource
-        ? "Quelle est la source du commentaire du texte du jour ?"
-        : `De quel livre biblique provient la référence ${scriptureReference} ?`,
-      ...q4,
-      explanation: commentarySource
-        ? `Source : ${commentarySource}.`
-        : `La référence ${scriptureReference} provient du livre ${refBook}.`,
-    },
-  ];
 }
 
 export function getParisDate(offsetDays = 0): Date {
@@ -259,5 +169,5 @@ export async function fetchJwDailyText(date: Date = new Date()): Promise<JwDaily
   };
 
   const seed = year * 10000 + month * 100 + day;
-  return { ...base, questions: buildQuizQuestions(base, seed) };
+  return { ...base, questions: buildDailyTextQuestions(base, seed) };
 }

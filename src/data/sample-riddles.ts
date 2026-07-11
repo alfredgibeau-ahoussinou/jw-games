@@ -1,7 +1,8 @@
 import type { QuizQuestion } from "@/types/content";
+import { prepareQuizQuestions } from "@/lib/quiz-options";
 import { EXTRA_RIDDLES } from "./extra/extra-riddles";
 
-export const RIDDLE_QUESTIONS: QuizQuestion[] = [
+const RAW_RIDDLE_QUESTIONS: QuizQuestion[] = [
   {
     id: "rid-01", type: "quiz", category: "personnages", difficulty: "facile",
     title: "Le berger", description: "",
@@ -55,10 +56,11 @@ export const RIDDLE_QUESTIONS: QuizQuestion[] = [
   {
     id: "rid-06", type: "quiz", category: "personnages", difficulty: "difficile",
     title: "Le disciple fidèle", description: "",
-    question: "J'étais pêcheur et Jésus m'a surnommé « fils du tonnerre ». Qui suis-je ?",
+    question:
+      "Je suis le frère aîné de Jean ; nous étions pêcheurs et Jésus nous a surnommés « fils du tonnerre ». Qui suis-je ?",
     options: ["Jean", "Jacques", "Pierre", "André"],
     correctIndex: 1,
-    explanation: "Jacques et Jean étaient surnommés « fils du tonnerre ».",
+    explanation: "Jacques et Jean, fils de Zébédée, étaient surnommés « fils du tonnerre » (Marc 3:17).",
     sources: [{ type: "bible", reference: "Marc 3:17", bibleEdition: "Traduction du monde nouveau" }],
     verifiedAt: "2026-01-01", tags: ["disciples"],
   },
@@ -84,6 +86,8 @@ export const RIDDLE_QUESTIONS: QuizQuestion[] = [
   },
   ...EXTRA_RIDDLES,
 ];
+
+export const RIDDLE_QUESTIONS: QuizQuestion[] = prepareQuizQuestions(RAW_RIDDLE_QUESTIONS);
 
 export function getRiddles() {
   return RIDDLE_QUESTIONS;

@@ -45,9 +45,9 @@ export default function BiblioPage() {
       )}
 
       {phase === "pick" && (
-        <div className="space-y-4">
-          <p className="text-center text-sm text-[var(--text-muted)]">Quelle partie de la Bible ?</p>
-          <div className="grid gap-4 sm:grid-cols-3">
+        <div>
+          <p>Quelle partie de la Bible ?</p>
+          <div>
             {BIBLE_BOOK_SETS.map((set, i) => (
               <Card
                 key={set.id}
@@ -57,17 +57,16 @@ export default function BiblioPage() {
                   setSetIndex(i);
                   setPhase("playing");
                 }}
-                className="cursor-pointer text-center"
               >
-                <div className="mb-2 flex justify-center text-[var(--accent)]">
-                  <BookMarked className="h-5 w-5" aria-hidden />
+                <div>
+                  <BookMarked aria-hidden />
                 </div>
-                <p className="font-semibold">{set.title}</p>
-                <p className="text-caption mt-1">{set.events.length} livres</p>
+                <p>{set.title}</p>
+                <p>{set.events.length} livres</p>
               </Card>
             ))}
           </div>
-          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
+          <Button variant="outline" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>
