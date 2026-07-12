@@ -9,6 +9,7 @@ function cacheResponse(
   return NextResponse.json(resolved.entry, {
     headers: {
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      "Netlify-Vary": "query=date",
       "X-Daily-Text-Source": resolved.source,
       "X-Daily-Text-Requested": resolved.requestedIso,
       "X-Daily-Text-Served": resolved.servedIso,
