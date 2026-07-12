@@ -67,11 +67,13 @@ export function StudyHubPathTiles({
             type="button"
             onClick={() => onSelect(path.id)}
             aria-pressed={isActive}
+            aria-label={`${path.title} — ${path.description}`}
             className={cn(
-              "group relative flex flex-col overflow-hidden rounded-2xl border p-5 text-left transition-all",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+              "group relative flex min-h-[11rem] flex-col overflow-hidden rounded-2xl border p-5 text-left transition-all duration-200",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]",
+              "active:scale-[0.98]",
               isActive
-                ? "border-[var(--accent)]/50 bg-[var(--accent-light)] shadow-lg shadow-[var(--accent)]/5"
+                ? "border-[var(--accent)]/50 bg-[var(--accent-light)] shadow-lg shadow-[var(--accent)]/10 ring-1 ring-[var(--accent)]/30"
                 : "border-white/[0.06] bg-[var(--bg-card)] hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl"
             )}
           >
@@ -97,10 +99,15 @@ export function StudyHubPathTiles({
               <p className="mt-2 flex-1 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
                 {path.description}
               </p>
-              <span className="mt-4 flex items-center gap-1 text-sm font-medium text-[var(--accent)]">
-                Explorer
+              <span className="mt-4 flex min-h-[2.75rem] items-center gap-1 text-sm font-medium text-[var(--accent)]">
+                {isActive ? "Ouvert" : "Explorer"}
                 <ArrowUpRight
-                  className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  className={cn(
+                    "h-4 w-4 transition-transform",
+                    isActive
+                      ? "rotate-45"
+                      : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  )}
                   aria-hidden
                 />
               </span>

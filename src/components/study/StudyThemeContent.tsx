@@ -210,9 +210,9 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
                       </p>
                     </div>
 
-                    <blockquote className="border-l-2 border-[var(--accent)] pl-4 italic text-[var(--text-secondary)]">
+                    <blockquote className="scripture-block">
                       {theme.scriptureHighlight}
-                      <footer className="mt-2 text-sm not-italic text-[var(--text-dim)]">
+                      <footer className="scripture-ref mt-2 not-italic">
                         {theme.scriptureRef}
                       </footer>
                     </blockquote>

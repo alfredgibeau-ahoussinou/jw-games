@@ -174,7 +174,8 @@ export function StudyHubContent() {
                 <button
                   type="button"
                   onClick={() => setActivePath(null)}
-                  className="flex items-center gap-2 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
+                  aria-label="Retour aux chemins d'étude"
+                  className="flex min-h-[2.75rem] items-center gap-2 rounded-lg px-1 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden />
                   Retour aux chemins

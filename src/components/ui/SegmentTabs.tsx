@@ -26,10 +26,23 @@ export function SegmentTabs<T extends string>({
   value,
   onChange,
   className,
+  size = "md",
+  fullWidth = false,
+  scrollable = false,
   ariaLabel = "Onglets",
 }: SegmentTabsProps<T>) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className={cn("segment-tabs", className)}>
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      className={cn(
+        "segment-tabs",
+        scrollable && "segment-tabs--scrollable",
+        fullWidth && "segment-tabs--full",
+        size === "sm" && "segment-tabs--sm",
+        className
+      )}
+    >
       {items.map(({ id, label, icon: Icon }) => {
         const active = value === id;
         return (
@@ -38,9 +51,10 @@ export function SegmentTabs<T extends string>({
             type="button"
             role="tab"
             aria-selected={active}
+            tabIndex={active ? 0 : -1}
             onClick={() => onChange(id)}
           >
-            {Icon && <Icon aria-hidden />}
+            {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
             {label}
           </button>
         );
