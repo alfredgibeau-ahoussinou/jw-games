@@ -1,17 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   BookOpen,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   Circle,
   Compass,
   Gamepad2,
   Lightbulb,
+  Link2,
   ListChecks,
+  ScrollText,
   Sparkles,
   Target,
 } from "lucide-react";
@@ -24,7 +27,7 @@ import { StudyReadingBlock } from "@/components/study/StudyReadingBlock";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { SegmentTabs } from "@/components/ui/SegmentTabs";
 import { getThemeGuide } from "@/data/study/theme-guides";
-import { getThemeArticles } from "@/data/study-themes";
+import { getStudyTheme, getThemeArticles } from "@/data/study-themes";
 import { STUDY_THEME_VISUALS } from "@/lib/study-visuals";
 import { isArticleRead, isStudyGameDone } from "@/lib/study-progress";
 import { useUserStore } from "@/stores/user-store";
@@ -47,6 +50,75 @@ const panelMotion = {
   transition: { duration: 0.2, ease: "easeOut" as const },
 };
 
+interface CollapsibleSectionProps {
+  id: string;
+  title: string;
+  icon: ReactNode;
+  defaultOpen?: boolean;
+  children: ReactNode;
+  badge?: string;
+}
+
+function CollapsibleSection({
+  id,
+  title,
+  icon,
+  defaultOpen = false,
+  children,
+  badge,
+}: CollapsibleSectionProps) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <section className="overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={id}
+        className={cn(
+          "flex w-full min-h-[2.75rem] items-center gap-3 p-5 text-left transition-colors sm:p-6",
+          "hover:bg-white/[0.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]"
+        )}
+      >
+        <span className="flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
+          {icon}
+          {title}
+        </span>
+        {badge && (
+          <span className="ml-1 rounded-full bg-[var(--accent-light)] px-2 py-0.5 text-[0.6875rem] font-medium text-[var(--accent)]">
+            {badge}
+          </span>
+        )}
+        <ChevronDown
+          className={cn(
+            "ml-auto h-5 w-5 shrink-0 text-[var(--text-dim)] transition-transform duration-200",
+            open && "rotate-180"
+          )}
+          aria-hidden
+        />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id={id}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-4 border-t border-white/[0.05] px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+}
+
 interface StudyThemeContentProps {
   theme: StudyTheme;
 }
@@ -60,6 +132,9 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
   const guide = getThemeGuide(theme);
   const readings = theme.readings ?? [];
   const articles = getThemeArticles(theme.id);
+  const relatedThemes = (guide.relatedThemes ?? [])
+    .map((id) => getStudyTheme(id))
+    .filter((t): t is StudyTheme => t != null);
 
   const articlesRead = articles.filter((a) => isArticleRead(studyProgress, a.id)).length;
   const gamesDone = theme.miniGames.filter((g) =>
@@ -200,14 +275,19 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
                     />
                   )}
                   <div className="relative space-y-5">
-                    <div>
-                      <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
+                    <div className="space-y-3">
+                      <p className="flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
                         <Sparkles className="h-4 w-4" aria-hidden />
                         Introduction
                       </p>
-                      <p className="text-[0.9375rem] leading-relaxed text-[var(--text-muted)]">
-                        {guide.intro}
-                      </p>
+                      {guide.introParagraphs.map((paragraph, i) => (
+                        <p
+                          key={i}
+                          className="text-[0.9375rem] leading-relaxed text-[var(--text-muted)]"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
                     </div>
 
                     <blockquote className="scripture-block">
@@ -229,6 +309,23 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
                   </p>
                 </section>
 
+                <CollapsibleSection
+                  id="key-verses"
+                  title="Versets clés à méditer"
+                  icon={<ScrollText className="h-4 w-4" aria-hidden />}
+                  badge={`${guide.keyVerses.length} versets`}
+                  defaultOpen={guide.keyVerses.length <= 4}
+                >
+                  <div className="space-y-4">
+                    {guide.keyVerses.map((verse, i) => (
+                      <blockquote key={i} className="scripture-block text-[0.9375rem]">
+                        {verse.text}
+                        <footer className="scripture-ref mt-2 not-italic">{verse.ref}</footer>
+                      </blockquote>
+                    ))}
+                  </div>
+                </CollapsibleSection>
+
                 <section className="rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-5 sm:p-6">
                   <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
                     <Target className="h-4 w-4" aria-hidden />
@@ -243,6 +340,70 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
                     ))}
                   </ul>
                 </section>
+
+                <CollapsibleSection
+                  id="meditation-tips"
+                  title="Comment méditer sur ce thème"
+                  icon={<ListChecks className="h-4 w-4" aria-hidden />}
+                  defaultOpen={false}
+                >
+                  <ul className="space-y-3">
+                    {guide.meditationTips.map((tip, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-[var(--text-muted)]">
+                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[var(--accent)]/15 text-[0.6875rem] font-bold tabular-nums text-[var(--accent)]">
+                          {i + 1}
+                        </span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </CollapsibleSection>
+
+                {articles.length > 0 && (
+                  <section aria-label="Articles recommandés" className="space-y-4">
+                    <div>
+                      <p className="flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
+                        <BookOpen className="h-4 w-4" aria-hidden />
+                        Articles à lire dans ce pôle
+                      </p>
+                      <p className="text-caption mt-1">
+                        Études structurées avec Écritures et questions de méditation.
+                      </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {articles.map((article) => (
+                        <StudyArticleCard key={article.id} article={article} compact />
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {relatedThemes.length > 0 && (
+                  <section className="rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-5 sm:p-6">
+                    <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-[var(--accent)]">
+                      <Link2 className="h-4 w-4" aria-hidden />
+                      Pôles connexes
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {relatedThemes.map((related) => {
+                        const relatedVisual = STUDY_THEME_VISUALS[related.id];
+                        const RelatedIcon = relatedVisual?.icon;
+                        return (
+                          <Link
+                            key={related.id}
+                            href={`/etude/${related.id}`}
+                            className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[var(--bg-elevated)] px-3 py-2 text-sm transition-colors hover:border-[var(--accent)]/30 hover:bg-[var(--accent-light)]"
+                          >
+                            {RelatedIcon && (
+                              <RelatedIcon className="h-4 w-4 text-[var(--accent)]" aria-hidden />
+                            )}
+                            <span className="font-medium">{related.title}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
 
                 <div className="flex justify-end">
                   <Button size="sm" onClick={() => setActiveTab("parcours")}>
