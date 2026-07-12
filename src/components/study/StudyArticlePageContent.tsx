@@ -61,73 +61,69 @@ export function StudyArticlePageContent({ article }: StudyArticlePageContentProp
   return (
     <PageWrapper>
       <StudioPageShell>
-        <div>
-          <PageHeader
-            title={article.title}
-            description={theme?.title ?? "Étude personnelle"}
-            backHref={theme ? `/etude/${theme.id}` : "/etude"}
-            backLabel={theme ? theme.title : "Étude personnelle"}
-            eyebrow="Article"
-          />
-        </div>
+        <PageHeader
+          title={article.title}
+          description={theme?.title ?? "Étude personnelle"}
+          backHref={theme ? `/etude/${theme.id}` : "/etude"}
+          backLabel={theme ? theme.title : "Étude personnelle"}
+          eyebrow="Article"
+        />
 
-        <StudioPageBody narrow>
-
-        {read && (
-          <div>
-            <CheckCircle2 aria-hidden />
-            Article marqué comme lu
-          </div>
-        )}
-
-        <StudyArticleView article={article} />
-
-        <div ref={endRef}>
-          {!read && (
-            <Button
-              variant="outline"
-              onClick={() => markStudyArticleRead(article.id)}
-            >
-              Marquer comme lu
-            </Button>
+        <StudioPageBody narrow className="space-y-8">
+          {read && (
+            <div className="inline-flex items-center gap-2 rounded-full bg-[var(--success-bg)] px-4 py-2 text-sm font-medium text-[var(--success-text)]">
+              <CheckCircle2 className="h-4 w-4" aria-hidden />
+              Article marqué comme lu
+            </div>
           )}
-        </div>
 
-        {read && nextArticle && nextArticle.id !== article.id && (
-          <div>
-            <p>Prochaine étape du parcours</p>
-            <p>{nextArticle.title}</p>
-            <Link href={`/etude/article/${nextArticle.id}`}>
-              <Button size="sm">Continuer la lecture</Button>
-            </Link>
-          </div>
-        )}
+          <StudyArticleView article={article} />
 
-        {theme && (
-          <div>
-            <Link href={`/etude/${theme.id}`}>
-              <Button variant="outline" size="sm">
-                Retour à la thématique
+          <div ref={endRef}>
+            {!read && (
+              <Button variant="outline" onClick={() => markStudyArticleRead(article.id)}>
+                Marquer comme lu
               </Button>
-            </Link>
-            {theme.miniGames[0] && (
-              <Link href={`/etude/${theme.id}/${theme.miniGames[0].id}`}>
-                <Button size="sm">Mini-jeu associé</Button>
-              </Link>
             )}
           </div>
-        )}
 
-        {related.length > 0 && (
-          <section aria-label="Articles liés">
-            <h2>À lire aussi</h2>
-            <div>
-              {related.map((a) => (
-                <StudyArticleCard key={a.id} article={a} />
-              ))}
+          {read && nextArticle && nextArticle.id !== article.id && (
+            <div className="rounded-2xl border border-[var(--accent)]/25 bg-[var(--accent-light)] p-5">
+              <p className="text-xs font-medium uppercase tracking-wider text-[var(--accent)]">
+                Prochaine étape du parcours
+              </p>
+              <p className="mt-1 font-semibold">{nextArticle.title}</p>
+              <Link href={`/etude/article/${nextArticle.id}`} className="mt-3 inline-block">
+                <Button size="sm">Continuer la lecture</Button>
+              </Link>
             </div>
-          </section>
-        )}
+          )}
+
+          {theme && (
+            <div className="flex flex-wrap gap-3">
+              <Link href={`/etude/${theme.id}`}>
+                <Button variant="outline" size="sm">
+                  Retour à la thématique
+                </Button>
+              </Link>
+              {theme.miniGames[0] && (
+                <Link href={`/etude/${theme.id}/${theme.miniGames[0].id}`}>
+                  <Button size="sm">Mini-jeu associé</Button>
+                </Link>
+              )}
+            </div>
+          )}
+
+          {related.length > 0 && (
+            <section aria-label="Articles liés" className="space-y-4">
+              <h2 className="text-heading">À lire aussi</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {related.map((a) => (
+                  <StudyArticleCard key={a.id} article={a} compact />
+                ))}
+              </div>
+            </section>
+          )}
         </StudioPageBody>
       </StudioPageShell>
     </PageWrapper>

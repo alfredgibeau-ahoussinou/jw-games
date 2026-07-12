@@ -58,6 +58,22 @@ export function toParisIso(date: Date = new Date()): string {
   return formatDateParts(date).iso;
 }
 
+/** Millisecondes jusqu'à la prochaine minuit (Europe/Paris). */
+export function msUntilParisMidnight(from: Date = new Date()): number {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Paris",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(from);
+  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
+  const second = Number(parts.find((p) => p.type === "second")?.value ?? 0);
+  return ((23 - hour) * 3600 + (59 - minute) * 60 + (59 - second)) * 1000 + 1000;
+}
+
 /** Valide et parse une date ISO (YYYY-MM-DD). */
 export function parseParisIso(iso: string): Date | null {
   if (!ISO_DATE_RE.test(iso)) return null;

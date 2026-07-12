@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-
 import type { PreachPhrase } from "@/types/language";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { cn } from "@/lib/cn";
 import { shuffle } from "@/data/languages";
 
 interface PhraseQuizProps {
@@ -14,7 +13,10 @@ interface PhraseQuizProps {
 }
 
 export function PhraseQuiz({ phrases, languageName, onComplete }: PhraseQuizProps) {
-  const questions = useMemo(() => shuffle(phrases).slice(0, Math.min(8, phrases.length)), [phrases]);
+  const questions = useMemo(
+    () => shuffle(phrases).slice(0, Math.min(8, phrases.length)),
+    [phrases]
+  );
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -33,7 +35,7 @@ export function PhraseQuiz({ phrases, languageName, onComplete }: PhraseQuizProp
   if (!current || questions.length === 0) {
     return (
       <Card>
-        <p>Pas assez de phrases pour un quiz.</p>
+        <p className="text-center text-[var(--text-muted)]">Pas assez de phrases pour un quiz.</p>
       </Card>
     );
   }
@@ -60,20 +62,20 @@ export function PhraseQuiz({ phrases, languageName, onComplete }: PhraseQuizProp
   const isCorrect = selected === current.target;
 
   return (
-    <div>
-      <div>
-        <span>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-[var(--text-muted)]">
           Question {index + 1}/{questions.length}
         </span>
-        <span>Score : {score}</span>
+        <span className="font-medium text-[var(--accent)]">Score : {score}</span>
       </div>
 
-      <Card glow>
-        <p>Traduisez en {languageName} :</p>
-        <p>{current.french}</p>
+      <Card glow className="text-center">
+        <p className="text-caption mb-2">Traduisez en {languageName} :</p>
+        <p className="text-lg font-semibold leading-snug">{current.french}</p>
       </Card>
 
-      <ul>
+      <ul className="game-option-list">
         {options.map((opt) => {
           let state: "default" | "correct" | "wrong" | "missed" = "default";
           if (selected) {
@@ -87,6 +89,12 @@ export function PhraseQuiz({ phrases, languageName, onComplete }: PhraseQuizProp
                 type="button"
                 disabled={!!selected}
                 onClick={() => handlePick(opt)}
+                className={cn(
+                  "game-option game-option--idle w-full",
+                  state === "correct" && "game-option--correct",
+                  state === "wrong" && "game-option--wrong",
+                  state === "missed" && selected && "opacity-50"
+                )}
               >
                 {opt}
               </button>
@@ -95,17 +103,21 @@ export function PhraseQuiz({ phrases, languageName, onComplete }: PhraseQuizProp
         })}
       </ul>
 
-      <>
-        {selected && (
-          <div
-          >
-            {isCorrect ? "Correct !" : `Réponse : ${current.target}`}
-            {current.pronunciation && (
-              <p>{current.pronunciation}</p>
-            )}
-          </div>
-        )}
-      </>
+      {selected && (
+        <div
+          className={cn(
+            "rounded-xl border px-4 py-3 text-center text-sm font-medium",
+            isCorrect
+              ? "border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]"
+              : "border-[var(--danger-border)] bg-[var(--danger-bg)] text-[var(--danger-text)]"
+          )}
+        >
+          {isCorrect ? "Correct !" : `Réponse : ${current.target}`}
+          {current.pronunciation && (
+            <p className="mt-1 text-xs opacity-80">{current.pronunciation}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

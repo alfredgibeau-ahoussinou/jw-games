@@ -8,6 +8,7 @@ import { getStudyTheme } from "@/data/study-themes";
 import { getNextPathStep, getStudyPathWeek } from "@/lib/study-paths";
 import { isArticleRead, type StudyProgress } from "@/lib/study-progress";
 import type { UserPreferences } from "@/types/user";
+import { cn } from "@/lib/cn";
 
 interface StudyContinueBannerProps {
   preferences?: UserPreferences | null;
@@ -55,33 +56,41 @@ export function StudyContinueBanner({
   const href = continueHref;
   const label = lastArticle && !lastRead ? "Reprendre votre lecture" : "Prochaine étape du parcours";
 
+  const bannerClass = cn(
+    "flex items-center gap-4 rounded-xl border border-[var(--accent)]/25 bg-gradient-to-r from-[var(--accent-light)]/60 to-[var(--bg-card)] px-4 py-3.5 transition-colors",
+    compact && "hover:border-[var(--accent)]/40 hover:bg-[var(--accent-light)]/80"
+  );
+
   if (compact) {
     return (
-      <Link href={href} className="promo-bar netflix-continue">
-        <BookOpen aria-hidden />
-        <div>
-          <p>{label}</p>
-          <p>{continueTitle}</p>
+      <Link href={href} className={cn(bannerClass, "group")}>
+        <BookOpen className="h-5 w-5 shrink-0 text-[var(--accent)]" aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-[var(--text-muted)]">{label}</p>
+          <p className="truncate text-sm font-semibold">{continueTitle}</p>
         </div>
-        <ChevronRight aria-hidden />
+        <ChevronRight
+          className="h-5 w-5 shrink-0 text-[var(--text-dim)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--accent)]"
+          aria-hidden
+        />
       </Link>
     );
   }
 
   return (
-    <div className="promo-bar netflix-continue">
-      <div>
-        <p>
-          <BookOpen aria-hidden />
+    <div className={bannerClass}>
+      <div className="min-w-0 flex-1">
+        <p className="flex items-center gap-2 text-xs font-medium text-[var(--accent)]">
+          <BookOpen className="h-4 w-4 shrink-0" aria-hidden />
           {label}
         </p>
-        <p>{continueTitle}</p>
-        <p>
+        <p className="mt-1 text-base font-semibold tracking-tight">{continueTitle}</p>
+        <p className="mt-0.5 text-caption">
           {pathWeek?.title}
           {theme ? ` · ${theme.title}` : ""}
         </p>
       </div>
-      <Link href={href}>
+      <Link href={href} className="shrink-0">
         <Button variant="primary">Continuer</Button>
       </Link>
     </div>

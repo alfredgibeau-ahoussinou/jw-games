@@ -41,23 +41,26 @@ export function StudyHubStats({ stats }: StudyHubStatsProps) {
   ] as const;
 
   return (
-    <section className="stats-grid" aria-label="Progression d'étude">
+    <section className="grid gap-4 sm:grid-cols-3" aria-label="Progression d'étude">
       {items.map(({ icon: Icon, label, value, max, pct }) => (
-        <div key={label} className="stats-grid__item card">
-          <div className="stats-grid__head">
-            <div className="stats-grid__label">
-              <span className="stats-grid__icon">
-                <Icon aria-hidden />
+        <div
+          key={label}
+          className="rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-5"
+        >
+          <div className="mb-3 flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent-light)] text-[var(--accent)]">
+                <Icon className="h-4 w-4" aria-hidden />
               </span>
-              <p>{label}</p>
+              <p className="text-sm text-[var(--text-muted)]">{label}</p>
             </div>
-            <p className="stats-grid__value">
+            <p className="text-lg font-bold tabular-nums text-[var(--accent)]">
               {value}
-              <span> / {max}</span>
+              <span className="text-sm font-normal text-[var(--text-muted)]"> / {max}</span>
             </p>
           </div>
           <ProgressBar value={value} max={max || 1} />
-          <p className="stats-grid__pct">{pct} %</p>
+          <p className="mt-2 text-right text-xs tabular-nums text-[var(--text-dim)]">{pct} %</p>
         </div>
       ))}
     </section>

@@ -33,25 +33,30 @@ export function ProfilePrivacy() {
 
   return (
     <Card>
-      <h2>Données sur cet appareil</h2>
-      <p>
+      <h2 className="text-heading mb-2">Données sur cet appareil</h2>
+      <p className="mb-4 text-sm leading-relaxed text-[var(--text-muted)]">
         Votre profil, progression et préférences sont enregistrés uniquement sur cet appareil
         (localStorage). Rien n&apos;est envoyé sur un serveur tiers.
       </p>
-      <div>
+      <div className="flex flex-wrap gap-3">
         <Button type="button" variant="outline" onClick={handleExport}>
           Exporter mes données (JSON)
         </Button>
-        <Button type="button" variant="outline" onClick={handleErase}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleErase}
+          className={confirmErase ? "border-[var(--danger-border)] text-[var(--danger-text)]" : ""}
+        >
           {confirmErase ? "Confirmer l'effacement" : "Effacer toutes mes données"}
         </Button>
-        {confirmErase && (
-          <p>
-            Cette action supprime le profil, la progression d&apos;étude, les langues et les
-            préférences locales. Appuyez à nouveau pour confirmer.
-          </p>
-        )}
       </div>
+      {confirmErase && (
+        <p className="mt-3 text-sm text-[var(--danger-text)]">
+          Cette action supprime le profil, la progression d&apos;étude, les langues et les
+          préférences locales. Appuyez à nouveau pour confirmer.
+        </p>
+      )}
     </Card>
   );
 }

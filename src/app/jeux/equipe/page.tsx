@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-
+import { motion } from "framer-motion";
 import { GameShell, GameResults } from "@/components/layout/GameShell";
 import { QuizGame } from "@/components/game/QuizGame";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/Badge";
 import { shuffleQuiz, SAMPLE_QUIZ } from "@/data/sample-quiz";
 import { calcXp } from "@/lib/daily-challenges";
 import { useUserStore } from "@/stores/user-store";
-import { Users } from "lucide-react";
+import { Users, Swords } from "lucide-react";
 
 type Phase = "setup" | "playing" | "results";
 
@@ -81,39 +81,41 @@ export default function EquipePage() {
       emoji="👥"
     >
       {phase === "setup" && (
-        <div>
+        <div className="mx-auto max-w-md space-y-6">
           <Card glow>
-            <div>
-              <Users />
-              <span>Mode coopératif par équipes</span>
+            <div className="mb-4 flex items-center gap-2 text-[var(--accent)]">
+              <Swords className="h-5 w-5" />
+              <span className="font-semibold">Mode coopératif par équipes</span>
             </div>
-            <p>
+            <p className="text-sm text-[var(--text-muted)]">
               {TOTAL_ROUNDS} manches · {QUESTIONS_PER_ROUND} questions par manche
             </p>
           </Card>
 
-          <div>
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label>
-                <Users /> Équipe A
+              <label className="mb-2 flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                <Users className="h-4 w-4" /> Équipe A
               </label>
               <input
                 value={teamA}
                 onChange={(e) => setTeamA(e.target.value)}
+                className="input-field w-full"
               />
             </div>
             <div>
-              <label>
-                <Users /> Équipe B
+              <label className="mb-2 flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                <Users className="h-4 w-4" /> Équipe B
               </label>
               <input
                 value={teamB}
                 onChange={(e) => setTeamB(e.target.value)}
+                className="input-field w-full"
               />
             </div>
           </div>
 
-          <Button size="lg" onClick={() => setPhase("playing")}>
+          <Button size="lg" className="w-full" onClick={() => setPhase("playing")}>
             Commencer le quiz
           </Button>
         </div>
@@ -121,25 +123,27 @@ export default function EquipePage() {
 
       {phase === "playing" && (
         <div>
-          <div>
-            <div>
-              <p>{teamA}</p>
-              <p>{scores.A}</p>
+          <div className="mb-6 flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-4 py-3">
+            <div className="flex-1 text-center">
+              <p className="text-xs text-[var(--text-muted)]">{teamA}</p>
+              <p className="text-2xl font-bold text-[var(--accent)]">{scores.A}</p>
             </div>
             <Badge variant="neon">
               Manche {round}/{TOTAL_ROUNDS}
             </Badge>
-            <div>
-              <p>{teamB}</p>
-              <p>{scores.B}</p>
+            <div className="flex-1 text-center">
+              <p className="text-xs text-[var(--text-muted)]">{teamB}</p>
+              <p className="text-2xl font-bold text-warning">{scores.B}</p>
             </div>
           </div>
-          <div
+          <motion.div
             key={`${round}-${activeTeam}-${gameKey}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            <p>
+            <p className="mb-4 text-center text-sm text-[var(--text-muted)]">
               C&apos;est au tour de{" "}
-              <span>
+              <span className="font-semibold text-[var(--text)]">
                 {activeTeam === "A" ? teamA : teamB}
               </span>
             </p>
@@ -147,31 +151,34 @@ export default function EquipePage() {
               questions={roundQuestions}
               onComplete={(score) => handleRoundComplete(score)}
             />
-          </div>
+          </motion.div>
         </div>
       )}
 
       {phase === "results" && (
-        <div>
-          <Card glow>
-            <div
+        <div className="mx-auto max-w-md">
+          <Card glow className="mb-6 py-10 text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring" }}
             >
-              <p>🏆</p>
-              <p>
+              <p className="mb-4 text-5xl">🏆</p>
+              <p className="gradient-text-gold text-2xl font-bold sm:text-3xl">
                 {winner
                   ? `Bravo à ${winner} — merci aux deux équipes !`
                   : "Égalité — merci aux deux équipes !"}
               </p>
-            </div>
-            <div>
+            </motion.div>
+            <div className="mt-6 flex justify-center gap-8">
               <div>
-                <p>{teamA}</p>
-                <p>{scores.A}</p>
+                <p className="text-sm text-[var(--text-muted)]">{teamA}</p>
+                <p className="text-3xl font-bold text-[var(--accent)]">{scores.A}</p>
               </div>
-              <div>vs</div>
+              <div className="self-center text-[var(--text-dim)]">vs</div>
               <div>
-                <p>{teamB}</p>
-                <p>{scores.B}</p>
+                <p className="text-sm text-[var(--text-muted)]">{teamB}</p>
+                <p className="text-3xl font-bold text-warning">{scores.B}</p>
               </div>
             </div>
           </Card>

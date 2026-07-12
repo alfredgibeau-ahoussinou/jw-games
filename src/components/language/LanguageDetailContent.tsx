@@ -49,9 +49,7 @@ export function LanguageDetailContent({ language }: LanguageDetailContentProps) 
   return (
     <PageWrapper>
       <StudioPageShell>
-        <div>
-          <StudioBackLink href="/langues" label="Toutes les langues" />
-        </div>
+        <StudioBackLink href="/langues" label="Toutes les langues" />
 
         <PageHeader
           title={`${language.flag} ${language.name}`}
@@ -61,100 +59,106 @@ export function LanguageDetailContent({ language }: LanguageDetailContentProps) 
           eyebrow="Langue"
         />
 
-        <StudioPageBody narrow>
+        <StudioPageBody narrow className="space-y-6">
+          <Card>
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-[var(--text-muted)]">Progression</p>
+                <p className="text-2xl font-bold tabular-nums text-[var(--accent)]">
+                  {loaded ? knownIds.length : "—"}/{language.phrases.length}
+                </p>
+                <p className="text-caption">{progressPct}% maîtrisé</p>
+              </div>
+              <div className="relative h-20 w-20 shrink-0">
+                <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90">
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.9"
+                    fill="none"
+                    stroke="var(--border)"
+                    strokeWidth="3"
+                  />
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="15.9"
+                    fill="none"
+                    stroke="var(--accent)"
+                    strokeWidth="3"
+                    strokeDasharray={`${progressPct} 100`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold">
+                  {progressPct}%
+                </span>
+              </div>
+            </div>
+            {knownIds.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={resetProgress} className="mt-4">
+                <RotateCcw className="h-4 w-4" />
+                Réinitialiser la progression
+              </Button>
+            )}
+          </Card>
 
-      <Card>
-        <div>
-          <div>
-            <p>Progression</p>
-            <p>
-              {loaded ? knownIds.length : "—"}/{language.phrases.length}
-            </p>
-            <p>{progressPct}% maîtrisé</p>
-          </div>
-          <div>
-            <svg viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="15.9" fill="none" strokeWidth="3" />
-              <circle
-                cx="18"
-                cy="18"
-                r="15.9"
-                fill="none"
-               
-                strokeWidth="3"
-                strokeDasharray={`${progressPct} 100`}
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-        </div>
-        {knownIds.length > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetProgress}
-          >
-            <RotateCcw />
-            Réinitialiser la progression
-          </Button>
-        )}
-      </Card>
+          <SegmentTabs
+            items={TABS}
+            value={tab}
+            onChange={(id) => {
+              setTab(id);
+              setPhase("hub");
+            }}
+            fullWidth
+            ariaLabel="Modes d'apprentissage"
+          />
 
-      <SegmentTabs
-        items={TABS}
-        value={tab}
-        onChange={(id) => {
-          setTab(id);
-          setPhase("hub");
-        }}
-        fullWidth
-        ariaLabel="Modes d'apprentissage"
-      />
+          {tab === "cards" && (
+            <PhraseFlashcards
+              phrases={language.phrases}
+              knownIds={knownIds}
+              onMarkKnown={markKnown}
+              languageId={language.id}
+            />
+          )}
 
-      {tab === "cards" && (
-        <PhraseFlashcards
-          phrases={language.phrases}
-          knownIds={knownIds}
-          onMarkKnown={markKnown}
-          languageId={language.id}
-        />
-      )}
+          {tab === "quiz" && phase === "hub" && (
+            <PhraseQuiz
+              key={language.id}
+              phrases={language.phrases}
+              languageName={language.name}
+              onComplete={handleQuizComplete}
+            />
+          )}
 
-      {tab === "quiz" && phase === "hub" && (
-        <PhraseQuiz
-          key={language.id}
-          phrases={language.phrases}
-          languageName={language.name}
-          onComplete={handleQuizComplete}
-        />
-      )}
+          {tab === "quiz" && phase === "quiz-done" && (
+            <Card className="py-10 text-center">
+              <Trophy className="mx-auto mb-3 h-10 w-10 text-warning" />
+              <h2 className="text-heading">Quiz terminé !</h2>
+              <p className="mt-2 text-3xl font-bold text-[var(--accent)]">
+                {quizScore.score}/{quizScore.total}
+              </p>
+              <p className="text-caption mt-1">+{quizScore.score * 15} XP gagnés</p>
+              <Button onClick={() => setPhase("hub")} className="mt-6">
+                Rejouer
+              </Button>
+            </Card>
+          )}
 
-      {tab === "quiz" && phase === "quiz-done" && (
-        <Card>
-          <Trophy />
-          <h2>Quiz terminé !</h2>
-          <p>
-            {quizScore.score}/{quizScore.total}
+          {tab === "list" && (
+            <PhraseList
+              phrases={language.phrases}
+              knownIds={knownIds}
+              languageName={language.name}
+              languageId={language.id}
+            />
+          )}
+
+          <p className="text-center text-sm text-[var(--text-muted)]">
+            Contenu d&apos;apprentissage pour la prédication — inspirez-vous des modèles officiels
+            JW.org.
           </p>
-          <p>+{quizScore.score * 15} XP gagnés</p>
-          <Button onClick={() => setPhase("hub")}>
-            Rejouer
-          </Button>
-        </Card>
-      )}
-
-      {tab === "list" && (
-        <PhraseList
-          phrases={language.phrases}
-          knownIds={knownIds}
-          languageName={language.name}
-          languageId={language.id}
-        />
-      )}
-
-      <p>
-        Contenu d&apos;apprentissage pour la prédication — inspirez-vous des modèles officiels JW.org.
-      </p>
         </StudioPageBody>
       </StudioPageShell>
     </PageWrapper>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -21,6 +21,7 @@ import type { JwDailyText } from "@/types/daily-text";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { useUserStore } from "@/stores/user-store";
+import { useParisDayRotation } from "@/hooks/useParisDayRotation";
 
 async function fetchDailyText(iso?: string) {
   const url = iso ? `/api/daily-text?date=${iso}` : "/api/daily-text";
@@ -56,6 +57,23 @@ export function DailyTextSection() {
 
   const activeIso = selectedIso ?? todayIso;
   const isToday = Boolean(todayIso && activeIso === todayIso);
+
+  const selectedIsoRef = useRef(selectedIso);
+  const todayIsoRef = useRef(todayIso);
+  useEffect(() => {
+    selectedIsoRef.current = selectedIso;
+  }, [selectedIso]);
+  useEffect(() => {
+    todayIsoRef.current = todayIso;
+  }, [todayIso]);
+
+  useParisDayRotation((newIso) => {
+    const prevToday = todayIsoRef.current;
+    const sel = selectedIsoRef.current;
+    const wasViewingToday = sel === null || sel === prevToday;
+    setTodayIso(newIso);
+    if (wasViewingToday) setSelectedIso(null);
+  });
 
   const load = useCallback(async (iso?: string) => {
     setLoading(true);

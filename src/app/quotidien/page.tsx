@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Flame, CheckCircle, Circle, Gift } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -13,7 +13,18 @@ import { PageWrapper } from "@/components/motion/PageWrapper";
 import { DAILY_CHALLENGE_BONUS } from "@/lib/constants";
 import { DAILY_TASKS, DAILY_THRESHOLDS } from "@/lib/daily-challenges";
 import { resetDailyIfNeeded } from "@/lib/db/types";
+import { toParisIso } from "@/lib/jw-daily-text";
+import { useParisDayRotation } from "@/hooks/useParisDayRotation";
 import { useUserStore } from "@/stores/user-store";
+
+function formatParisDateLabel(iso: string) {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Paris",
+  });
+}
 
 export default function QuotidienPage() {
   const { profile, dailyProgress, claimDailyReward } = useUserStore();
@@ -23,16 +34,11 @@ export default function QuotidienPage() {
   const canClaim = allDone && !progress.claimed;
   const doneCount = DAILY_TASKS.filter((t) => progress.tasks[t.id]).length;
 
-  const [dateLabel, setDateLabel] = useState("");
-  useEffect(() => {
-    setDateLabel(
-      new Date().toLocaleDateString("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      })
-    );
-  }, []);
+  const [dateLabel, setDateLabel] = useState(() => formatParisDateLabel(toParisIso()));
+
+  useParisDayRotation((newIso) => {
+    setDateLabel(formatParisDateLabel(newIso));
+  });
 
   return (
     <PageWrapper>
