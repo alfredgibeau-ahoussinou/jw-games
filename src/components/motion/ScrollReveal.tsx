@@ -24,7 +24,7 @@ interface ScrollRevealGroupProps {
 
 export function ScrollRevealGroup({ children, className, as = "div" }: ScrollRevealGroupProps) {
   const Tag = as;
-  return <Tag className={className ?? "card-grid"}>{children}</Tag>;
+  return <Tag className={className ?? "space-y-4"}>{children}</Tag>;
 }
 
 export function ScrollRevealItem({

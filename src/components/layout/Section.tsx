@@ -20,7 +20,7 @@ export function Section({
 }: SectionProps) {
   return (
     <section className={cn("section-block", className)}>
-      <div className="section-header">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-heading">{title}</h2>
           {description && <p className="text-caption mt-1">{description}</p>}
