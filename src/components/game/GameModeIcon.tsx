@@ -21,9 +21,16 @@ export function GameModeIcon({ mode, size = "md", className }: GameModeIconProps
 
   return (
     <div
+      className={cn(
+        "relative flex shrink-0 items-center justify-center rounded-xl",
+        "bg-gradient-to-br shadow-lg ring-1 ring-white/10",
+        visual.gradient,
+        s.box,
+        className
+      )}
       aria-hidden
     >
-      <Icon strokeWidth={1.75} />
+      <Icon className={cn("text-white drop-shadow-sm", s.icon)} strokeWidth={1.75} />
     </div>
   );
 }

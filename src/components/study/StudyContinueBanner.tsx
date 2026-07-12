@@ -82,7 +82,7 @@ export function StudyContinueBanner({
         </p>
       </div>
       <Link href={href}>
-        <Button variant="play">Continuer</Button>
+        <Button variant="primary">Continuer</Button>
       </Link>
     </div>
   );

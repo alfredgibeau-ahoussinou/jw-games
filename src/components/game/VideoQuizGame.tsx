@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { prepareQuizForPlay } from "@/lib/quiz-options";
-import { useGameScore } from "@/hooks/useGameScore";
-
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { VideoQuizItem } from "@/types/content";
 import { getVideoById } from "@/data/jw-videos";
 import { JwVideoPlayer } from "@/components/media/JwVideoPlayer";
@@ -15,6 +13,7 @@ import { GameComboBanner } from "@/components/game/shared/GameComboBanner";
 import { GameOptionGrid } from "@/components/game/shared/GameOptionGrid";
 import { GameFeedbackPanel } from "@/components/game/shared/GameFeedbackPanel";
 import { useGameStreak } from "@/hooks/useGameStreak";
+import { cn } from "@/lib/cn";
 import { Play, HelpCircle, Film } from "lucide-react";
 
 interface VideoQuizGameProps {
@@ -28,11 +27,10 @@ export function VideoQuizGame({ items, onComplete, onVideoWatched }: VideoQuizGa
   const [phase, setPhase] = useState<"watch" | "quiz">("watch");
   const [selected, setSelected] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const { score, addPoint, getScore } = useGameScore();
+  const correctCount = useRef(0);
   const { streak, bestStreak, showCombo, registerAnswer, resetStreak } = useGameStreak();
 
-  const preparedItems = useMemo(() => prepareQuizForPlay(items), [items]);
-  const item = preparedItems[index];
+  const item = items[index];
   const video = getVideoById(item.videoId);
   const isLast = index >= items.length - 1;
   const source = item.sources[0];
@@ -43,7 +41,7 @@ export function VideoQuizGame({ items, onComplete, onVideoWatched }: VideoQuizGa
     setSelected(optionIndex);
     setShowResult(true);
     if (optionIndex === item.correctIndex) {
-      addPoint();
+      correctCount.current += 1;
       registerAnswer(true);
     } else {
       resetStreak();
@@ -52,7 +50,7 @@ export function VideoQuizGame({ items, onComplete, onVideoWatched }: VideoQuizGa
 
   function next() {
     if (isLast) {
-      onComplete(getScore(), preparedItems.length, { bestStreak });
+      onComplete(correctCount.current, items.length, { bestStreak });
       return;
     }
     setIndex((i) => i + 1);
@@ -62,95 +60,103 @@ export function VideoQuizGame({ items, onComplete, onVideoWatched }: VideoQuizGa
   }
 
   if (!video) {
-    return <p>Vidéo introuvable</p>;
+    return <p className="text-center text-danger">Vidéo introuvable</p>;
   }
 
   return (
-    <div>
+    <div className="relative mx-auto max-w-3xl">
       <GameComboBanner show={showCombo} streak={streak} />
 
       <GameHud
         current={index + 1}
-        total={preparedItems.length}
-        score={score}
+        total={items.length}
+        score={correctCount.current}
         streak={streak}
         extra={
-          <Badge variant={phase === "watch" ? "info" : "neon"}>
+          <Badge variant={phase === "watch" ? "info" : "neon"} className="gap-1">
             {phase === "watch" ? (
               <>
-                <Film aria-hidden /> Visionnage
+                <Film className="h-3 w-3" aria-hidden /> Visionnage
               </>
             ) : (
               <>
-                <HelpCircle aria-hidden /> Quiz
+                <HelpCircle className="h-3 w-3" aria-hidden /> Quiz
               </>
             )}
           </Badge>
         }
       />
 
-      <>
+      <AnimatePresence mode="wait">
         {phase === "watch" ? (
-          <div
+          <motion.div
             key={`watch-${index}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -12 }}
           >
             <JwVideoPlayer
               video={video}
+              className="mb-4 video-shell--featured"
               onWatched={() => onVideoWatched?.(item.videoId)}
             />
 
-            <Card>
-              <div>
-                <div>
-                  <p>{video.title}</p>
-                  <p>
+            <Card className="mb-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-[var(--text)]">{video.title}</p>
+                  <p className="mt-1 text-sm text-[var(--text-muted)]">
                     Regardez la vidéo, puis répondez à la question associée.
                   </p>
                 </div>
-                <span>
+                <span className="shrink-0 rounded-full bg-[var(--accent-light)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
                   Question {index + 1} / {items.length}
                 </span>
               </div>
             </Card>
 
-            <Card>
-              <p>
-                Après la vidéo
+            <Card className="mb-6 border-dashed border-[var(--border)] bg-[var(--surface-subtle)]">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+                Question à venir
               </p>
-              <p>
-                Une question sur ce que vous venez de voir — regardez attentivement avant de
-                répondre.
-              </p>
+              <p className="text-sm text-[var(--text-secondary)]">{item.question}</p>
             </Card>
 
-            <Button size="lg" onClick={() => setPhase("quiz")}>
-              <Play aria-hidden />
+            <Button className="w-full" size="lg" onClick={() => setPhase("quiz")}>
+              <Play className="h-5 w-5" aria-hidden />
               J&apos;ai regardé — Passer au quiz
             </Button>
-          </div>
+          </motion.div>
         ) : (
-          <div
+          <motion.div
             key={`quiz-${index}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
           >
-            <div>
-              <Badge variant="neon">
-                <HelpCircle aria-hidden />
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <Badge variant="neon" className="gap-1">
+                <HelpCircle className="h-3 w-3" aria-hidden />
                 Phase quiz
               </Badge>
               <button
                 type="button"
                 onClick={() => setPhase("watch")}
                 disabled={showResult}
+                className={cn(
+                  "text-sm text-[var(--accent)] underline-offset-2 hover:underline",
+                  showResult && "pointer-events-none opacity-40"
+                )}
               >
                 Revoir la vidéo
               </button>
             </div>
 
-            <Card>
-              <p>
+            <Card className="mb-6">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
                 Question {index + 1} sur {items.length}
               </p>
-              <p>{item.question}</p>
+              <p className="mt-2 text-xl font-bold text-[var(--text)]">{item.question}</p>
             </Card>
 
             <GameOptionGrid
@@ -162,7 +168,7 @@ export function VideoQuizGame({ items, onComplete, onVideoWatched }: VideoQuizGa
             />
 
             {showResult && selected !== null && (
-              <div>
+              <div className="mt-6">
                 <GameFeedbackPanel
                   correct={isCorrect}
                   explanation={item.explanation}
@@ -173,9 +179,9 @@ export function VideoQuizGame({ items, onComplete, onVideoWatched }: VideoQuizGa
                 />
               </div>
             )}
-          </div>
+          </motion.div>
         )}
-      </>
+      </AnimatePresence>
     </div>
   );
 }

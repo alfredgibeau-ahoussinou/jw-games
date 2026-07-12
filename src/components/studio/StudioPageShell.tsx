@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-/** Enveloppe standard des pages intérieures — fond + espacement Studio */
+/** Enveloppe standard des pages intérieures */
 export function StudioPageShell({
   children,
   className,
@@ -11,7 +11,7 @@ export function StudioPageShell({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={cn("page container", className)}>{children}</div>;
+  return <div className={cn("container-app", className)}>{children}</div>;
 }
 
 /** Corps de page sous le hero */
@@ -25,7 +25,13 @@ export function StudioPageBody({
   narrow?: boolean;
 }) {
   return (
-    <div className={cn("page-section stack stack--lg", narrow && "container container--narrow", className)}>
+    <div
+      className={cn(
+        "section-block space-y-6",
+        narrow && "mx-auto max-w-2xl",
+        className
+      )}
+    >
       {children}
     </div>
   );

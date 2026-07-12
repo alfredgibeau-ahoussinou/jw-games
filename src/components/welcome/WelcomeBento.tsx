@@ -69,13 +69,15 @@ export function WelcomeBento() {
             return (
               <div key={path.href} className={cn("bento-cell", path.className)}>
                 <Link href={path.href}>
-                  <SafeImage
-                    src={img.url}
-                    alt=""
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    frameClassName="media-frame--fill"
-                  />
+                  <div className="absolute inset-0">
+                    <SafeImage
+                      src={img.url}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                    />
+                  </div>
                   <div />
                   <div>
                     <span>

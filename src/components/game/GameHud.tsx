@@ -25,17 +25,17 @@ export function GameHud({
   const progressValue = total > 0 ? ((current - 1) / total) * 100 : 0;
 
   return (
-    <div>
-      <div>
-        <span>
+    <div className={cn("mb-6 space-y-3", className)}>
+      <div className="game-hud">
+        <span className="game-hud-stat">
           <strong>{current}</strong> / {total}
         </span>
-        <div>
+        <div className="flex items-center gap-3">
           {streak !== undefined && streak >= 2 && (
-            <span>🔥 ×{streak}</span>
+            <span className="text-sm font-bold text-[var(--warning)]">🔥 ×{streak}</span>
           )}
           {score !== undefined && (
-            <span>
+            <span className="game-hud-stat">
               <strong>{score}</strong> {scoreLabel}
             </span>
           )}

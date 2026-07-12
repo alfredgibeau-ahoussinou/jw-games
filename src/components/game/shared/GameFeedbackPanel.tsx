@@ -1,9 +1,10 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { BookOpen, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { jwBibleLookupUrl } from "@/lib/jw-bible-url";
+import { cn } from "@/lib/cn";
 
 interface GameFeedbackPanelProps {
   correct: boolean;
@@ -26,39 +27,47 @@ export function GameFeedbackPanel({
   wrongLabel = "Pas tout à fait…",
   nextLabel,
   onNext,
+  className,
 }: GameFeedbackPanelProps) {
-  const bibleUrl = source ? jwBibleLookupUrl(source) : null;
-
   return (
-    <div>
-      <Card>
-        <div>
-          {correct ? <CheckCircle aria-hidden /> : <XCircle aria-hidden />}
-          <p>{correct ? correctLabel : wrongLabel}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      className={className}
+    >
+      <Card
+        glow
+        className={cn(
+          "mb-4",
+          correct ? "border-[var(--success-border)]" : "border-[var(--danger-border)]"
+        )}
+      >
+        <div className="mb-3 flex items-center gap-2">
+          {correct ? (
+            <CheckCircle className="h-6 w-6 text-[var(--success)]" aria-hidden />
+          ) : (
+            <XCircle className="h-6 w-6 text-[var(--danger)]" aria-hidden />
+          )}
+          <p className={cn("text-lg font-bold", correct ? "text-[var(--success)]" : "text-[var(--danger)]")}>
+            {correct ? correctLabel : wrongLabel}
+          </p>
         </div>
-        {explanation && <p>{explanation}</p>}
+        {explanation && (
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{explanation}</p>
+        )}
         {source && (
-          <footer>
-            <BookOpen aria-hidden />
-            {bibleUrl ? (
-              <a href={bibleUrl} target="_blank" rel="noopener noreferrer">
-                <cite>
-                  {source}
-                  {sourceEdition ? ` — ${sourceEdition}` : ""} (TMN sur jw.org)
-                </cite>
-              </a>
-            ) : (
-              <cite>
-                {source}
-                {sourceEdition ? ` — ${sourceEdition}` : ""}
-              </cite>
-            )}
+          <footer className="mt-4 flex items-center gap-2 border-t border-white/[0.06] pt-3">
+            <BookOpen className="h-3.5 w-3.5 text-[var(--accent)]" aria-hidden />
+            <cite className="scripture-ref not-italic">
+              {source}
+              {sourceEdition ? ` — ${sourceEdition}` : ""}
+            </cite>
           </footer>
         )}
       </Card>
-      <Button size="lg" onClick={onNext}>
+      <Button className="w-full" size="lg" onClick={onNext}>
         {nextLabel}
       </Button>
-    </div>
+    </motion.div>
   );
 }

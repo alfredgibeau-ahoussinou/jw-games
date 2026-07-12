@@ -32,15 +32,16 @@ export function Logo({
       alt="JW Games"
       width={LOGO_WIDTH}
       height={LOGO_HEIGHT}
+      className={cn(sizes[size], "object-contain")}
       priority
     />
   );
 
   return (
-    <Link href={href} className={cn("logo", `logo--${size}`, className)}>
+    <Link href={href} className={cn("inline-flex items-center gap-3", className)}>
       {image}
       {showText && (
-        <span>
+        <span className="hidden text-lg font-bold text-[var(--text)] sm:block">
           JW Games
         </span>
       )}

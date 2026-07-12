@@ -1,16 +1,14 @@
 {
   "name": "JW Games",
   "short_name": "JW Games",
-  "description": "Étude biblique, texte du jour, quiz et outils pour le ministère — contenus jw.org",
+  "description": "Apprenez la Bible en vous amusant — quiz, défis et jeux bibliques",
   "start_url": "/",
-  "scope": "/",
-  "id": "/",
   "display": "standalone",
-  "background_color": "#141414",
-  "theme_color": "#141414",
+  "background_color": "#050507",
+  "theme_color": "#050507",
   "orientation": "portrait-primary",
   "lang": "fr",
-  "categories": ["education"],
+  "categories": ["education", "games"],
   "icons": [
     {
       "src": "/icons/icon-192.png",

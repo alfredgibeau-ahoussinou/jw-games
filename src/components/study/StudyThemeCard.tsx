@@ -1,121 +1,88 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { StudyTheme } from "@/types/study";
 import { STUDY_THEME_VISUALS } from "@/lib/study-visuals";
-import { getThemeArticles } from "@/data/study-themes";
-import { getThemeStudyStats, isArticleRead, isStudyGameDone } from "@/lib/study-progress";
-import { jwImageForStudyTheme } from "@/lib/jw-images";
-import { useUserStore } from "@/stores/user-store";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-import { SafeImage } from "@/components/ui/SafeImage";
 import { cn } from "@/lib/cn";
 
 interface StudyThemeCardProps {
   theme: StudyTheme;
   compact?: boolean;
-  showProgress?: boolean;
 }
 
-function ThemeImageBg({ themeId }: { themeId: string }) {
-  const img = jwImageForStudyTheme(themeId);
-  return (
-    <>
-      <SafeImage
-        src={img.url}
-        alt=""
-        fill
-        sizes="(max-width: 640px) 80vw, 360px"
-        frameClassName="media-frame--fill"
-      />
-      <div className="netflix-poster__shade" />
-    </>
-  );
-}
-
-export function StudyThemeCard({ theme, compact, showProgress }: StudyThemeCardProps) {
-  const studyProgress = useUserStore((s) => s.studyProgress);
+export function StudyThemeCard({ theme, compact }: StudyThemeCardProps) {
   const visual = STUDY_THEME_VISUALS[theme.id];
   const Icon = visual?.icon;
 
-  const articles = getThemeArticles(theme.id);
-  const articlesRead = articles.filter((a) => isArticleRead(studyProgress, a.id)).length;
-  const gamesDone = theme.miniGames.filter((g) =>
-    isStudyGameDone(studyProgress, theme.id, g.id)
-  ).length;
-  const progress = getThemeStudyStats(
-    studyProgress,
-    articles.length,
-    articlesRead,
-    theme.miniGames.length,
-    gamesDone
-  );
-
-  const meta = (
-    <>
-      {theme.miniGames.length} mini-jeux
-      {showProgress && progress.hasStarted && <span> · {progress.percent} %</span>}
-    </>
-  );
-
   if (compact) {
     return (
-      <Link href={`/etude/${theme.id}`} className="netflix-poster-link">
-        <article className={cn("netflix-poster", "netflix-poster--compact")}>
-          <div className="netflix-poster__media">
-            <ThemeImageBg themeId={theme.id} />
-            <div className="netflix-poster__body">
-              {Icon && visual && (
-                <span className="badge badge--info" style={{ marginBottom: "0.35rem" }}>
-                  <Icon strokeWidth={2} width={12} height={12} aria-hidden />
-                </span>
+      <Link
+        href={`/etude/${theme.id}`}
+        className="poster-card poster-card--study group block shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+      >
+        <article className="study-card-compact relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-3.5 transition-all hover:border-white/12 hover:shadow-lg sm:p-4">
+          {Icon && visual && (
+            <div
+              className={cn(
+                "mb-2.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-white/10 sm:mb-3 sm:h-10 sm:w-10",
+                visual.gradient
               )}
-              <h3>{theme.title}</h3>
-              <p>{meta}</p>
+            >
+              <Icon className="h-4 w-4 text-white sm:h-5 sm:w-5" strokeWidth={1.75} aria-hidden />
             </div>
-          </div>
+          )}
+          <h3 className="line-clamp-2 min-h-0 flex-1 text-[0.8125rem] font-semibold leading-snug tracking-tight sm:text-sm">
+            {theme.title}
+          </h3>
+          <p className="text-caption mt-2 shrink-0 pt-0.5 text-[0.6875rem] sm:text-xs">
+            {theme.miniGames.length} mini-jeux
+          </p>
         </article>
       </Link>
     );
   }
 
   return (
-    <Link href={`/etude/${theme.id}`} className="netflix-poster-link">
-      <article className="netflix-poster netflix-poster--card card" style={{ padding: 0 }}>
-        <div className="netflix-poster__media">
-          <ThemeImageBg themeId={theme.id} />
-        </div>
-        <div className="stack" style={{ padding: "1rem" }}>
-          <span className="netflix-tile__meta">
+    <Link
+      href={`/etude/${theme.id}`}
+      className="group block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+    >
+      <article className="relative flex h-[240px] flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-6 transition-all hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl">
+        {visual && (
+          <div
+            className={cn(
+              "pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br opacity-25 blur-3xl transition-opacity group-hover:opacity-40",
+              visual.gradient
+            )}
+          />
+        )}
+        <div className="relative mb-4 flex items-start justify-between gap-3">
+          {Icon && visual && (
+            <div
+              className={cn(
+                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-white/10",
+                visual.gradient
+              )}
+            >
+              <Icon className="h-5 w-5 text-white" strokeWidth={1.75} aria-hidden />
+            </div>
+          )}
+          <span className="text-caption rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5">
             {theme.miniGames.length} jeux
             {(theme.articleIds?.length ?? 0) > 0 && ` · ${theme.articleIds!.length} articles`}
           </span>
-          <h3>{theme.title}</h3>
-          <p className="netflix-tile__meta">{theme.subtitle}</p>
-          <p className="netflix-tile__meta">{theme.description}</p>
-          <div className="cluster">
-            <p className="netflix-tile__meta">{theme.scriptureRef}</p>
-            <ArrowUpRight aria-hidden />
-          </div>
-          {showProgress && progress.hasStarted && (
-            <div className="stack">
-              <div className="cluster" style={{ justifyContent: "space-between" }}>
-                <span className="netflix-tile__meta">
-                  {progress.articlesRead}/{progress.articlesTotal} articles · {progress.gamesDone}/
-                  {progress.gamesTotal} jeux
-                </span>
-                <span className="netflix-tile__meta">{progress.percent} %</span>
-              </div>
-              <ProgressBar
-                value={progress.articlesRead + progress.gamesDone}
-                max={progress.articlesTotal + progress.gamesTotal || 1}
-              />
-            </div>
-          )}
-          {showProgress && progress.isComplete && (
-            <span className="badge badge--success">Terminé ✓</span>
-          )}
+        </div>
+        <div className="relative flex min-h-0 flex-1 flex-col">
+          <h3 className="text-base font-semibold tracking-tight">{theme.title}</h3>
+          <p className="text-caption mt-1 line-clamp-1">{theme.subtitle}</p>
+          <p className="mt-2 line-clamp-2 text-[0.8125rem] leading-relaxed text-[var(--text-muted)]">
+            {theme.description}
+          </p>
+        </div>
+        <div className="relative mt-4 flex items-center justify-between border-t border-white/[0.05] pt-3">
+          <p className="line-clamp-1 text-[0.6875rem] font-medium italic text-[var(--text-dim)]">
+            {theme.scriptureRef}
+          </p>
+          <ArrowUpRight className="h-4 w-4 text-[var(--text-dim)] transition-all group-hover:text-[var(--accent)]" aria-hidden />
         </div>
       </article>
     </Link>

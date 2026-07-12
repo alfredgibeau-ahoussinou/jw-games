@@ -51,6 +51,48 @@ function formatDateParts(date: Date) {
   return { year, month, day, iso, jw };
 }
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Date du jour au format ISO (fuseau Europe/Paris). */
+export function toParisIso(date: Date = new Date()): string {
+  return formatDateParts(date).iso;
+}
+
+/** Valide et parse une date ISO (YYYY-MM-DD). */
+export function parseParisIso(iso: string): Date | null {
+  if (!ISO_DATE_RE.test(iso)) return null;
+  const parsed = new Date(`${iso}T12:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/** Décale une date ISO de N jours (calendrier local). */
+export function shiftParisIso(iso: string, days: number): string {
+  const date = parseParisIso(iso);
+  if (!date) return iso;
+  date.setDate(date.getDate() + days);
+  return toParisIso(date);
+}
+
+/** Bornes du mois calendaire courant (fuseau Paris). */
+export function getParisMonthRange(reference: Date = new Date()): { from: string; to: string } {
+  const { year, month } = formatDateParts(reference);
+  const from = `${year}-${String(month).padStart(2, "0")}-01`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const to = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+  return { from, to };
+}
+
+/** Liste toutes les dates ISO entre from et to (inclus). */
+export function listParisIsoRange(from: string, to: string): string[] {
+  const dates: string[] = [];
+  let cursor = from;
+  while (cursor <= to) {
+    dates.push(cursor);
+    cursor = shiftParisIso(cursor, 1);
+  }
+  return dates;
+}
+
 async function fetchWithTimeout(url: string, init: RequestInit, ms: number) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);

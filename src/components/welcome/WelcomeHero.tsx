@@ -44,21 +44,21 @@ export function WelcomeHero({ isOnboarded, displayName }: WelcomeHeroProps) {
 
         <div className="netflix-billboard__actions">
           <Link href="/jeux">
-            <Button size="lg" variant="play">
+            <Button size="lg" variant="primary">
               <Gamepad2 aria-hidden />
               Jouer
             </Button>
           </Link>
           {!isOnboarded ? (
             <Link href="/profil">
-              <Button size="lg" variant="info">
+              <Button size="lg" variant="secondary">
                 <Sparkles aria-hidden />
                 Créer mon profil
               </Button>
             </Link>
           ) : (
             <Link href="/etude">
-              <Button size="lg" variant="info">
+              <Button size="lg" variant="secondary">
                 <User aria-hidden />
                 Mon parcours
               </Button>

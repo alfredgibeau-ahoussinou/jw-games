@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces } from "next/font/google";
-import "./globals.css";
+import { Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
 import { Header } from "@/components/layout/Header";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { Footer } from "@/components/layout/Footer";
 import { SyncProvider } from "@/components/providers/SyncProvider";
 import { PwaInstallListener } from "@/components/pwa/PwaInstallListener";
@@ -10,17 +8,21 @@ import { IosInstallSheet } from "@/components/pwa/IosInstallSheet";
 import { ToastProvider } from "@/components/ui/Toast";
 import { GameFeedbackProvider } from "@/components/providers/GameFeedbackProvider";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
+import "./globals.css";
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans-family",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-inter",
 });
 
-const fraunces = Fraunces({
+const sourceSerif = Source_Serif_4({
+  variable: "--font-serif-family",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
@@ -41,18 +43,18 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  themeColor: "#050507",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#141414",
   colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="app-body">
-        <a className="skip-link" href="#main-content">
+    <html lang="fr" className={`${plusJakarta.variable} ${sourceSerif.variable} h-full`}>
+      <body className="app-gradient min-h-full flex flex-col text-[var(--text)] antialiased">
+        <a href="#main-content" className="skip-link">
           Aller au contenu
         </a>
         <SyncProvider>
@@ -61,11 +63,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ToastProvider>
             <GameFeedbackProvider>
               <Header />
-              <main id="main-content" className="app-main">
+              <main id="main-content" className="relative flex-1 page-shell">
                 {children}
               </main>
               <Footer />
-              <MobileBottomNav />
             </GameFeedbackProvider>
           </ToastProvider>
         </SyncProvider>

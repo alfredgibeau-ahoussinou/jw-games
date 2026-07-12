@@ -1,8 +1,7 @@
 "use client";
 
-import { useGameScore } from "@/hooks/useGameScore";
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { LayoutGroup } from "framer-motion";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import type { WordScrambleItem } from "@/types/content";
 import { scrambleWord } from "@/data/sample-words";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +10,7 @@ import { GameHud } from "@/components/game/GameHud";
 import { GameComboBanner } from "@/components/game/shared/GameComboBanner";
 import { GameFeedbackPanel } from "@/components/game/shared/GameFeedbackPanel";
 import { useGameStreak } from "@/hooks/useGameStreak";
+import { cn } from "@/lib/cn";
 import { Lightbulb, Shuffle } from "lucide-react";
 
 interface WordScrambleGameProps {
@@ -47,7 +47,7 @@ export function WordScrambleGame({ items, onComplete }: WordScrambleGameProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [hintUsed, setHintUsed] = useState(false);
   const [roundKey, setRoundKey] = useState(0);
-  const { score, addPoint, getScore } = useGameScore();
+  const correctCount = useRef(0);
   const { streak, bestStreak, showCombo, registerAnswer } = useGameStreak();
 
   const item = items[index];
@@ -106,13 +106,13 @@ export function WordScrambleGame({ items, onComplete }: WordScrambleGameProps) {
     if (feedback || answer.length !== item.word.length) return;
     const correct = answer.toUpperCase() === item.word.toUpperCase();
     setFeedback(correct ? "correct" : "wrong");
-    if (correct) addPoint();
+    if (correct) correctCount.current += 1;
     registerAnswer(correct);
   }
 
   function next() {
     if (isLast) {
-      onComplete(getScore(), items.length, { bestStreak });
+      onComplete(correctCount.current, items.length, { bestStreak });
       return;
     }
     setIndex((i) => i + 1);
@@ -120,34 +120,41 @@ export function WordScrambleGame({ items, onComplete }: WordScrambleGameProps) {
   }
 
   return (
-    <div>
+    <div className="relative mx-auto max-w-lg">
       <GameComboBanner show={showCombo} streak={streak} />
 
       <GameHud
         current={index + 1}
         total={items.length}
-        score={score}
+        score={correctCount.current}
         streak={streak}
       />
 
-      <Card>
-        <p>
-          <Lightbulb aria-hidden />
+      <Card className="mb-6 text-center">
+        <p className="mb-4 text-sm text-[var(--text-muted)]">
+          <Lightbulb className="mr-1 inline h-3.5 w-3.5 text-[var(--warning)]" aria-hidden />
           {item.hint}
         </p>
 
         <LayoutGroup>
-          <div>
+          <div className="flex min-h-[3.5rem] flex-wrap justify-center gap-2">
             {answer.split("").map((letter, i) => (
-              <span
+              <motion.span
                 key={`slot-${i}`}
+                layout
+                initial={{ scale: 0, y: 12 }}
+                animate={{ scale: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                className="flex h-12 w-10 items-center justify-center rounded-xl border border-[var(--accent)]/40 bg-[var(--accent-light)] text-xl font-bold text-[var(--accent)]"
               >
                 {letter}
-              </span>
+              </motion.span>
             ))}
             {Array.from({ length: item.word.length - answer.length }).map((_, i) => (
-              <span
+              <motion.span
                 key={`empty-${i}`}
+                layout
+                className="h-12 w-10 rounded-xl border border-dashed border-white/20"
               />
             ))}
           </div>
@@ -157,45 +164,59 @@ export function WordScrambleGame({ items, onComplete }: WordScrambleGameProps) {
       {!feedback && (
         <>
           <LayoutGroup>
-            <div>
-              <>
+            <div className="mb-4 flex flex-wrap justify-center gap-2">
+              <AnimatePresence mode="popLayout">
                 {availableIds.map((tileId) => {
                   const tile = tiles.find((t) => t.id === tileId)!;
                   return (
-                    <button
+                    <motion.button
                       key={tileId}
+                      layout
                       type="button"
+                      initial={{ scale: 0, rotate: -8 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, opacity: 0, rotate: 12 }}
+                      whileHover={{ scale: 1.08, y: -2 }}
+                      whileTap={{ scale: 0.92 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 20 }}
                       onClick={() => pickLetter(tileId)}
+                      className={cn(
+                        "flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--border)]",
+                        "bg-[var(--bg-elevated)] text-lg font-bold text-[var(--text)]",
+                        "hover:border-[var(--accent)] hover:bg-[var(--accent-light)]"
+                      )}
                     >
                       {tile.letter}
-                    </button>
+                    </motion.button>
                   );
                 })}
-              </>
+              </AnimatePresence>
             </div>
           </LayoutGroup>
 
-          <div>
+          <div className="mb-3 flex gap-2">
             <Button
               variant="outline"
               size="sm"
+              className="flex-1"
               onClick={useHint}
               disabled={hintUsed || answer.length >= item.word.length}
             >
-              <Lightbulb aria-hidden />
+              <Lightbulb className="h-4 w-4" aria-hidden />
               Indice
             </Button>
-            <Button variant="outline" size="sm" onClick={shuffleUnused}>
-              <Shuffle aria-hidden />
+            <Button variant="outline" size="sm" className="flex-1" onClick={shuffleUnused}>
+              <Shuffle className="h-4 w-4" aria-hidden />
               Mélanger
             </Button>
           </div>
 
-          <div>
+          <div className="flex gap-3">
             <Button variant="outline" onClick={backspace} disabled={!answer} aria-label="Effacer">
               ⌫
             </Button>
             <Button
+              className="flex-1"
               size="lg"
               onClick={check}
               disabled={answer.length !== item.word.length}

@@ -1,39 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-
-import { BookOpen, CheckCircle, ChevronRight, ExternalLink, Loader2, Sparkles, XCircle, Zap } from "lucide-react";
-import { DAILY_TEXT_QUIZ_XP, formatDailyTextDate } from "@/lib/daily-text";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Loader2,
+  Sparkles,
+  XCircle,
+  Zap,
+} from "lucide-react";
+import { DAILY_TEXT_QUIZ_XP, formatDailyTextIso } from "@/lib/daily-text";
+import { shiftParisIso, toParisIso } from "@/lib/jw-daily-text";
 import type { JwDailyText } from "@/types/daily-text";
-import { Button } from "@/components/ui/Button";
-import { SafeImage } from "@/components/ui/SafeImage";
-import { jwImageForSlot } from "@/lib/jw-images";
-import { jwBibleLookupUrl } from "@/lib/jw-bible-url";
-import { useUserStore } from "@/stores/user-store";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
+import { useUserStore } from "@/stores/user-store";
 
-function shortenVerse(text: string, max = 120): string {
-  const t = text.replace(/\s+/g, " ").trim();
-  if (t.length <= max) return t;
-  const cut = t.slice(0, max);
-  const lastSpace = cut.lastIndexOf(" ");
-  return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trim() + "…";
+async function fetchDailyText(iso?: string) {
+  const url = iso ? `/api/daily-text?date=${iso}` : "/api/daily-text";
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error ?? "Impossible de charger le texte du jour");
+  }
+  const data = (await res.json()) as JwDailyText;
+  const requested = res.headers.get("X-Daily-Text-Requested");
+  const served = res.headers.get("X-Daily-Text-Served");
+  const cacheNote =
+    requested && served && requested !== served
+      ? `Texte du ${formatDailyTextIso(served)} affiché (demande : ${formatDailyTextIso(requested)})`
+      : null;
+  return { data, cacheNote };
 }
 
-interface DailyTextSectionProps {
-  variant?: "full" | "compact";
-}
-
-export function DailyTextSection({ variant = "full" }: DailyTextSectionProps) {
+export function DailyTextSection() {
   const addXp = useUserStore((s) => s.addXp);
-  const tryClaimDailyTextQuizXp = useUserStore((s) => s.tryClaimDailyTextQuizXp);
-  const trackDailyProgress = useUserStore((s) => s.trackDailyProgress);
-  const [dateLabel, setDateLabel] = useState("");
-
-  useEffect(() => {
-    setDateLabel(formatDailyTextDate());
-  }, []);
+  const [todayIso, setTodayIso] = useState("");
+  const [selectedIso, setSelectedIso] = useState<string | null>(null);
 
   const [entry, setEntry] = useState<JwDailyText | null>(null);
   const [cacheNote, setCacheNote] = useState<string | null>(null);
@@ -44,59 +53,42 @@ export function DailyTextSection({ variant = "full" }: DailyTextSectionProps) {
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
-  const [xpAwarded, setXpAwarded] = useState(0);
-  const [xpAlreadyClaimed, setXpAlreadyClaimed] = useState(false);
+
+  const activeIso = selectedIso ?? todayIso;
+  const isToday = Boolean(todayIso && activeIso === todayIso);
+
+  const load = useCallback(async (iso?: string) => {
+    setLoading(true);
+    setError(null);
+    setCacheNote(null);
+    try {
+      const { data, cacheNote: note } = await fetchDailyText(iso);
+      setEntry(data);
+      setCacheNote(note);
+      setIndex(0);
+      setSelected(null);
+      setScore(0);
+      setDone(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur de chargement");
+      setEntry(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      setCacheNote(null);
-      try {
-        const res = await fetch("/api/daily-text");
-        if (!res.ok) {
-          const body = (await res.json().catch(() => null)) as { error?: string } | null;
-          throw new Error(body?.error ?? "Impossible de charger le texte du jour");
-        }
-        const data = (await res.json()) as JwDailyText;
-        const requested = res.headers.get("X-Daily-Text-Requested");
-        const served = res.headers.get("X-Daily-Text-Served");
-        if (!cancelled) {
-          setEntry(data);
-          setCacheNote(
-            requested && served && requested !== served
-              ? `Texte en cache (${data.heading}) — mise à jour du jour en cours`
-              : null
-          );
-          setIndex(0);
-          setSelected(null);
-          setScore(0);
-          setDone(false);
-          setXpAwarded(0);
-          setXpAlreadyClaimed(false);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Erreur de chargement");
-          setEntry(null);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
+    setTodayIso(toParisIso());
   }, []);
+
+  useEffect(() => {
+    if (!todayIso) return;
+    void load(selectedIso ?? undefined);
+  }, [todayIso, selectedIso, load]);
 
   const questions = entry?.questions ?? [];
   const q = questions[index];
   const answered = selected !== null;
-  const isCompact = variant === "compact";
 
   function pick(i: number) {
     if (!q || answered) return;
@@ -106,18 +98,10 @@ export function DailyTextSection({ variant = "full" }: DailyTextSectionProps) {
     if (correct) setScore(newScore);
 
     if (index >= questions.length - 1) {
-      const potentialXp = newScore * DAILY_TEXT_QUIZ_XP;
-      if (potentialXp > 0) {
-        if (tryClaimDailyTextQuizXp()) {
-          addXp(potentialXp, { skipSession: true });
-          setXpAwarded(potentialXp);
-        } else {
-          setXpAlreadyClaimed(true);
-        }
-      }
+      const xp = newScore * DAILY_TEXT_QUIZ_XP;
+      if (xp > 0) addXp(xp, { skipSession: true });
       setScore(newScore);
       setDone(true);
-      trackDailyProgress("dailytext", 1);
     }
   }
 
@@ -126,224 +110,221 @@ export function DailyTextSection({ variant = "full" }: DailyTextSectionProps) {
     setSelected(null);
   }
 
+  function goDay(offset: number) {
+    if (!activeIso) return;
+    setSelectedIso(shiftParisIso(activeIso, offset));
+  }
+
   return (
-    <section
-      className={cn("card scripture-panel stack", isCompact && "card")}
-      aria-label="Texte du jour"
-      id={isCompact ? undefined : "texte-du-jour"}
-    >
-      <div>
-        {!isCompact && (
-          <div>
-            <SafeImage
-              src={jwImageForSlot("daily.text").url}
-              alt="" fill sizes="(max-width: 768px) 100vw, 800px" />
-            <div />
-            <div>
-              <p>
-                Texte officiel du jour
-              </p>
-              {entry && (
-                <p>{entry.scriptureReference}</p>
-              )}
-            </div>
-          </div>
-        )}
-        <div>
-          <div>
-            <div>
-              <span>
-                <BookOpen aria-hidden />
+    <section className="container-app mb-8" aria-label="Texte du jour">
+      <div className="rounded-2xl border border-[var(--accent)]/25 bg-gradient-to-br from-[var(--bg-card)] via-[var(--bg-card)] to-[var(--accent-light)]/40 shadow-lg">
+        <div className="border-b border-white/[0.06] px-6 py-4 sm:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-light)] ring-1 ring-[var(--accent)]/20">
+                <BookOpen className="h-5 w-5 text-[var(--accent)]" aria-hidden />
               </span>
               <div>
-                <h2>Texte du jour</h2>
-                <p>{(entry?.heading ?? dateLabel) || "Texte du jour"}</p>
-                {cacheNote && (
-                  <p>{cacheNote}</p>
-                )}
+                <h2 className="text-lg font-semibold tracking-tight">Texte du jour</h2>
+                <p className="text-caption capitalize">
+                  {(entry?.heading ?? (activeIso ? formatDailyTextIso(activeIso) : "")) || "Texte du jour"}
+                </p>
+                {cacheNote && <p className="text-caption mt-0.5 text-warning">{cacheNote}</p>}
               </div>
             </div>
-            {entry && isCompact && (
-              <span>
+            {entry && (
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[0.6875rem] font-medium text-[var(--text-dim)]">
                 {entry.scriptureReference}
               </span>
             )}
-            {entry && !isCompact && !loading && (
-              <span>
-                {entry.publicationTitle}
-              </span>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label="Jour précédent"
+              disabled={loading || !activeIso}
+              onClick={() => goDay(-1)}
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden />
+            </Button>
+            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-2 sm:max-w-[12rem]">
+              <Calendar className="h-4 w-4 shrink-0 text-[var(--accent)]" aria-hidden />
+              <input
+                type="date"
+                className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text)] outline-none"
+                value={activeIso}
+                disabled={loading}
+                onChange={(e) => setSelectedIso(e.target.value || null)}
+                aria-label="Choisir une date"
+              />
+            </label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-label="Jour suivant"
+              disabled={loading || !activeIso}
+              onClick={() => goDay(1)}
+            >
+              <ChevronRight className="h-4 w-4" aria-hidden />
+            </Button>
+            {!isToday && (
+              <Button type="button" variant="ghost" size="sm" disabled={loading} onClick={() => setSelectedIso(null)}>
+                Aujourd&apos;hui
+              </Button>
             )}
           </div>
         </div>
 
         {loading && (
-          <div>
-            <Loader2 aria-hidden />
-            <p>Chargement du texte officiel…</p>
+          <div className="flex items-center justify-center gap-3 px-6 py-16 text-[var(--text-muted)]">
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--accent)]" aria-hidden />
+            <p className="text-sm">Chargement du texte officiel…</p>
           </div>
         )}
 
         {!loading && error && (
-          <div>
-            <p>{error}</p>
-            <div>
+          <div className="space-y-4 px-6 py-10 sm:px-8">
+            <p className="text-sm text-[var(--text-muted)]">{error}</p>
+            <div className="flex flex-wrap gap-3">
               <Button
-                size="sm" variant="outline" onClick={() => {
-                  setLoading(true);
-                  setError(null);
-                  void fetch("/api/daily-text")
-                    .then(async (res) => {
-                      if (!res.ok) {
-                        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-                        throw new Error(body?.error ?? "Impossible de charger le texte du jour");
-                      }
-                      return res.json() as Promise<JwDailyText>;
-                    })
-                    .then((data) => {
-                      setEntry(data);
-                      setIndex(0);
-                      setSelected(null);
-                      setScore(0);
-                      setDone(false);
-                      setXpAwarded(0);
-                      setXpAlreadyClaimed(false);
-                    })
-                    .catch((err) => {
-                      setError(err instanceof Error ? err.message : "Erreur de chargement");
-                      setEntry(null);
-                    })
-                    .finally(() => setLoading(false));
-                }}
+                size="sm"
+                variant="outline"
+                onClick={() => void load(selectedIso ?? undefined)}
               >
                 Réessayer
               </Button>
               <Link
-                href="https://www.jw.org/finder?alias=daily-text&wtlocale=F&srcid=jwlshare" target="_blank" rel="noopener noreferrer" >
-                Voir sur JW.org
-                <ExternalLink aria-hidden />
+              href="https://www.jw.org/finder?alias=daily-text&wtlocale=F&srcid=jwlshare"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-primary inline-flex items-center gap-1.5 text-sm"
+            >
+              Voir sur JW.org
+              <ExternalLink className="h-4 w-4" aria-hidden />
               </Link>
             </div>
           </div>
         )}
 
-        {!loading && entry && isCompact && (
-          <div>
-            <blockquote>
-              {shortenVerse(entry.scripture)}
-              <footer>{entry.scriptureReference}</footer>
-            </blockquote>
-            <Link
-              href="/quotidien#texte-du-jour" >
-              Lire le commentaire et le quiz
-              <ChevronRight aria-hidden />
-            </Link>
-          </div>
-        )}
-
-        {!loading && entry && !isCompact && (
+        {!loading && entry && (
           <>
-            <div>
-              <blockquote>
+            <div className="space-y-6 px-6 py-6 sm:px-8">
+              <blockquote className="scripture-block text-[1.0625rem] leading-relaxed break-words whitespace-pre-wrap">
                 {entry.scripture}
-                <footer>
-                  <a href={jwBibleLookupUrl(entry.scriptureReference)} target="_blank" rel="noopener noreferrer">
-                    {entry.scriptureReference}
-                  </a>
-                </footer>
+                <footer className="scripture-ref mt-3 not-italic">{entry.scriptureReference}</footer>
               </blockquote>
 
               <div>
-                <p>
+                <p className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-widest text-[var(--accent)]">
                   Commentaire
                 </p>
-                <p>
+                <p className="text-body text-[0.9375rem] leading-relaxed break-words whitespace-pre-wrap text-[var(--text-secondary)]">
                   {entry.commentary}
                 </p>
                 {entry.commentarySource && (
-                  <p>
+                  <p className="mt-3 text-[0.8125rem] font-medium text-[var(--text-dim)]">
                     Source : {entry.commentarySource}
                   </p>
                 )}
               </div>
 
-              <div>
-                <span>{entry.publicationTitle}</span>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/[0.06] pt-4 text-[0.8125rem]">
+                <span className="text-[var(--text-dim)]">{entry.publicationTitle}</span>
                 <Link
                   href={entry.jwOrgUrl}
-                  target="_blank" rel="noopener noreferrer" >
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-primary inline-flex items-center gap-1"
+                >
                   JW.org
-                  <ExternalLink aria-hidden />
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                 </Link>
                 <Link
                   href={entry.wolUrl}
-                  target="_blank" rel="noopener noreferrer" >
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-primary inline-flex items-center gap-1"
+                >
                   Bibliothèque en ligne
-                  <ExternalLink aria-hidden />
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                 </Link>
               </div>
             </div>
 
-            <div>
+            <div className="border-t border-white/[0.06] bg-[var(--bg-elevated)]/80 px-6 py-6 sm:px-8">
               {done ? (
-                <div>
+                <div className="flex items-center gap-4">
                   <div
+                    className={cn(
+                      "flex h-12 w-12 items-center justify-center rounded-xl",
+                      score === questions.length
+                        ? "bg-emerald-500/15 text-[var(--success)]"
+                        : "bg-[var(--accent-light)] text-[var(--accent)]"
+                    )}
                   >
-                    <CheckCircle aria-hidden />
+                    <CheckCircle className="h-7 w-7" aria-hidden />
                   </div>
                   <div>
-                    <p>
+                    <p className="font-semibold tracking-tight">
                       Quiz terminé — {score}/{questions.length}
                     </p>
-                    {xpAlreadyClaimed ? (
-                      <p>
-                        XP déjà gagné aujourd&apos;hui — rejouez demain !
-                      </p>
-                    ) : xpAwarded > 0 ? (
-                      <p>
-                        <Zap aria-hidden />+
-                        {xpAwarded} XP
-                      </p>
-                    ) : null}
+                    <p className="text-caption mt-0.5 flex items-center gap-1.5">
+                      <Zap className="h-3.5 w-3.5 text-[var(--accent)]" aria-hidden />+
+                      {score * DAILY_TEXT_QUIZ_XP} XP
+                    </p>
                   </div>
                 </div>
               ) : q ? (
                 <>
-                  <div>
-                    <div>
-                      <Sparkles aria-hidden />
-                      <p>Questions sur le texte</p>
+                  <div className="mb-5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <p className="text-sm font-semibold">Quiz sur le texte</p>
                     </div>
-                    <p>
+                    <p className="text-caption">
                       Question {index + 1} / {questions.length}
                     </p>
                   </div>
 
-                  <>
-                    <div
+                  <AnimatePresence mode="wait">
+                    <motion.div
                       key={q.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
                     >
-                      <p>
+                      <p className="mb-4 text-[0.9375rem] font-medium leading-relaxed break-words whitespace-pre-wrap">
                         {q.question}
                       </p>
-                      <ul>
+                      <ul className="game-option-list">
                         {q.options.map((opt, i) => {
                           const isCorrect = i === q.correctIndex;
                           const isSelected = i === selected;
                           return (
                             <li key={i}>
                               <button
-                                type="button" onClick={() => pick(i)}
+                                type="button"
+                                onClick={() => pick(i)}
                                 disabled={answered}
+                                className={cn(
+                                  "game-option w-full",
+                                  answered && isCorrect && "border-[var(--success)]/60 bg-emerald-950/30",
+                                  answered && isSelected && !isCorrect && "border-red-500/50 bg-red-950/25"
+                                )}
                               >
-                                <span>{String.fromCharCode(65 + i)}</span>
-                                <span>
+                                <span className="option-letter">{String.fromCharCode(65 + i)}</span>
+                                <span className="min-w-0 flex-1 break-words whitespace-pre-wrap leading-relaxed">
                                   {opt}
                                 </span>
                                 {answered && isCorrect && (
-                                  <CheckCircle aria-hidden />
+                                  <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--success)]" aria-hidden />
                                 )}
                                 {answered && isSelected && !isCorrect && (
-                                  <XCircle aria-hidden />
+                                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden />
                                 )}
                               </button>
                             </li>
@@ -352,18 +333,22 @@ export function DailyTextSection({ variant = "full" }: DailyTextSectionProps) {
                       </ul>
 
                       {answered && (
-                        <p >
+                        <motion.p
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          className="mt-4 rounded-lg border border-[var(--accent)]/20 bg-[var(--accent-light)] px-4 py-3 text-sm leading-relaxed break-words whitespace-pre-wrap text-[var(--text-secondary)]"
+                        >
                           {q.explanation}
-                        </p>
+                        </motion.p>
                       )}
 
                       {answered && index < questions.length - 1 && (
-                        <Button onClick={next}>
+                        <Button className="mt-5 w-full sm:w-auto" onClick={next}>
                           Question suivante
                         </Button>
                       )}
-                    </div>
-                  </>
+                    </motion.div>
+                  </AnimatePresence>
                 </>
               ) : null}
             </div>

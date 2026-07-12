@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -16,7 +15,7 @@ export interface StudioPageHeroProps {
   className?: string;
 }
 
-/** Bannière de page intérieure — sombre, image + dégradé */
+/** Bannière de page intérieure — style production (teal + Tailwind) */
 export function StudioPageHero({
   eyebrow,
   title,
@@ -29,32 +28,40 @@ export function StudioPageHero({
 }: StudioPageHeroProps) {
   return (
     <section
-      className={cn("page-banner", compact && "page-banner--compact", className)}
+      className={cn(
+        "relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)]",
+        compact ? "p-6 sm:p-8" : "p-8 sm:p-10",
+        className
+      )}
       aria-label={eyebrow ?? title}
     >
       {imageSrc && (
-        <div className="page-banner__bg">
-          <SafeImage src={imageSrc} alt="" fill sizes="100vw" priority />
-        </div>
+        <>
+          <div className="absolute inset-0">
+            <SafeImage src={imageSrc} alt="" fill sizes="100vw" priority className="object-cover" />
+          </div>
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-[var(--bg)] via-[var(--bg)]/85 to-[var(--bg)]/40"
+            aria-hidden
+          />
+        </>
       )}
-      <div className="page-banner__shade" aria-hidden />
 
-      <div className="page-banner__content">
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+      <div className="relative z-10">
+        {eyebrow && (
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)]">{eyebrow}</p>
+        )}
 
-        <h1>
+        <h1 className="text-display">
           {title}
-          {titleAccent && (
-            <>
-              {" "}
-              <span className="text-accent">{titleAccent}</span>
-            </>
-          )}
+          {titleAccent && <span className="text-[var(--accent)]"> {titleAccent}</span>}
         </h1>
 
-        {description && <p className="page-banner__desc">{description}</p>}
+        {description && (
+          <p className="text-body mt-3 max-w-2xl text-[0.9375rem] sm:text-base">{description}</p>
+        )}
 
-        {children && <div className="cluster">{children}</div>}
+        {children && <div className="mt-4 flex flex-wrap items-center gap-2">{children}</div>}
       </div>
     </section>
   );
@@ -80,7 +87,7 @@ export function StudioSection({
     <section
       id={id}
       aria-label={ariaLabel}
-      className={cn("page-section", fullBleed && "page-section--bleed", className)}
+      className={cn("section-block", fullBleed && "px-0", className)}
     >
       {children}
     </section>
@@ -105,14 +112,16 @@ export function StudioSectionHeader({
   className,
 }: StudioSectionHeaderProps) {
   return (
-    <div className={cn("section-header", className)}>
+    <div className={cn("mb-4 flex flex-wrap items-end justify-between gap-3", className)}>
       <div>
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h2>
+        {eyebrow && (
+          <p className="mb-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)]">{eyebrow}</p>
+        )}
+        <h2 className="text-heading">
           {title}
-          {titleAccent && <span className="text-accent"> {titleAccent}</span>}
+          {titleAccent && <span className="text-[var(--accent)]"> {titleAccent}</span>}
         </h2>
-        {description && <p>{description}</p>}
+        {description && <p className="text-body mt-1 text-sm">{description}</p>}
       </div>
       {action && <div>{action}</div>}
     </div>
@@ -129,8 +138,8 @@ export function StudioBackLink({
   className?: string;
 }) {
   return (
-    <Link href={href} className={cn("back-link", className)}>
+    <a href={href} className={cn("link-primary text-sm font-semibold", className)}>
       ← {label}
-    </Link>
+    </a>
   );
 }

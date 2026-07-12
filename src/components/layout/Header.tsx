@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, User, Download } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { MobileMenu } from "@/components/layout/MobileMenu";
-import { PRIMARY_NAV, isNavActive } from "@/lib/navigation";
+import { cn } from "@/lib/cn";
+import { DESKTOP_NAV, isNavActive } from "@/lib/navigation";
 import { useUserStore } from "@/stores/user-store";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
 
@@ -16,65 +17,106 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
   const openMenu = useCallback(() => setMenuOpen(true), []);
-  const { canInstall, install, isIos } = usePwaInstall();
-  const [solid, setSolid] = useState(false);
-
-  const isHome = pathname === "/";
-
-  useEffect(() => {
-    const onScroll = () => setSolid(!isHome || window.scrollY > 48);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [isHome]);
-
-  const profileLink = profile ? (
-    <Link href="/profil" aria-label={`Profil de ${profile.displayName}`}>
-      {profile.displayName.charAt(0).toUpperCase()}
-    </Link>
-  ) : (
-    <Link href="/profil" aria-label="Créer un profil">
-      <User aria-hidden />
-    </Link>
-  );
+  const { canInstall, install } = usePwaInstall();
 
   return (
     <>
-      <header className={solid || !isHome ? "app-header app-header--solid" : "app-header"}>
-        <div className="app-header__inner container">
+      <header className="site-header lg:hidden">
+        <div className="site-header__bar">
           <Logo size="sm" />
-          <nav className="app-header__nav" aria-label="Navigation principale">
-            {PRIMARY_NAV.map(({ href, label, icon: Icon }) => {
-              const active = isNavActive(pathname, href);
-              return (
-                <Link key={href} href={href} aria-current={active ? "page" : undefined}>
-                  <Icon aria-hidden />
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="app-header__actions">
+          <div className="ml-auto flex items-center gap-2">
             {canInstall && (
               <button
                 type="button"
-                className="btn btn--sm"
                 onClick={() => void install()}
-                aria-label={isIos ? "Ajouter à l'écran d'accueil" : "Installer l'application"}
+                className="touch-target flex h-10 w-10 items-center justify-center rounded-full border border-[var(--accent)]/40 bg-[var(--accent-light)] text-[var(--accent)]"
+                aria-label="Installer l'application"
               >
-                <Download aria-hidden />
-                {isIos ? "Ajouter" : "Installer"}
+                <Download className="h-4 w-4 shrink-0" strokeWidth={2.25} aria-hidden />
               </button>
             )}
             <button
               type="button"
-              className="app-header__menu-btn btn btn--sm"
               onClick={openMenu}
+              className="touch-target flex h-10 items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 text-sm font-semibold text-white"
               aria-label="Ouvrir le menu"
             >
-              <Menu aria-hidden />
+              <Menu className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
+              <span>Menu</span>
             </button>
-            {profileLink}
+            {profile ? (
+              <Link
+                href="/profil"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-teal-700 text-sm font-bold text-white ring-2 ring-white/10"
+                aria-label={`Profil de ${profile.displayName}`}
+              >
+                {profile.displayName.charAt(0).toUpperCase()}
+              </Link>
+            ) : (
+              <Link
+                href="/profil"
+                aria-label="Connexion"
+                className="touch-target flex h-10 w-10 items-center justify-center rounded-full bg-white text-black"
+              >
+                <User className="h-4 w-4" aria-hidden />
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <header className="site-header hidden lg:block">
+        <div className="border-b border-white/[0.04] px-4 py-1.5 text-center text-xs font-medium tracking-wide text-white/45">
+          Contenu officiel{" "}
+          <a
+            href="https://www.jw.org/fr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] hover:underline"
+          >
+            jw.org
+          </a>
+        </div>
+        <div className="site-header__bar">
+          <Logo size="sm" />
+          <nav className="flex flex-1 items-center justify-center gap-1" aria-label="Navigation">
+            {DESKTOP_NAV.map(({ href, label }) => {
+              const active = isNavActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "relative px-4 py-2 text-sm font-medium tracking-tight transition-colors",
+                    active ? "text-white" : "text-white/50 hover:text-white/90"
+                  )}
+                >
+                  {label}
+                  {active && (
+                    <span className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[var(--accent)]" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="ml-auto flex items-center gap-3">
+            {profile ? (
+              <Link
+                href="/profil"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-teal-700 text-sm font-bold text-white ring-2 ring-white/10"
+                aria-label={`Profil de ${profile.displayName}`}
+              >
+                {profile.displayName.charAt(0).toUpperCase()}
+              </Link>
+            ) : (
+              <Link
+                href="/profil"
+                className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-white/90"
+              >
+                Connexion
+              </Link>
+            )}
           </div>
         </div>
       </header>

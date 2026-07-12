@@ -9,15 +9,26 @@ interface BadgeProps {
   pulse?: boolean;
 }
 
-const VARIANT_CLASS = {
-  default: undefined,
-  success: "badge--success",
-  warning: "badge--warning",
-  info: "badge--info",
-  neon: "badge--neon",
-  gold: "badge--gold",
-} as const;
-
-export function Badge({ children, variant = "default", className }: BadgeProps) {
-  return <span className={cn("badge", VARIANT_CLASS[variant], className)}>{children}</span>;
+export function Badge({
+  children,
+  variant = "default",
+  className,
+}: BadgeProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium",
+        {
+          "bg-[var(--surface-subtle)] text-[var(--text-secondary)]": variant === "default",
+          "badge-success": variant === "success",
+          "badge-warning": variant === "warning",
+          "bg-[var(--accent-light)] text-[var(--accent)]": variant === "info" || variant === "neon",
+          "badge-gold": variant === "gold",
+        },
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
 }

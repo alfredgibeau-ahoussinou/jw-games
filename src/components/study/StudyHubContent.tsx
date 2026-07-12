@@ -252,7 +252,7 @@ export function StudyHubContent() {
                 <ScrollRevealGroup>
                   {filteredRecommended.map((theme) => (
                     <ScrollRevealItem key={theme.id}>
-                      <StudyThemeCard theme={theme} showProgress />
+                      <StudyThemeCard theme={theme} />
                     </ScrollRevealItem>
                   ))}
                 </ScrollRevealGroup>
@@ -266,7 +266,7 @@ export function StudyHubContent() {
                 </h3>
                 <div className="card-grid">
                   {filteredOther.map((theme) => (
-                    <StudyThemeCard key={theme.id} theme={theme} showProgress />
+                    <StudyThemeCard key={theme.id} theme={theme} />
                   ))}
                 </div>
               </section>
@@ -281,7 +281,7 @@ export function StudyHubContent() {
             ) : (
               <div className="card-grid">
                 {filteredAll.map((theme) => (
-                  <StudyThemeCard key={theme.id} theme={theme} showProgress />
+                  <StudyThemeCard key={theme.id} theme={theme} />
                 ))}
               </div>
             )}
