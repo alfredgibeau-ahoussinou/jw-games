@@ -39,7 +39,9 @@ function formatPlaybackTime(seconds: number) {
 
 export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }: JwVideoPlayerProps) {
   const ref = useRef<HTMLVideoElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [muted, setMuted] = useState(autoPlay);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -94,6 +96,16 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
     return () => {
       if (hideControlsTimer.current) clearTimeout(hideControlsTimer.current);
     };
+  }, []);
+
+  useEffect(() => {
+    function syncFullscreen() {
+      const shell = shellRef.current;
+      setIsFullscreen(document.fullscreenElement === shell);
+    }
+
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
   }, []);
 
   function revealControls(autoHide = true) {
@@ -157,19 +169,25 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
   }
 
   function goFullscreen() {
-    const shell = ref.current?.closest(".video-shell");
-    if (shell && "requestFullscreen" in shell) {
-      void (shell as HTMLElement).requestFullscreen?.();
+    const shell = shellRef.current;
+    if (shell?.requestFullscreen) {
+      void shell.requestFullscreen();
       return;
     }
-    ref.current?.requestFullscreen?.();
+    const video = ref.current as (HTMLVideoElement & { webkitEnterFullscreen?: () => void }) | null;
+    video?.webkitEnterFullscreen?.();
   }
 
   const showControls = controlsVisible || !playing;
 
   return (
     <div
-      className={cn("video-shell group relative", className)}
+      ref={shellRef}
+      className={cn(
+        "video-shell group relative",
+        isFullscreen && "video-shell--native-fs",
+        className
+      )}
       onMouseMove={() => revealControls()}
       onTouchStart={() => revealControls(false)}
     >

@@ -49,20 +49,24 @@ export function VideoPageContent({ video }: VideoPageContentProps) {
               onWatched={() => watchVideo(video.id)}
               className="video-shell--featured video-shell--flat"
             />
+          </div>
 
-            <VideoMiniQuiz video={video} />
-
-            <div className="flex flex-wrap gap-3 border-t border-white/10 bg-black p-4">
-              <Link href={video.jwPageUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm">
-                  <ExternalLink className="h-4 w-4" aria-hidden />
-                  JW.org
-                </Button>
-              </Link>
-              <Link href="/jeux/video-quiz">
-                <Button size="sm">Mode quiz vidéo</Button>
-              </Link>
+          {hasVideoQuiz(video) && (
+            <div className="video-player-panel overflow-hidden">
+              <VideoMiniQuiz video={video} />
             </div>
+          )}
+
+          <div className="flex flex-wrap gap-3">
+            <Link href={video.jwPageUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" size="sm">
+                <ExternalLink className="h-4 w-4" aria-hidden />
+                JW.org
+              </Button>
+            </Link>
+            <Link href="/jeux/video-quiz">
+              <Button size="sm">Mode quiz vidéo</Button>
+            </Link>
           </div>
         </StudioPageBody>
       </StudioPageShell>
