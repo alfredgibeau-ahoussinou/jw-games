@@ -63,9 +63,9 @@ export default function RapiditePage() {
       )}
 
       {phase === "pick" && (
-        <div>
-          <p>Sélectionnez votre niveau</p>
-          <div>
+        <div className="mx-auto max-w-lg space-y-6">
+          <h2 className="text-heading text-center">Sélectionnez votre niveau</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
             {sets.map((set) => (
               <Card
                 key={set.id}
@@ -76,22 +76,20 @@ export default function RapiditePage() {
                   setPhase("playing");
                 }}
               >
-                <div>
-                  <Zap aria-hidden />
-                  <h3>{set.name}</h3>
+                <div className="mb-3 flex items-center gap-3">
+                  <Zap className="h-5 w-5 shrink-0 text-[var(--accent)]" aria-hidden />
+                  <h3 className="font-semibold tracking-tight">{set.name}</h3>
                 </div>
-                <p>
-                  <Timer aria-hidden />
+                <p className="text-caption mb-4 flex items-center gap-1.5">
+                  <Timer className="h-3.5 w-3.5" aria-hidden />
                   {set.challenges.length} défis · max{" "}
                   {Math.max(...set.challenges.map((c) => c.timeLimitSeconds))}s
                 </p>
-                <Button size="sm">
-                  Lancer
-                </Button>
+                <Button size="sm">Lancer</Button>
               </Card>
             ))}
           </div>
-          <Button variant="outline" onClick={() => setPhase("menu")}>
+          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

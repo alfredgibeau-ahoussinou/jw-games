@@ -1173,6 +1173,25 @@ body {
   }
 }
 
+.discover-hero__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.discover-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
 ::selection { background: rgba(0, 163, 163, 0.35); }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }

@@ -8,6 +8,7 @@ import { QuizGame } from "@/components/game/QuizGame";
 import { getQuizByCategory, getQuizCount, shuffleQuiz } from "@/data/sample-quiz";
 import { calcXp, getAccuracyLabel } from "@/lib/daily-challenges";
 import { THEME_VISUALS } from "@/lib/game-visuals";
+import { cn } from "@/lib/cn";
 import { useUserStore } from "@/stores/user-store";
 import type { ContentCategory } from "@/types/content";
 
@@ -46,8 +47,8 @@ export default function ThematiquePage() {
       description={`Explorez ${getQuizCount()} questions classées par thème biblique.`}
     >
       {phase === "menu" && (
-        <div>
-          {THEMES.map((t, i) => {
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {THEMES.map((t) => {
             const count = getQuizByCategory(t.id).length;
             const visual = THEME_VISUALS[t.id];
             const Icon = visual.icon;
@@ -59,19 +60,33 @@ export default function ThematiquePage() {
                 type="button"
                 disabled={disabled}
                 onClick={() => !disabled && (setTheme(t.id), setPhase("playing"))}
+                className={cn(
+                  "group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-5 text-left transition-all sm:p-6",
+                  !disabled && "hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl",
+                  disabled && "cursor-not-allowed opacity-50"
+                )}
               >
                 <div
+                  className={cn(
+                    "pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br opacity-25 blur-3xl transition-opacity group-hover:opacity-40",
+                    visual.gradient
+                  )}
                 />
                 <div
+                  className={cn(
+                    "relative mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-white/10",
+                    visual.gradient
+                  )}
                 >
-                  <Icon strokeWidth={1.75} aria-hidden />
+                  <Icon className="h-5 w-5 text-white" strokeWidth={1.75} aria-hidden />
                 </div>
-                <h3>{t.label}</h3>
-                <p>
+                <h3 className="text-heading relative text-base">{t.label}</h3>
+                <p className="text-caption relative mt-1">
                   {count > 0 ? `${count} questions` : "Bientôt disponible"}
                 </p>
                 {count > 0 && (
                   <ArrowUpRight
+                    className="absolute right-4 top-4 h-4 w-4 text-[var(--text-dim)] transition-colors group-hover:text-[var(--accent)]"
                     aria-hidden
                   />
                 )}

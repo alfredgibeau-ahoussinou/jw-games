@@ -77,9 +77,9 @@ export default function VraiFauxPage() {
           ]}
           onStart={startGame}
         >
-          <div>
-            <p>Nombre de questions</p>
-            <div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-[var(--text-muted)]">Nombre de questions</p>
+            <div className="flex flex-wrap gap-2">
               {ROUND_OPTIONS.map((n) => (
                 <Button
                   key={n}

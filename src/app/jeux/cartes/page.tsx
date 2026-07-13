@@ -8,6 +8,7 @@ import { GameStartMenu } from "@/components/game/shared/GameStartMenu";
 import { Button } from "@/components/ui/Button";
 import { getFlashcardDecks } from "@/data/sample-flashcards";
 import { calcXp, getAccuracyLabel } from "@/lib/daily-challenges";
+import { cn } from "@/lib/cn";
 import { useUserStore } from "@/stores/user-store";
 
 type Phase = "menu" | "pick" | "playing" | "results";
@@ -53,33 +54,43 @@ export default function CartesPage() {
       )}
 
       {phase === "pick" && (
-        <div>
-          <p>Sélectionnez un paquet de cartes</p>
-          <div>
-          {decks.map((d, i) => (
-            <button
-              key={d.id}
-              type="button"
-              onClick={() => {
-                setDeckId(d.id);
-                setPhase("playing");
-              }}
-            >
-              <div
-              />
-              <div
+        <div className="mx-auto max-w-lg space-y-6">
+          <h2 className="text-heading text-center">Sélectionnez un paquet de cartes</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {decks.map((d, i) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => {
+                  setDeckId(d.id);
+                  setPhase("playing");
+                }}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-5 text-left transition-all hover:-translate-y-0.5 hover:border-white/12 hover:shadow-xl"
               >
-                <Layers strokeWidth={1.75} aria-hidden />
-              </div>
-              <p>{d.name}</p>
-              <p>{d.cards.length} cartes</p>
-              <ArrowUpRight
-                aria-hidden
-              />
-            </button>
-          ))}
+                <div
+                  className={cn(
+                    "pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br opacity-25 blur-3xl transition-opacity group-hover:opacity-40",
+                    DECK_GRADIENTS[i % DECK_GRADIENTS.length]
+                  )}
+                />
+                <div
+                  className={cn(
+                    "relative mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ring-1 ring-white/10",
+                    DECK_GRADIENTS[i % DECK_GRADIENTS.length]
+                  )}
+                >
+                  <Layers className="h-5 w-5 text-white" strokeWidth={1.75} aria-hidden />
+                </div>
+                <p className="relative font-semibold tracking-tight">{d.name}</p>
+                <p className="text-caption relative mt-1">{d.cards.length} cartes</p>
+                <ArrowUpRight
+                  className="absolute right-4 top-4 h-4 w-4 text-[var(--text-dim)] transition-colors group-hover:text-[var(--accent)]"
+                  aria-hidden
+                />
+              </button>
+            ))}
           </div>
-          <Button variant="outline" onClick={() => setPhase("menu")}>
+          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

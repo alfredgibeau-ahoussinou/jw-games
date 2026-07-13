@@ -57,9 +57,9 @@ export default function VersetsPage() {
           ]}
           onStart={startGame}
         >
-          <div>
-            <p>Versets par manche</p>
-            <div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-[var(--text-muted)]">Versets par manche</p>
+            <div className="flex flex-wrap gap-2">
               {ROUND_OPTIONS.map((n) => (
                 <Button
                   key={n}

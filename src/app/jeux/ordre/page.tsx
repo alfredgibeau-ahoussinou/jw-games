@@ -52,28 +52,28 @@ export default function OrdrePage() {
       )}
 
       {phase === "pick" && (
-        <div>
-          <p>Quelle chronologie voulez-vous tester ?</p>
-          <div>
+        <div className="mx-auto max-w-lg space-y-6">
+          <h2 className="text-heading text-center">Quelle chronologie voulez-vous tester ?</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
             {sets.map((s) => (
               <Card
                 key={s.id}
                 hover
-                shine
+                interactive
                 onClick={() => {
                   setSetId(s.id);
                   setPhase("playing");
                 }}
               >
-                <div>
-                  <CalendarDays aria-hidden />
-                  <p>{s.title}</p>
+                <div className="mb-3 flex items-center gap-3">
+                  <CalendarDays className="h-5 w-5 shrink-0 text-[var(--accent)]" aria-hidden />
+                  <p className="font-semibold tracking-tight">{s.title}</p>
                 </div>
-                <p>{s.events.length} événements</p>
+                <p className="text-caption">{s.events.length} événements</p>
               </Card>
             ))}
           </div>
-          <Button variant="outline" onClick={() => setPhase("menu")}>
+          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

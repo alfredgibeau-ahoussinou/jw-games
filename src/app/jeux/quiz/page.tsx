@@ -73,7 +73,7 @@ export default function QuizPage() {
       emoji="📖"
     >
       {phase === "menu" && (
-        <div>
+        <div className="mx-auto max-w-2xl space-y-6">
           <GameStartMenu
             emoji="📖"
             title="Testez vos connaissances"
@@ -87,10 +87,10 @@ export default function QuizPage() {
             onStart={() => {}}
             showStartButton={false}
           />
-          <p>
+          <p className="text-body text-center">
             Niveau adapté à votre profil — recommandé : {DIFFICULTY_LABELS[defaultDifficulty]}
           </p>
-          <div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {ALL_DIFFICULTIES.map((d) => {
               const count = getQuizByDifficulty(d).length;
               const isRecommended = recommended.includes(d);
@@ -106,8 +106,8 @@ export default function QuizPage() {
                     {DIFFICULTY_LABELS[d]}
                     {d === defaultDifficulty ? " · recommandé" : ""}
                   </Badge>
-                  <p>{count}</p>
-                  <p>questions</p>
+                  <p className="mt-3 text-2xl font-bold tabular-nums text-[var(--accent)]">{count}</p>
+                  <p className="text-caption">questions</p>
                 </Card>
               );
             })}
@@ -115,6 +115,7 @@ export default function QuizPage() {
           <Button
             variant="outline"
             size="lg"
+            className="w-full"
             onClick={() => {
               setMixedMode(true);
               setDifficulty(undefined);

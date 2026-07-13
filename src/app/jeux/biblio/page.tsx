@@ -45,9 +45,9 @@ export default function BiblioPage() {
       )}
 
       {phase === "pick" && (
-        <div>
-          <p>Quelle partie de la Bible ?</p>
-          <div>
+        <div className="mx-auto max-w-lg space-y-6">
+          <h2 className="text-heading text-center">Quelle partie de la Bible ?</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
             {BIBLE_BOOK_SETS.map((set, i) => (
               <Card
                 key={set.id}
@@ -58,15 +58,15 @@ export default function BiblioPage() {
                   setPhase("playing");
                 }}
               >
-                <div>
-                  <BookMarked aria-hidden />
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--accent-light)]">
+                  <BookMarked className="h-5 w-5 text-[var(--accent)]" aria-hidden />
                 </div>
-                <p>{set.title}</p>
-                <p>{set.events.length} livres</p>
+                <p className="font-semibold tracking-tight">{set.title}</p>
+                <p className="text-caption mt-1">{set.events.length} livres</p>
               </Card>
             ))}
           </div>
-          <Button variant="outline" onClick={() => setPhase("menu")}>
+          <Button variant="outline" className="w-full" onClick={() => setPhase("menu")}>
             Retour
           </Button>
         </div>

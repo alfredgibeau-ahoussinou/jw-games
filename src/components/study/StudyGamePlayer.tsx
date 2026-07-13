@@ -50,22 +50,23 @@ export function StudyGamePlayer({ themeId, gameId }: StudyGamePlayerProps) {
 
   if (phase === "intro") {
     return (
-      <div>
-        <div>
-          <p>{theme.title}</p>
-          <h2>{game.title}</h2>
-          <p>{game.description}</p>
-          <blockquote>
+      <div className="mx-auto max-w-xl space-y-6">
+        <div className="surface-card rounded-2xl border border-white/[0.06] p-6 sm:p-8">
+          <p className="text-caption mb-1">{theme.title}</p>
+          <h2 className="text-heading text-xl sm:text-2xl">{game.title}</h2>
+          <p className="text-body mt-3">{game.description}</p>
+          <blockquote className="scripture-block mt-6 not-italic">
             {theme.scriptureHighlight}
-            <footer>{theme.scriptureRef}</footer>
+            <footer className="scripture-ref mt-2 block not-italic">{theme.scriptureRef}</footer>
           </blockquote>
         </div>
-        <Button size="lg" onClick={() => setPhase("playing")}>
+        <Button size="lg" className="w-full" onClick={() => setPhase("playing")}>
           Commencer le mini-jeu
         </Button>
         {theme.articleIds && theme.articleIds.length > 0 && (
           <Link
             href={`/etude/article/${theme.articleIds[0]}`}
+            className="link-primary block text-center text-sm"
           >
             Lire un article de cette thématique
           </Link>

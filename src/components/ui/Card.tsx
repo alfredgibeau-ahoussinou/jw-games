@@ -24,7 +24,7 @@ export function Card({
   const baseClass = cn(
     "rounded-md border border-[var(--border)] bg-[var(--bg-card)] p-6",
     glow && "border-[var(--accent)]/30 shadow-md",
-    shine && "",
+    shine && "relative overflow-hidden before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/5 before:to-transparent",
     hover && "cursor-pointer hover:border-[var(--border-strong)] hover:shadow-md transition-shadow",
     className
   );

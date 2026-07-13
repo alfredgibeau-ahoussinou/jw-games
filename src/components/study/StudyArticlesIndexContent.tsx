@@ -78,22 +78,22 @@ export function StudyArticlesIndexContent() {
         />
 
         {filteredArticles.length === 0 ? (
-          <p>
+          <p className="text-caption py-8 text-center">
             {filter === "unread"
               ? "Vous avez lu tous les articles de ce filtre. Bravo !"
               : "Aucun article dans ce filtre."}
           </p>
         ) : (
-          <div>
+          <div className="mt-8 space-y-10">
             {SECTIONS.map((kind) => {
               const articles = filteredArticles.filter((a) => a.kind === kind);
               if (articles.length === 0) return null;
               return (
                 <section key={kind} aria-label={STUDY_PUBLICATION_LABELS[kind]}>
-                  <h2>
+                  <h2 className="text-heading mb-4">
                     {STUDY_PUBLICATION_LABELS[kind]} ({articles.length})
                   </h2>
-                  <div>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {articles.map((article) => (
                       <StudyArticleCard key={article.id} article={article} />
                     ))}
