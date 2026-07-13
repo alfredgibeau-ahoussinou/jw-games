@@ -10,7 +10,7 @@ export default function MediathequePage() {
   return (
     <Suspense
       fallback={
-        <div>
+        <div className="container-app flex min-h-[40vh] items-center justify-center py-16 text-sm text-[var(--text-muted)]">
           Chargement de la médiathèque…
         </div>
       }
