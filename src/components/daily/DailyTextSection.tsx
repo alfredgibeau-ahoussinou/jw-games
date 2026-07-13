@@ -5,17 +5,21 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen,
+  BookMarked,
   Calendar,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  Gamepad2,
   Loader2,
   Sparkles,
   XCircle,
   Zap,
 } from "lucide-react";
 import { DAILY_TEXT_QUIZ_XP, formatDailyTextIso } from "@/lib/daily-text";
+import { matchDailyTextTheme, getDailyMiniGameSuggestion } from "@/lib/daily-text-themes";
+import { getStudyTheme } from "@/data/study-themes";
 import { shiftParisIso, toParisIso } from "@/lib/jw-daily-text";
 import type { JwDailyText } from "@/types/daily-text";
 import { cn } from "@/lib/cn";
@@ -42,6 +46,7 @@ async function fetchDailyText(iso?: string) {
 
 export function DailyTextSection() {
   const addXp = useUserStore((s) => s.addXp);
+  const trackDailyProgress = useUserStore((s) => s.trackDailyProgress);
   const [todayIso, setTodayIso] = useState("");
   const [selectedIso, setSelectedIso] = useState<string | null>(null);
 
@@ -107,6 +112,9 @@ export function DailyTextSection() {
   const questions = entry?.questions ?? [];
   const q = questions[index];
   const answered = selected !== null;
+  const matchedThemeId = entry ? matchDailyTextTheme(entry) : null;
+  const matchedTheme = matchedThemeId ? getStudyTheme(matchedThemeId) : null;
+  const miniGame = activeIso ? getDailyMiniGameSuggestion(activeIso) : null;
 
   function pick(i: number) {
     if (!q || answered) return;
@@ -118,6 +126,7 @@ export function DailyTextSection() {
     if (index >= questions.length - 1) {
       const xp = newScore * DAILY_TEXT_QUIZ_XP;
       if (xp > 0) addXp(xp, { skipSession: true });
+      trackDailyProgress("dailytext", 1);
       setScore(newScore);
       setDone(true);
     }
@@ -271,6 +280,39 @@ export function DailyTextSection() {
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                 </Link>
               </div>
+
+              {(matchedTheme || miniGame) && (
+                <div className="grid gap-3 border-t border-white/[0.06] pt-4 sm:grid-cols-2">
+                  {matchedTheme && (
+                    <Link
+                      href={`/etude/${matchedTheme.id}`}
+                      className="flex items-center gap-3 rounded-xl border border-[var(--accent)]/25 bg-[var(--accent-light)]/40 p-4 transition-colors hover:border-[var(--accent)]/50"
+                    >
+                      <BookMarked className="h-5 w-5 shrink-0 text-[var(--accent)]" aria-hidden />
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+                          Approfondir ce verset
+                        </p>
+                        <p className="mt-0.5 text-sm font-semibold">{matchedTheme.title}</p>
+                      </div>
+                    </Link>
+                  )}
+                  {miniGame && (
+                    <Link
+                      href={miniGame.href}
+                      className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-[var(--bg-elevated)] p-4 transition-colors hover:border-[var(--accent)]/40"
+                    >
+                      <Gamepad2 className="h-5 w-5 shrink-0 text-[var(--accent)]" aria-hidden />
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                          Mini-jeu du jour
+                        </p>
+                        <p className="mt-0.5 text-sm font-semibold">{miniGame.label}</p>
+                      </div>
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="border-t border-white/[0.06] bg-[var(--bg-elevated)]/80 px-6 py-6 sm:px-8">

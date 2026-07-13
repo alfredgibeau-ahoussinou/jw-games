@@ -1,5 +1,6 @@
 import type { PhraseCategory, PreachLanguage, PreachLanguageId } from "@/types/language";
 import { EN_PHRASES } from "./en";
+import { EN_SCENARIOS } from "./scenarios-en";
 import { ES_PHRASES } from "./es";
 import { KO_PHRASES } from "./ko";
 import { FR_PHRASES } from "./fr";
@@ -17,6 +18,7 @@ export const PREACH_LANGUAGES: PreachLanguage[] = [
     description: "Phrases et mots pour prêcher en anglais",
     forWhom: "Idéal pour les territoires anglophones ou bilingues",
     phrases: EN_PHRASES,
+    scenarios: EN_SCENARIOS,
   },
   {
     id: "es",

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Sparkles } from "lucide-react";
 import { PageWrapper } from "@/components/motion/PageWrapper";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StudioPageBody, StudioPageShell } from "@/components/studio/StudioPageShell";
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { getStudyTheme, getThemeArticles } from "@/data/study-themes";
 import { getStudyArticle } from "@/data/study/articles";
 import { getNextPathStep } from "@/lib/study-paths";
-import { isArticleRead } from "@/lib/study-progress";
+import { isArticleRead, isArticleMeditated } from "@/lib/study-progress";
 import type { StudyArticle } from "@/types/study";
 import { useUserStore } from "@/stores/user-store";
 
@@ -25,9 +25,11 @@ export function StudyArticlePageContent({ article }: StudyArticlePageContentProp
   const studyProgress = useUserStore((s) => s.studyProgress);
   const openStudyArticle = useUserStore((s) => s.openStudyArticle);
   const markStudyArticleRead = useUserStore((s) => s.markStudyArticleRead);
+  const markStudyArticleMeditated = useUserStore((s) => s.markStudyArticleMeditated);
 
   const endRef = useRef<HTMLDivElement>(null);
   const read = isArticleRead(studyProgress, article.id);
+  const meditated = isArticleMeditated(studyProgress, article.id);
 
   useEffect(() => {
     openStudyArticle(article.id, article.themeId);
@@ -79,11 +81,26 @@ export function StudyArticlePageContent({ article }: StudyArticlePageContentProp
 
           <StudyArticleView article={article} />
 
-          <div ref={endRef}>
+          <div ref={endRef} className="space-y-4">
             {!read && (
               <Button variant="outline" onClick={() => markStudyArticleRead(article.id)}>
                 Marquer comme lu
               </Button>
+            )}
+            {(article.studyQuestions?.length ?? 0) > 0 && !meditated && (
+              <Button
+                variant={read ? "primary" : "outline"}
+                onClick={() => markStudyArticleMeditated(article.id)}
+              >
+                <Sparkles className="h-4 w-4" aria-hidden />
+                J&apos;ai médité
+              </Button>
+            )}
+            {meditated && (
+              <div className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-light)] px-4 py-2 text-sm font-medium text-[var(--accent)]">
+                <Sparkles className="h-4 w-4" aria-hidden />
+                Méditation enregistrée
+              </div>
             )}
           </div>
 

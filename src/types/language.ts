@@ -30,6 +30,20 @@ export interface PreachPhrase {
   tip?: string;
 }
 
+export interface DoorScenarioLine {
+  speaker: "vous" | "habitant";
+  french: string;
+  target: string;
+  pronunciation?: string;
+}
+
+export interface DoorScenario {
+  id: string;
+  title: string;
+  setting: string;
+  lines: DoorScenarioLine[];
+}
+
 export interface PreachLanguage {
   id: PreachLanguageId;
   name: string;
@@ -38,4 +52,5 @@ export interface PreachLanguage {
   description: string;
   forWhom: string;
   phrases: PreachPhrase[];
+  scenarios?: DoorScenario[];
 }

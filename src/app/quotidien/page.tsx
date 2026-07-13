@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageWrapper } from "@/components/motion/PageWrapper";
+import { DailyTextSection } from "@/components/daily/DailyTextSection";
 import { DAILY_CHALLENGE_BONUS } from "@/lib/constants";
-import { DAILY_TASKS, DAILY_THRESHOLDS } from "@/lib/daily-challenges";
+import { DAILY_THRESHOLDS, getDailyTasksForUser } from "@/lib/daily-challenges";
 import { resetDailyIfNeeded } from "@/lib/db/types";
 import { toParisIso } from "@/lib/jw-daily-text";
 import { useParisDayRotation } from "@/hooks/useParisDayRotation";
@@ -29,10 +30,12 @@ function formatParisDateLabel(iso: string) {
 export default function QuotidienPage() {
   const { profile, dailyProgress, claimDailyReward } = useUserStore();
   const progress = resetDailyIfNeeded(dailyProgress);
+  const dailyTasks = getDailyTasksForUser(profile?.preferences);
+  const requiredCount = dailyTasks.length;
 
-  const allDone = DAILY_TASKS.every((t) => progress.tasks[t.id]);
+  const allDone = dailyTasks.every((t) => progress.tasks[t.id]);
   const canClaim = allDone && !progress.claimed;
-  const doneCount = DAILY_TASKS.filter((t) => progress.tasks[t.id]).length;
+  const doneCount = dailyTasks.filter((t) => progress.tasks[t.id]).length;
 
   const [dateLabel, setDateLabel] = useState(() => formatParisDateLabel(toParisIso()));
 
@@ -47,8 +50,8 @@ export default function QuotidienPage() {
           title="Défi du jour"
           description={
             dateLabel
-              ? `${dateLabel} — complétez 4 missions pour gagner +${DAILY_CHALLENGE_BONUS} XP.`
-              : `Complétez 4 missions pour gagner +${DAILY_CHALLENGE_BONUS} XP.`
+              ? `${dateLabel} — complétez ${requiredCount} mission${requiredCount > 1 ? "s" : ""} pour gagner +${DAILY_CHALLENGE_BONUS} XP.`
+              : `Complétez ${requiredCount} missions pour gagner +${DAILY_CHALLENGE_BONUS} XP.`
           }
         />
 
@@ -64,23 +67,27 @@ export default function QuotidienPage() {
               <div className="text-right">
                 <p className="text-caption">Aujourd&apos;hui</p>
                 <p className="text-2xl font-bold text-[var(--accent)] tabular-nums">
-                  {doneCount}/{DAILY_TASKS.length}
+                  {doneCount}/{requiredCount}
                 </p>
               </div>
             </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--surface-subtle)]" role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={DAILY_TASKS.length}>
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--surface-subtle)]" role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={requiredCount}>
               <motion.div
                 className="h-full bg-[var(--accent)]"
-                animate={{ width: `${(doneCount / DAILY_TASKS.length) * 100}%` }}
+                animate={{ width: `${(doneCount / requiredCount) * 100}%` }}
               />
             </div>
           </Card>
         )}
 
+        <div id="texte-du-jour" className="mb-6">
+          <DailyTextSection />
+        </div>
+
         <Card className="mb-6">
           <h2 className="text-heading mb-4">Missions</h2>
           <ul className="space-y-3">
-            {DAILY_TASKS.map((task) => {
+            {dailyTasks.map((task) => {
               const done = Boolean(progress.tasks[task.id]);
               const count = progress.counts?.[task.id] ?? 0;
               const threshold = DAILY_THRESHOLDS[task.id];
@@ -128,7 +135,7 @@ export default function QuotidienPage() {
             </p>
           ) : (
             <Button className="w-full min-h-12" size="lg" disabled={!canClaim} onClick={claimDailyReward}>
-              {canClaim ? "Réclamer la récompense" : `Encore ${DAILY_TASKS.length - doneCount} mission(s)`}
+              {canClaim ? "Réclamer la récompense" : `Encore ${requiredCount - doneCount} mission(s)`}
             </Button>
           )}
         </Card>

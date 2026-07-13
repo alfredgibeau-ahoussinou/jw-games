@@ -348,11 +348,16 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
                       <button
                         type="button"
                         onClick={() => setSubtitlesOn((v) => !v)}
-                        className={cn("video-ctrl-btn", subtitlesOn && "video-ctrl-btn--active")}
+                        className={cn(
+                          "video-ctrl-btn video-ctrl-btn--cc",
+                          subtitlesOn && "video-ctrl-btn--active"
+                        )}
                         aria-label={subtitlesOn ? "Masquer les sous-titres" : "Afficher les sous-titres"}
                         aria-pressed={subtitlesOn}
+                        title="Sous-titres"
                       >
-                        <Subtitles />
+                        <Subtitles aria-hidden />
+                        <span>CC</span>
                       </button>
                     ) : null}
 

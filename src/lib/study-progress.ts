@@ -3,6 +3,7 @@ import { STUDY_THEMES } from "@/data/study-themes";
 
 export interface StudyProgress {
   readArticleIds: string[];
+  meditatedArticleIds: string[];
   completedStudyGames: string[];
   lastArticleId: string | null;
   lastThemeId: string | null;
@@ -13,12 +14,17 @@ export interface StudyProgress {
 export function emptyStudyProgress(): StudyProgress {
   return {
     readArticleIds: [],
+    meditatedArticleIds: [],
     completedStudyGames: [],
     lastArticleId: null,
     lastThemeId: null,
     currentPathWeek: 1,
     pathStartedAt: null,
   };
+}
+
+export function isArticleMeditated(progress: StudyProgress, articleId: string): boolean {
+  return progress.meditatedArticleIds.includes(articleId);
 }
 
 export function studyGameKey(themeId: string, gameId: string): string {

@@ -155,3 +155,48 @@ export function getAccuracyLabel(score: number, total: number) {
   if (pct >= 40) return "Pas mal";
   return "Continuez !";
 }
+
+const FEATURED_GAMES: GameMode[] = ["quiz", "vraifaux", "rapidite", "memoire", "versets", "ordre"];
+const FEATURED_THEMES = [
+  { id: "priere", label: "La prière" },
+  { id: "confiance", label: "Confiance en Jéhovah" },
+  { id: "jesus", label: "Jésus Christ" },
+  { id: "royaume", label: "Le Royaume" },
+  { id: "bible", label: "Étude biblique" },
+  { id: "service", label: "Le service" },
+] as const;
+
+export interface FeaturedDailyChallenge {
+  gameId: GameMode;
+  gameHref: string;
+  gameLabel: string;
+  themeId: string;
+  themeLabel: string;
+  themeHref: string;
+  dateIso: string;
+}
+
+/** Défi du jour unifié — même sélection sur l'accueil et le hub jeux. */
+export function getFeaturedDailyChallenge(dateIso: string): FeaturedDailyChallenge {
+  const seed = dateIso.split("-").reduce((a, p) => a + parseInt(p, 10), 0);
+  const gameId = FEATURED_GAMES[seed % FEATURED_GAMES.length];
+  const theme = FEATURED_THEMES[(seed + 3) % FEATURED_THEMES.length];
+  const gameLabels: Partial<Record<GameMode, string>> = {
+    quiz: "Quiz biblique",
+    vraifaux: "Vrai ou faux",
+    rapidite: "Défi de rapidité",
+    memoire: "Mémoire biblique",
+    versets: "Compléter le verset",
+    ordre: "Ordre des événements",
+  };
+
+  return {
+    gameId,
+    gameHref: `/jeux/${gameId === "vraifaux" ? "vrai-faux" : gameId === "rapidite" ? "rapidite" : gameId}`,
+    gameLabel: gameLabels[gameId] ?? gameId,
+    themeId: theme.id,
+    themeLabel: theme.label,
+    themeHref: `/etude/${theme.id}`,
+    dateIso,
+  };
+}

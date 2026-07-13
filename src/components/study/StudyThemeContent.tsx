@@ -30,6 +30,7 @@ import { getThemeGuide } from "@/data/study/theme-guides";
 import { getStudyTheme, getThemeArticles } from "@/data/study-themes";
 import { STUDY_THEME_VISUALS } from "@/lib/study-visuals";
 import { isArticleRead, isStudyGameDone } from "@/lib/study-progress";
+import { estimateThemeMinutes } from "@/lib/theme-estimates";
 import { useUserStore } from "@/stores/user-store";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
@@ -166,6 +167,7 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
 
   const completedSteps = stepStatus.filter(Boolean).length;
   const totalSteps = guide.howToAdvance.length;
+  const estimatedMin = estimateThemeMinutes(theme);
 
   return (
     <PageWrapper>
@@ -180,7 +182,13 @@ export function StudyThemeContent({ theme }: StudyThemeContentProps) {
 
         <StudioPageBody className="space-y-6">
           {(articles.length > 0 || theme.miniGames.length > 0) && (
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-xl border border-white/[0.06] bg-[var(--bg-card)] p-4">
+                <p className="text-caption text-[0.6875rem]">Temps estimé</p>
+                <p className="mt-1 text-lg font-bold tabular-nums text-[var(--accent)]">
+                  ~{estimatedMin} <span className="text-sm font-normal text-[var(--text-muted)]">min</span>
+                </p>
+              </div>
               <div className="rounded-xl border border-white/[0.06] bg-[var(--bg-card)] p-4">
                 <p className="text-caption text-[0.6875rem]">Progression du pôle</p>
                 <p className="mt-1 text-lg font-bold tabular-nums text-[var(--accent)]">

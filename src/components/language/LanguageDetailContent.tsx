@@ -5,6 +5,8 @@ import type { PreachLanguage } from "@/types/language";
 import { PhraseFlashcards } from "@/components/language/PhraseFlashcards";
 import { PhraseQuiz } from "@/components/language/PhraseQuiz";
 import { PhraseList } from "@/components/language/PhraseList";
+import { DoorScenarioSection } from "@/components/language/DoorScenarioSection";
+import { ReviewTodaySection } from "@/components/language/ReviewTodaySection";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageWrapper } from "@/components/motion/PageWrapper";
 import { StudioBackLink } from "@/components/studio/StudioPageHero";
@@ -12,7 +14,7 @@ import { StudioPageBody, StudioPageShell } from "@/components/studio/StudioPageS
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SegmentTabs } from "@/components/ui/SegmentTabs";
-import { useLanguageProgress } from "@/hooks/useLanguageProgress";
+import { useLanguageProgress, getPhrasesToReview } from "@/hooks/useLanguageProgress";
 import { useUserStore } from "@/stores/user-store";
 import { BookOpen, Layers, List, RotateCcw, Trophy } from "lucide-react";
 import { jwImageForLanguage } from "@/lib/jw-images";
@@ -34,7 +36,9 @@ export function LanguageDetailContent({ language }: LanguageDetailContentProps) 
   const [tab, setTab] = useState<Tab>("cards");
   const [phase, setPhase] = useState<Phase>("hub");
   const [quizScore, setQuizScore] = useState({ score: 0, total: 0 });
-  const { knownIds, markKnown, resetProgress, loaded } = useLanguageProgress(language.id);
+  const { knownIds, markKnown, markForReview, clearReview, resetProgress, loaded } =
+    useLanguageProgress(language.id);
+  const reviewPhrases = loaded ? getPhrasesToReview(language.id, language.phrases) : [];
   const addXp = useUserStore((s) => s.addXp);
 
   const progressPct = Math.round((knownIds.length / language.phrases.length) * 100);
@@ -114,13 +118,22 @@ export function LanguageDetailContent({ language }: LanguageDetailContentProps) 
             ariaLabel="Modes d'apprentissage"
           />
 
+          <ReviewTodaySection phrases={reviewPhrases} onClearReview={clearReview} />
+
+          {language.scenarios && language.scenarios.length > 0 && (
+            <DoorScenarioSection scenarios={language.scenarios} />
+          )}
+
           {tab === "cards" && (
+            <div id="cartes">
             <PhraseFlashcards
               phrases={language.phrases}
               knownIds={knownIds}
               onMarkKnown={markKnown}
+              onMarkForReview={markForReview}
               languageId={language.id}
             />
+            </div>
           )}
 
           {tab === "quiz" && phase === "hub" && (

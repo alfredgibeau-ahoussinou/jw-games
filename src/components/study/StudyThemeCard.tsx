@@ -1,23 +1,26 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Clock } from "lucide-react";
 import type { StudyTheme } from "@/types/study";
 import { STUDY_THEME_VISUALS } from "@/lib/study-visuals";
+import { estimateThemeMinutes } from "@/lib/theme-estimates";
 import { cn } from "@/lib/cn";
 
 interface StudyThemeCardProps {
   theme: StudyTheme;
   compact?: boolean;
+  progressPercent?: number;
 }
 
-export function StudyThemeCard({ theme, compact }: StudyThemeCardProps) {
+export function StudyThemeCard({ theme, compact, progressPercent }: StudyThemeCardProps) {
   const visual = STUDY_THEME_VISUALS[theme.id];
   const Icon = visual?.icon;
+  const estimatedMin = estimateThemeMinutes(theme);
 
   if (compact) {
     return (
       <Link
         href={`/etude/${theme.id}`}
-        className="poster-card poster-card--study group block shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+        className="poster-card poster-card--study group block shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
       >
         <article className="study-card-compact relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[var(--bg-card)] p-3.5 transition-all hover:border-white/12 hover:shadow-lg sm:p-4">
           {Icon && visual && (
@@ -33,9 +36,24 @@ export function StudyThemeCard({ theme, compact }: StudyThemeCardProps) {
           <h3 className="line-clamp-2 min-h-0 flex-1 text-[0.8125rem] font-semibold leading-snug tracking-tight sm:text-sm">
             {theme.title}
           </h3>
-          <p className="text-caption mt-2 shrink-0 pt-0.5 text-[0.6875rem] sm:text-xs">
-            {theme.miniGames.length} mini-jeux
-          </p>
+          <div className="mt-2 flex shrink-0 items-center justify-between gap-2 pt-0.5">
+            <p className="text-caption flex items-center gap-1 text-[0.6875rem] sm:text-xs">
+              <Clock className="h-3 w-3" aria-hidden />~{estimatedMin} min
+            </p>
+            {progressPercent !== undefined && progressPercent > 0 && (
+              <span className="text-[0.6875rem] font-semibold text-[var(--accent)]">
+                {progressPercent}%
+              </span>
+            )}
+          </div>
+          {progressPercent !== undefined && progressPercent > 0 && (
+            <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-[var(--border)]">
+              <div
+                className="h-full rounded-full bg-[var(--accent)] transition-all"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          )}
         </article>
       </Link>
     );
@@ -67,7 +85,7 @@ export function StudyThemeCard({ theme, compact }: StudyThemeCardProps) {
             </div>
           )}
           <span className="text-caption rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-0.5">
-            {theme.miniGames.length} jeux
+            ~{estimatedMin} min
             {(theme.articleIds?.length ?? 0) > 0 && ` · ${theme.articleIds!.length} articles`}
           </span>
         </div>

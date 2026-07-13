@@ -13,6 +13,8 @@ import { StudyArticleCard } from "@/components/study/StudyArticleCard";
 import { StudyPathSection } from "@/components/study/StudyPathSection";
 import { WeeklyMeetingSection } from "@/components/study/WeeklyMeetingSection";
 import { StudyContinueBanner } from "@/components/study/StudyContinueBanner";
+import { StudyProgressThread } from "@/components/study/StudyProgressThread";
+import { StudyResumeButton } from "@/components/study/StudyResumeButton";
 import {
   StudyHubPathTiles,
   type StudyHubPath,
@@ -150,6 +152,16 @@ export function StudyHubContent() {
         </StudioPageHero>
 
         <StudioPageBody>
+          <StudyProgressThread
+            preferences={profile?.preferences}
+            studyProgress={studyProgress}
+          />
+
+          <StudyResumeButton
+            preferences={profile?.preferences}
+            studyProgress={studyProgress}
+          />
+
           {(isOnboarded || studyProgress.lastArticleId) && !activePath && (
             <StudyContinueBanner
               preferences={profile?.preferences}
@@ -284,11 +296,31 @@ export function StudyHubContent() {
                                 Recommandé pour vous ({filteredRecommended.length})
                               </h3>
                               <ScrollRevealGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                {filteredRecommended.map((theme) => (
+                                {filteredRecommended.map((theme) => {
+                                  const articles = getThemeArticles(theme.id);
+                                  const articlesRead = articles.filter((a) =>
+                                    isArticleRead(studyProgress, a.id)
+                                  ).length;
+                                  const gamesDone = theme.miniGames.filter((g) =>
+                                    isStudyGameDone(studyProgress, theme.id, g.id)
+                                  ).length;
+                                  const stats = getThemeStudyStats(
+                                    studyProgress,
+                                    articles.length,
+                                    articlesRead,
+                                    theme.miniGames.length,
+                                    gamesDone
+                                  );
+                                  return (
                                   <ScrollRevealItem key={theme.id}>
-                                    <StudyThemeCard theme={theme} compact />
+                                    <StudyThemeCard
+                                      theme={theme}
+                                      compact
+                                      progressPercent={stats.hasStarted ? stats.percent : undefined}
+                                    />
                                   </ScrollRevealItem>
-                                ))}
+                                  );
+                                })}
                               </ScrollRevealGroup>
                             </section>
                           )}
@@ -298,9 +330,30 @@ export function StudyHubContent() {
                                 Autres thématiques ({filteredOther.length})
                               </h3>
                               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                {filteredOther.map((theme) => (
-                                  <StudyThemeCard key={theme.id} theme={theme} compact />
-                                ))}
+                                {filteredOther.map((theme) => {
+                                  const articles = getThemeArticles(theme.id);
+                                  const articlesRead = articles.filter((a) =>
+                                    isArticleRead(studyProgress, a.id)
+                                  ).length;
+                                  const gamesDone = theme.miniGames.filter((g) =>
+                                    isStudyGameDone(studyProgress, theme.id, g.id)
+                                  ).length;
+                                  const stats = getThemeStudyStats(
+                                    studyProgress,
+                                    articles.length,
+                                    articlesRead,
+                                    theme.miniGames.length,
+                                    gamesDone
+                                  );
+                                  return (
+                                  <StudyThemeCard
+                                    key={theme.id}
+                                    theme={theme}
+                                    compact
+                                    progressPercent={stats.hasStarted ? stats.percent : undefined}
+                                  />
+                                  );
+                                })}
                               </div>
                             </section>
                           )}
@@ -309,9 +362,30 @@ export function StudyHubContent() {
                         <p className="text-caption">Aucune thématique ne correspond à votre recherche.</p>
                       ) : (
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                          {filteredAll.map((theme) => (
-                            <StudyThemeCard key={theme.id} theme={theme} compact />
-                          ))}
+                          {filteredAll.map((theme) => {
+                            const articles = getThemeArticles(theme.id);
+                            const articlesRead = articles.filter((a) =>
+                              isArticleRead(studyProgress, a.id)
+                            ).length;
+                            const gamesDone = theme.miniGames.filter((g) =>
+                              isStudyGameDone(studyProgress, theme.id, g.id)
+                            ).length;
+                            const stats = getThemeStudyStats(
+                              studyProgress,
+                              articles.length,
+                              articlesRead,
+                              theme.miniGames.length,
+                              gamesDone
+                            );
+                            return (
+                            <StudyThemeCard
+                              key={theme.id}
+                              theme={theme}
+                              compact
+                              progressPercent={stats.hasStarted ? stats.percent : undefined}
+                            />
+                            );
+                          })}
                         </div>
                       )}
                     </div>

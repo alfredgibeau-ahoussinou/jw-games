@@ -4,10 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { GameCard } from "@/components/game/GameCard";
+import { DailyChallengeWidget } from "@/components/daily/DailyChallengeWidget";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageWrapper } from "@/components/motion/PageWrapper";
 import { Button } from "@/components/ui/Button";
 import { GAME_MODES } from "@/lib/constants";
+import { getFeaturedDailyChallenge } from "@/lib/daily-challenges";
+import { toParisIso } from "@/lib/jw-daily-text";
 import { GAME_POLES } from "@/lib/game-visuals";
 import { cn } from "@/lib/cn";
 import { getQuizCount } from "@/data/sample-quiz";
@@ -33,6 +36,8 @@ export function GamesHub() {
   const available = GAME_MODES.filter((g) => g.available);
   const filtered = available.filter((g) => matchesFilter(g.players, filter));
   const featured = GAME_MODES.find((g) => g.id === "quiz")!;
+  const dailyChallenge = getFeaturedDailyChallenge(toParisIso());
+  const featuredGame = GAME_MODES.find((g) => g.id === dailyChallenge.gameId) ?? featured;
 
   const poles = GAME_POLES.map((pole) => ({
     ...pole,
@@ -57,12 +62,15 @@ export function GamesHub() {
         </PageHeader>
 
         {filter === "all" && (
-          <section className="mb-12" aria-label="Jeu recommandé">
-            <p className="mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
-              Sélection
-            </p>
-            <GameCard game={featured} featured />
-          </section>
+          <>
+            <DailyChallengeWidget className="mb-8" />
+            <section className="mb-12" aria-label="Jeu recommandé">
+              <p className="mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                Sélection du jour — {dailyChallenge.gameLabel}
+              </p>
+              <GameCard game={featuredGame} featured />
+            </section>
+          </>
         )}
 
         <div

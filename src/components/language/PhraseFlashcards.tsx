@@ -12,6 +12,7 @@ interface PhraseFlashcardsProps {
   phrases: PreachPhrase[];
   knownIds: string[];
   onMarkKnown: (id: string) => void;
+  onMarkForReview?: (id: string) => void;
   languageId: string;
 }
 
@@ -19,6 +20,7 @@ export function PhraseFlashcards({
   phrases,
   knownIds,
   onMarkKnown,
+  onMarkForReview,
   languageId,
 }: PhraseFlashcardsProps) {
   const [index, setIndex] = useState(0);
@@ -132,7 +134,14 @@ export function PhraseFlashcards({
 
       {flipped && (
         <div className="grid grid-cols-2 gap-3">
-          <Button variant="outline" onClick={goNext} className="w-full">
+          <Button
+            variant="outline"
+            onClick={() => {
+              onMarkForReview?.(phrase.id);
+              goNext();
+            }}
+            className="w-full"
+          >
             <X className="h-4 w-4" />
             À revoir
           </Button>

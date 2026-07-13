@@ -39,6 +39,7 @@ interface UserStore {
   updatePreferences: (preferences: UserPreferences) => void;
   openStudyArticle: (articleId: string, themeId?: string) => void;
   markStudyArticleRead: (articleId: string) => void;
+  markStudyArticleMeditated: (articleId: string) => void;
   markStudyGameComplete: (themeId: string, gameId: string) => void;
   advanceStudyPathWeek: () => void;
   setStudyPathWeek: (week: number) => void;
@@ -130,6 +131,19 @@ export const useUserStore = create<UserStore>()(
             studyProgress: {
               ...state.studyProgress,
               readArticleIds: [...read, articleId],
+            },
+          };
+        });
+      },
+
+      markStudyArticleMeditated: (articleId) => {
+        set((state) => {
+          const meditated = state.studyProgress.meditatedArticleIds;
+          if (meditated.includes(articleId)) return state;
+          return {
+            studyProgress: {
+              ...state.studyProgress,
+              meditatedArticleIds: [...meditated, articleId],
             },
           };
         });

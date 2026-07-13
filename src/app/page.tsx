@@ -8,6 +8,7 @@ import { HeroBanner } from "@/components/media/HeroBanner";
 import { MediaRow } from "@/components/media/MediaRow";
 import { VideoPoster } from "@/components/media/MediaRow";
 import { DailyTextSection } from "@/components/daily/DailyTextSection";
+import { DailyChallengeWidget } from "@/components/daily/DailyChallengeWidget";
 import { PageWrapper } from "@/components/motion/PageWrapper";
 import { JW_VIDEO_COLLECTIONS, JW_VIDEOS } from "@/data/jw-videos";
 import { GAME_MODES } from "@/lib/constants";
@@ -56,6 +57,8 @@ export default function HomePage() {
             </div>
           </div>
         )}
+
+        <DailyChallengeWidget compact className="container-app" />
 
         <DailyTextSection />
 

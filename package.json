@@ -7,7 +7,9 @@
     "cache:daily-text": "npx tsx scripts/cache-daily-text.ts",
     "build": "npm run cache:daily-text && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -19,6 +21,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

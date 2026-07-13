@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SyncProvider } from "@/components/providers/SyncProvider";
 import { PwaInstallListener } from "@/components/pwa/PwaInstallListener";
+import { PwaVisitPrompt } from "@/components/pwa/PwaVisitPrompt";
 import { IosInstallSheet } from "@/components/pwa/IosInstallSheet";
 import { ToastProvider } from "@/components/ui/Toast";
 import { GameFeedbackProvider } from "@/components/providers/GameFeedbackProvider";
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <SyncProvider>
           <PwaInstallListener />
+          <PwaVisitPrompt />
           <IosInstallSheet />
           <ToastProvider>
             <GameFeedbackProvider>
