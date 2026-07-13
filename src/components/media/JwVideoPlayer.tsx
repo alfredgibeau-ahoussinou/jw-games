@@ -42,19 +42,27 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
   const shellRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [muted, setMuted] = useState(autoPlay);
+  const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [watched, setWatched] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [ready, setReady] = useState(false);
-  const [subtitlesOn, setSubtitlesOn] = useState(true);
+  const [subtitlesOn, setSubtitlesOn] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const hideControlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { subtitleUrl } = useVideoSubtitles(video);
   const hasSubtitles = Boolean(subtitleUrl);
+
+  const ensureAudible = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = false;
+    el.volume = 1;
+    setMuted(false);
+  }, []);
 
   const syncSubtitleTrack = useCallback(() => {
     const el = ref.current;
@@ -72,8 +80,8 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
     setWatched(false);
     setLoadError(false);
     setReady(false);
-    setMuted(autoPlay);
-    setSubtitlesOn(true);
+    setMuted(false);
+    setSubtitlesOn(false);
 
     const el = ref.current;
     if (!el) return;
@@ -82,10 +90,17 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
 
     if (!autoPlay) return;
 
-    el.muted = true;
+    el.muted = false;
+    el.volume = 1;
     void el.play()
       .then(() => setPlaying(true))
-      .catch(() => setPlaying(false));
+      .catch(() => {
+        el.muted = true;
+        setMuted(true);
+        void el.play()
+          .then(() => setPlaying(true))
+          .catch(() => setPlaying(false));
+      });
   }, [video.id, autoPlay]);
 
   useEffect(() => {
@@ -120,6 +135,7 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
     const el = ref.current;
     if (!el) return;
     if (el.paused) {
+      ensureAudible();
       void el.play().then(() => {
         setPlaying(true);
         revealControls();
@@ -226,7 +242,6 @@ export function JwVideoPlayer({ video, autoPlay = false, onWatched, className }:
             src={subtitleUrl}
             srcLang="fr"
             label="Français"
-            default
             onLoad={syncSubtitleTrack}
           />
         ) : null}
