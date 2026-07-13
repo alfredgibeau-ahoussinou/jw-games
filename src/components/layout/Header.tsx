@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, User, Download } from "lucide-react";
+import { Menu, Download } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { cn } from "@/lib/cn";
@@ -44,21 +44,13 @@ export function Header() {
               <Menu className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
               <span>Menu</span>
             </button>
-            {profile ? (
+            {profile && (
               <Link
                 href="/profil"
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-teal-700 text-sm font-bold text-white ring-2 ring-white/10"
                 aria-label={`Profil de ${profile.displayName}`}
               >
                 {profile.displayName.charAt(0).toUpperCase()}
-              </Link>
-            ) : (
-              <Link
-                href="/profil"
-                aria-label="Connexion"
-                className="touch-target flex h-10 w-10 items-center justify-center rounded-full bg-white text-black"
-              >
-                <User className="h-4 w-4" aria-hidden />
               </Link>
             )}
           </div>
@@ -101,20 +93,13 @@ export function Header() {
             })}
           </nav>
           <div className="ml-auto flex items-center gap-3">
-            {profile ? (
+            {profile && (
               <Link
                 href="/profil"
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent)] to-teal-700 text-sm font-bold text-white ring-2 ring-white/10"
                 aria-label={`Profil de ${profile.displayName}`}
               >
                 {profile.displayName.charAt(0).toUpperCase()}
-              </Link>
-            ) : (
-              <Link
-                href="/profil"
-                className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-white/90"
-              >
-                Connexion
               </Link>
             )}
           </div>
