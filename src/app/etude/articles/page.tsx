@@ -5,8 +5,8 @@ export default function StudyArticlesIndexPage() {
   return (
     <Suspense
       fallback={
-        <div>
-          Chargement de la bibliothèque…
+        <div className="page-shell container-app flex min-h-[40vh] items-center justify-center">
+          <p className="text-caption animate-pulse">Chargement de la bibliothèque…</p>
         </div>
       }
     >

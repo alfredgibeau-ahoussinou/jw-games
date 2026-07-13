@@ -33,7 +33,21 @@ export function StudyGamePlayer({ themeId, gameId }: StudyGamePlayerProps) {
   const clearLastBadges = useUserStore((s) => s.clearLastBadges);
 
   if (!theme || !game) {
-    return <p>Mini-jeu introuvable.</p>;
+    return (
+      <div className="mx-auto max-w-xl space-y-6 text-center">
+        <div className="surface-card rounded-2xl border border-white/[0.06] p-6 sm:p-8">
+          <h2 className="text-heading text-xl">Mini-jeu introuvable</h2>
+          <p className="text-body mt-3">
+            Ce mini-jeu n&apos;existe pas ou a été déplacé.
+          </p>
+        </div>
+        <Link href="/etude">
+          <Button variant="outline" className="w-full">
+            Retour à l&apos;étude
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
   const xpFor = (score: number) => score * STUDY_MINI_GAME_XP;
@@ -107,5 +121,19 @@ export function StudyGamePlayer({ themeId, gameId }: StudyGamePlayerProps) {
     return <VerseGapGame questions={game.verseQuestions} onComplete={handleComplete} />;
   }
 
-  return <p>Contenu en préparation.</p>;
+  return (
+    <div className="mx-auto max-w-xl space-y-6 text-center">
+      <div className="surface-card rounded-2xl border border-white/[0.06] p-6 sm:p-8">
+        <h2 className="text-heading text-xl">Contenu en préparation</h2>
+        <p className="text-body mt-3">
+          Les questions de ce mini-jeu seront bientôt disponibles.
+        </p>
+      </div>
+      <Link href={`/etude/${themeId}`}>
+        <Button variant="outline" className="w-full">
+          Retour à la thématique
+        </Button>
+      </Link>
+    </div>
+  );
 }

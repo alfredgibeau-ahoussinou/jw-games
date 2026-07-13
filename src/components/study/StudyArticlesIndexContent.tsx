@@ -68,7 +68,7 @@ export function StudyArticlesIndexContent() {
           eyebrow="Articles"
         />
 
-        <StudioPageBody>
+        <StudioPageBody className="space-y-6">
 
         <SegmentTabs
           items={FILTERS}
