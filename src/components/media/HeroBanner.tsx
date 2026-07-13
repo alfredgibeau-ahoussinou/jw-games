@@ -45,7 +45,7 @@ export function HeroBanner({ video, onPlay, compact }: HeroBannerProps) {
               Lecture
             </button>
           ) : (
-            <Link href={`/mediatheque?video=${video.id}`} className="w-full sm:w-auto">
+            <Link href={`/mediatheque/${video.id}`} className="w-full sm:w-auto">
               <span className="inline-flex w-full min-h-12 items-center justify-center gap-2 rounded-lg bg-white px-6 text-base font-semibold text-zinc-900 shadow-lg transition-colors hover:bg-white/90 sm:min-w-[8.5rem]">
                 <Play className="h-5 w-5 shrink-0 fill-zinc-900" aria-hidden />
                 Lecture

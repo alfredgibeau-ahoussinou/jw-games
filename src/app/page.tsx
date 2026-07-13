@@ -73,19 +73,19 @@ export default function HomePage() {
 
         <MediaRow title="Pour les enfants" href="/mediatheque">
           {enfantsRow.map((v) => (
-            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+            <VideoPoster key={v.id} video={v} href={`/mediatheque/${v.id}`} />
           ))}
         </MediaRow>
 
         <MediaRow title="Pour les jeunes" href="/mediatheque">
           {jeunesRow.map((v) => (
-            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+            <VideoPoster key={v.id} video={v} href={`/mediatheque/${v.id}`} />
           ))}
         </MediaRow>
 
         <MediaRow title="La bonne nouvelle selon Jésus" href="/mediatheque">
           {jesusRow.map((v) => (
-            <VideoPoster key={v.id} video={v} href={`/mediatheque?video=${v.id}`} />
+            <VideoPoster key={v.id} video={v} href={`/mediatheque/${v.id}`} />
           ))}
         </MediaRow>
 
